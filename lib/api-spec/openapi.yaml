@@ -3,20 +3,32 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: BotalSePaisa Operations Portal API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: shops
+    description: Shop management
+  - name: collections
+    description: Collection entries
+  - name: reports
+    description: Reports
+  - name: settings
+    description: Application settings
+  - name: dashboard
+    description: Dashboard summary
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +36,546 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with username and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginCredentials"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthToken"
+        "401":
+          description: Invalid credentials
+
+  /shops:
+    get:
+      operationId: listShops
+      tags: [shops]
+      summary: List all shops
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search by shop name, owner name, or mobile
+        - name: page
+          in: query
+          schema:
+            type: number
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: number
+          description: Items per page
+      responses:
+        "200":
+          description: List of shops
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopList"
+    post:
+      operationId: createShop
+      tags: [shops]
+      summary: Create a new shop
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShopInput"
+      responses:
+        "201":
+          description: Shop created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Shop"
+
+  /shops/{id}:
+    get:
+      operationId: getShop
+      tags: [shops]
+      summary: Get shop by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Shop found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Shop"
+        "404":
+          description: Shop not found
+    put:
+      operationId: updateShop
+      tags: [shops]
+      summary: Update a shop
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShopUpdate"
+      responses:
+        "200":
+          description: Shop updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Shop"
+        "404":
+          description: Shop not found
+    delete:
+      operationId: deleteShop
+      tags: [shops]
+      summary: Delete a shop
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "204":
+          description: Shop deleted
+        "404":
+          description: Shop not found
+
+  /collections:
+    get:
+      operationId: listCollections
+      tags: [collections]
+      summary: List collection entries
+      parameters:
+        - name: shopId
+          in: query
+          schema:
+            type: number
+        - name: startDate
+          in: query
+          schema:
+            type: string
+        - name: endDate
+          in: query
+          schema:
+            type: string
+        - name: paymentStatus
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+      responses:
+        "200":
+          description: List of collections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionList"
+    post:
+      operationId: createCollection
+      tags: [collections]
+      summary: Create a collection entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CollectionInput"
+      responses:
+        "201":
+          description: Collection created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collection"
+
+  /collections/{id}:
+    get:
+      operationId: getCollection
+      tags: [collections]
+      summary: Get a single collection entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Collection found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collection"
+        "404":
+          description: Not found
+
+  /collections/{id}/payment:
+    patch:
+      operationId: updatePaymentStatus
+      tags: [collections]
+      summary: Mark a collection as paid or pending
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentUpdate"
+      responses:
+        "200":
+          description: Payment status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collection"
+        "404":
+          description: Not found
+
+  /reports:
+    get:
+      operationId: getReports
+      tags: [reports]
+      summary: Get report data with filters
+      parameters:
+        - name: shopId
+          in: query
+          schema:
+            type: number
+        - name: week
+          in: query
+          schema:
+            type: string
+          description: ISO week string e.g. 2024-W01
+        - name: month
+          in: query
+          schema:
+            type: string
+          description: Month string e.g. 2024-01
+        - name: startDate
+          in: query
+          schema:
+            type: string
+        - name: endDate
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Report data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportResult"
+
+  /settings:
+    get:
+      operationId: getSettings
+      tags: [settings]
+      summary: Get current settings
+      responses:
+        "200":
+          description: Current settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+    put:
+      operationId: updateSettings
+      tags: [settings]
+      summary: Update settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SettingsUpdate"
+      responses:
+        "200":
+          description: Settings updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+
+  /dashboard:
+    get:
+      operationId: getDashboard
+      tags: [dashboard]
+      summary: Get dashboard summary
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
+    LoginCredentials:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    AuthToken:
+      type: object
+      required: [token, username, role]
+      properties:
+        token:
+          type: string
+        username:
+          type: string
+        role:
+          type: string
+
+    Shop:
+      type: object
+      required: [id, shopId, shopName, ownerName, mobile, address, createdAt]
+      properties:
+        id:
+          type: number
+        shopId:
+          type: string
+        shopName:
+          type: string
+        ownerName:
+          type: string
+        mobile:
+          type: string
+        address:
+          type: string
+        createdAt:
+          type: string
+
+    ShopInput:
+      type: object
+      required: [shopName, ownerName, mobile, address]
+      properties:
+        shopName:
+          type: string
+          minLength: 1
+        ownerName:
+          type: string
+          minLength: 1
+        mobile:
+          type: string
+          minLength: 1
+        address:
+          type: string
+          minLength: 1
+
+    ShopUpdate:
+      type: object
+      properties:
+        shopName:
+          type: string
+          minLength: 1
+        ownerName:
+          type: string
+          minLength: 1
+        mobile:
+          type: string
+          minLength: 1
+        address:
+          type: string
+          minLength: 1
+
+    ShopList:
+      type: object
+      required: [data, total, page, limit]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Shop"
+        total:
+          type: number
+        page:
+          type: number
+        limit:
+          type: number
+
+    Collection:
+      type: object
+      required: [id, shopId, collectionDate, weightKg, ratePerKg, totalAmount, paymentStatus, createdAt]
+      properties:
+        id:
+          type: number
+        shopId:
+          type: number
+        shop:
+          $ref: "#/components/schemas/Shop"
+        collectionDate:
+          type: string
+        weightKg:
+          type: number
+        ratePerKg:
+          type: number
+        totalAmount:
+          type: number
+        paymentStatus:
+          type: string
+        paymentDate:
+          type: ["string", "null"]
+        paidBy:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    CollectionInput:
+      type: object
+      required: [shopId, collectionDate, weightKg]
+      properties:
+        shopId:
+          type: number
+        collectionDate:
+          type: string
+        weightKg:
+          type: number
+
+    CollectionList:
+      type: object
+      required: [data, total, page, limit]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Collection"
+        total:
+          type: number
+        page:
+          type: number
+        limit:
+          type: number
+
+    PaymentUpdate:
+      type: object
+      required: [paymentStatus]
+      properties:
+        paymentStatus:
+          type: string
+        paymentDate:
+          type: ["string", "null"]
+        paidBy:
+          type: ["string", "null"]
+
+    ReportEntry:
+      type: object
+      required: [id, shopId, shop, collectionDate, weightKg, ratePerKg, totalAmount, paymentStatus, createdAt]
+      properties:
+        id:
+          type: number
+        shopId:
+          type: number
+        shop:
+          $ref: "#/components/schemas/Shop"
+        collectionDate:
+          type: string
+        weightKg:
+          type: number
+        ratePerKg:
+          type: number
+        totalAmount:
+          type: number
+        paymentStatus:
+          type: string
+        paymentDate:
+          type: ["string", "null"]
+        paidBy:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    ReportResult:
+      type: object
+      required: [data, totalKg, totalAmount]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReportEntry"
+        totalKg:
+          type: number
+        totalAmount:
+          type: number
+
+    Settings:
+      type: object
+      required: [id, pricePerKg]
+      properties:
+        id:
+          type: number
+        pricePerKg:
+          type: number
+
+    SettingsUpdate:
+      type: object
+      required: [pricePerKg]
+      properties:
+        pricePerKg:
+          type: number
+
+    DashboardSummary:
+      type: object
+      required: [totalShops, totalKgCollected, totalAmountPayable, pendingPayments, recentCollections]
+      properties:
+        totalShops:
+          type: number
+        totalKgCollected:
+          type: number
+        totalAmountPayable:
+          type: number
+        pendingPayments:
+          type: number
+        recentCollections:
+          type: array
+          items:
+            $ref: "#/components/schemas/Collection"

@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "BotalSePaisa Operations Portal"
+description = "Internal operations portal for the BotalSePaisa team to manage partner shops, record weekly plastic bottle collections, calculate payments, and generate weekly reports."
+version = "1.0.0"
+id = "artifacts/operations-portal"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23010
+
+[services.development]
+run = "pnpm --filter @workspace/operations-portal run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/operations-portal", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/operations-portal/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23010"
+BASE_PATH = "/"
