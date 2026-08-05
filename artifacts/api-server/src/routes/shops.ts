@@ -70,7 +70,7 @@ router.post("/shops", async (req, res): Promise<void> => {
     data: { shopId, shopName, ownerName, mobile, address, remarks: remarks ?? null, photoBase64: photoBase64 ?? null },
   });
 
-  req.log.info({ shopId: shop.shopId }, "Shop created");
+  req.log.info({ shopId: shop.shopId, shopName: shop.shopName, ownerName: shop.ownerName, mobile: shop.mobile, address: shop.address }, "Shop created");
   res.status(201).json({ ...shop, createdAt: shop.createdAt.toISOString() });
 });
 
