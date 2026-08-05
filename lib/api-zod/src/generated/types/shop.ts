@@ -13,5 +13,9 @@ export interface Shop {
   ownerName: string;
   mobile: string;
   address: string;
+  /** @nullable */
+  remarks?: string | null;
+  /** @nullable */
+  photoBase64?: string | null;
   createdAt: string;
 }

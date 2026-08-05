@@ -22,6 +22,8 @@ model Shop {
   ownerName   String
   mobile      String
   address     String
+  remarks     String?
+  photoBase64 String?
   createdAt   DateTime     @default(now())
   collections Collection[]
 }

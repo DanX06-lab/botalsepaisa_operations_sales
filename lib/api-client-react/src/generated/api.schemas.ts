@@ -27,6 +27,10 @@ export interface Shop {
   ownerName: string;
   mobile: string;
   address: string;
+  /** @nullable */
+  remarks?: string | null;
+  /** @nullable */
+  photoBase64?: string | null;
   createdAt: string;
 }
 
@@ -39,6 +43,8 @@ export interface ShopInput {
   mobile: string;
   /** @minLength 1 */
   address: string;
+  remarks?: string;
+  photoBase64?: string;
 }
 
 export interface ShopUpdate {
@@ -50,6 +56,8 @@ export interface ShopUpdate {
   mobile?: string;
   /** @minLength 1 */
   address?: string;
+  remarks?: string;
+  photoBase64?: string;
 }
 
 export interface ShopList {

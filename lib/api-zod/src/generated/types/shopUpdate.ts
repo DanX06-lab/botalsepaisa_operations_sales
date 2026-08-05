@@ -15,4 +15,6 @@ export interface ShopUpdate {
   mobile?: string;
   /** @minLength 1 */
   address?: string;
+  remarks?: string;
+  photoBase64?: string;
 }

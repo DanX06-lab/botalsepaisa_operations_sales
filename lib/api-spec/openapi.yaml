@@ -392,6 +392,10 @@ components:
           type: string
         address:
           type: string
+        remarks:
+          type: ["string", "null"]
+        photoBase64:
+          type: ["string", "null"]
         createdAt:
           type: string
 
@@ -411,6 +415,10 @@ components:
         address:
           type: string
           minLength: 1
+        remarks:
+          type: string
+        photoBase64:
+          type: string
 
     ShopUpdate:
       type: object
@@ -427,6 +435,10 @@ components:
         address:
           type: string
           minLength: 1
+        remarks:
+          type: string
+        photoBase64:
+          type: string
 
     ShopList:
       type: object

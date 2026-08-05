@@ -60,14 +60,14 @@ router.post("/shops", async (req, res): Promise<void> => {
     return;
   }
 
-  const { shopName, ownerName, mobile, address } = parsed.data;
+  const { shopName, ownerName, mobile, address, remarks, photoBase64 } = parsed.data;
 
   // Generate shop ID: BSP0001, BSP0002, etc.
   const count = await prisma.shop.count();
   const shopId = `BSP${String(count + 1).padStart(4, "0")}`;
 
   const shop = await prisma.shop.create({
-    data: { shopId, shopName, ownerName, mobile, address },
+    data: { shopId, shopName, ownerName, mobile, address, remarks: remarks ?? null, photoBase64: photoBase64 ?? null },
   });
 
   req.log.info({ shopId: shop.shopId }, "Shop created");

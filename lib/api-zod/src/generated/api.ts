@@ -48,6 +48,8 @@ export const ListShopsResponse = zod.object({
   "ownerName": zod.string(),
   "mobile": zod.string(),
   "address": zod.string(),
+  "remarks": zod.string().nullish(),
+  "photoBase64": zod.string().nullish(),
   "createdAt": zod.string()
 })),
   "total": zod.number(),
@@ -69,7 +71,9 @@ export const CreateShopBody = zod.object({
   "shopName": zod.string().min(1),
   "ownerName": zod.string().min(1),
   "mobile": zod.string().min(1),
-  "address": zod.string().min(1)
+  "address": zod.string().min(1),
+  "remarks": zod.string().optional(),
+  "photoBase64": zod.string().optional()
 })
 
 export const CreateShopResponse = zod.object({
@@ -79,6 +83,8 @@ export const CreateShopResponse = zod.object({
   "ownerName": zod.string(),
   "mobile": zod.string(),
   "address": zod.string(),
+  "remarks": zod.string().nullish(),
+  "photoBase64": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -97,6 +103,8 @@ export const GetShopResponse = zod.object({
   "ownerName": zod.string(),
   "mobile": zod.string(),
   "address": zod.string(),
+  "remarks": zod.string().nullish(),
+  "photoBase64": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -118,7 +126,9 @@ export const UpdateShopBody = zod.object({
   "shopName": zod.string().min(1).optional(),
   "ownerName": zod.string().min(1).optional(),
   "mobile": zod.string().min(1).optional(),
-  "address": zod.string().min(1).optional()
+  "address": zod.string().min(1).optional(),
+  "remarks": zod.string().optional(),
+  "photoBase64": zod.string().optional()
 })
 
 export const UpdateShopResponse = zod.object({
@@ -128,6 +138,8 @@ export const UpdateShopResponse = zod.object({
   "ownerName": zod.string(),
   "mobile": zod.string(),
   "address": zod.string(),
+  "remarks": zod.string().nullish(),
+  "photoBase64": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -165,6 +177,8 @@ export const ListCollectionsResponse = zod.object({
   "ownerName": zod.string(),
   "mobile": zod.string(),
   "address": zod.string(),
+  "remarks": zod.string().nullish(),
+  "photoBase64": zod.string().nullish(),
   "createdAt": zod.string()
 }).optional(),
   "collectionDate": zod.string(),
@@ -201,6 +215,8 @@ export const CreateCollectionResponse = zod.object({
   "ownerName": zod.string(),
   "mobile": zod.string(),
   "address": zod.string(),
+  "remarks": zod.string().nullish(),
+  "photoBase64": zod.string().nullish(),
   "createdAt": zod.string()
 }).optional(),
   "collectionDate": zod.string(),
@@ -231,6 +247,8 @@ export const GetCollectionResponse = zod.object({
   "ownerName": zod.string(),
   "mobile": zod.string(),
   "address": zod.string(),
+  "remarks": zod.string().nullish(),
+  "photoBase64": zod.string().nullish(),
   "createdAt": zod.string()
 }).optional(),
   "collectionDate": zod.string(),
@@ -267,6 +285,8 @@ export const UpdatePaymentStatusResponse = zod.object({
   "ownerName": zod.string(),
   "mobile": zod.string(),
   "address": zod.string(),
+  "remarks": zod.string().nullish(),
+  "photoBase64": zod.string().nullish(),
   "createdAt": zod.string()
 }).optional(),
   "collectionDate": zod.string(),
@@ -302,6 +322,8 @@ export const GetReportsResponse = zod.object({
   "ownerName": zod.string(),
   "mobile": zod.string(),
   "address": zod.string(),
+  "remarks": zod.string().nullish(),
+  "photoBase64": zod.string().nullish(),
   "createdAt": zod.string()
 }),
   "collectionDate": zod.string(),
@@ -358,6 +380,8 @@ export const GetDashboardResponse = zod.object({
   "ownerName": zod.string(),
   "mobile": zod.string(),
   "address": zod.string(),
+  "remarks": zod.string().nullish(),
+  "photoBase64": zod.string().nullish(),
   "createdAt": zod.string()
 }).optional(),
   "collectionDate": zod.string(),
