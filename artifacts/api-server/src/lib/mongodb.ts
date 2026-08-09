@@ -54,7 +54,7 @@ export async function createIndexes(): Promise<void> {
   await database.collection("users").createIndex({ username: 1 }, { unique: true });
   
   // Shops collection indexes
-  await database.collection("shops").createIndex({ shopId: 1 }, { unique: true, partialFilterExpression: { shopId: { $exists: true, $ne: null } } });
+  await database.collection("shops").createIndex({ shopId: 1 }, { unique: true, sparse: true });
   await database.collection("shops").createIndex({ shopName: 1 });
   await database.collection("shops").createIndex({ ownerName: 1 });
   await database.collection("shops").createIndex({ mobile: 1 });
