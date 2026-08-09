@@ -33,9 +33,8 @@ services:
         value: https://botalsepaisa-frontend.onrender.com
 
   # Frontend Operations Portal
-  - type: web
+  - type: staticsite
     name: botalsepaisa-frontend
-    runtime: static
     plan: free
     buildCommand: cd artifacts/operations-portal && npm install && npm run build
     publishDir: artifacts/operations-portal/dist
