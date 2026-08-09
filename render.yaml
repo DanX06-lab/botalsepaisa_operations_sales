@@ -33,11 +33,12 @@ services:
         value: https://botalsepaisa-frontend.onrender.com
 
   # Frontend Operations Portal
-  - type: staticsite
+  - type: web
     name: botalsepaisa-frontend
+    runtime: static
     plan: free
     buildCommand: cd artifacts/operations-portal && npm install && npm run build
-    publishDir: artifacts/operations-portal/dist
+    staticPublishPath: artifacts/operations-portal/dist
     envVars:
       - key: VITE_API_BASE_URL
         value: https://botalsepaisa-api.onrender.com
