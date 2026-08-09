@@ -3,7 +3,6 @@ services:
   - type: web
     name: botalsepaisa-api
     runtime: node
-    plan: free
     buildCommand: cd artifacts/api-server && npm install && npm run build
     startCommand: cd artifacts/api-server && node dist/index.js
     envVars:
@@ -36,7 +35,6 @@ services:
   - type: web
     name: botalsepaisa-frontend
     runtime: static
-    plan: free
     buildCommand: cd artifacts/operations-portal && npm install && npm run build
     staticPublishPath: artifacts/operations-portal/dist
     envVars:
