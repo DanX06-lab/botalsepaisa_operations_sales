@@ -378,7 +378,7 @@ components:
 
     Shop:
       type: object
-      required: [id, shopId, shopName, ownerName, mobile, address, createdAt]
+      required: [id, shopId, shopName, ownerName, mobile, createdAt]
       properties:
         id:
           type: number
@@ -390,18 +390,22 @@ components:
           type: string
         mobile:
           type: string
-        address:
-          type: string
-        remarks:
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        accuracy:
+          type: ["number", "null"]
+        locationCapturedAt:
           type: ["string", "null"]
-        photoBase64:
+        photoUrl:
           type: ["string", "null"]
         createdAt:
           type: string
 
     ShopInput:
       type: object
-      required: [shopName, ownerName, mobile, address]
+      required: [shopName, ownerName, mobile, photoBase64]
       properties:
         shopName:
           type: string
@@ -412,11 +416,12 @@ components:
         mobile:
           type: string
           minLength: 1
-        address:
-          type: string
-          minLength: 1
-        remarks:
-          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        accuracy:
+          type: number
         photoBase64:
           type: string
 
@@ -432,11 +437,12 @@ components:
         mobile:
           type: string
           minLength: 1
-        address:
-          type: string
-          minLength: 1
-        remarks:
-          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        accuracy:
+          type: number
         photoBase64:
           type: string
 

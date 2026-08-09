@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import prisma from "../lib/prisma";
+import { getDb } from "../lib/mongodb";
 import { requireAuth } from "../middlewares/auth";
 import { GetReportsQueryParams } from "@workspace/api-zod";
 
@@ -35,9 +35,10 @@ router.get("/reports", async (req, res): Promise<void> => {
   }
 
   const { shopId, week, month, startDate, endDate } = query.data;
+  const db = getDb();
 
-  const where: Record<string, unknown> = {};
-  if (shopId) where.shopId = Number(shopId);
+  const filter: Record<string, unknown> = {};
+  if (shopId) filter.shopId = Number(shopId);
 
   let dateGte: string | undefined;
   let dateLte: string | undefined;
@@ -58,29 +59,40 @@ router.get("/reports", async (req, res): Promise<void> => {
   }
 
   if (dateGte || dateLte) {
-    where.collectionDate = {
-      ...(dateGte ? { gte: dateGte } : {}),
-      ...(dateLte ? { lte: dateLte } : {}),
+    filter.collectionDate = {
+      ...(dateGte ? { $gte: dateGte } : {}),
+      ...(dateLte ? { $lte: dateLte } : {}),
     };
   }
 
-  const data = await prisma.collection.findMany({
-    where,
-    orderBy: [{ collectionDate: "desc" }, { createdAt: "desc" }],
-    include: { shop: true },
-  });
+  const data = await db.collection("collections")
+    .find(filter)
+    .sort({ collectionDate: -1, createdAt: -1 })
+    .toArray();
+
+  // Fetch shops for each collection
+  const shopIds = [...new Set(data.map((c: any) => c.shopId))];
+  const shops = await db.collection("shops")
+    .find({ id: { $in: shopIds } })
+    .toArray();
+  const shopMap = new Map(shops.map((s: any) => [s.id, s]));
 
   let totalKg = 0;
   let totalAmount = 0;
   for (const c of data) {
-    totalKg += c.weightKg;
-    totalAmount += c.totalAmount;
+    totalKg += c.weightKg || 0;
+    totalAmount += c.totalAmount || 0;
   }
 
-  const serialized = data.map((c) => ({
+  const serialized = data.map((c: any) => ({
     ...c,
-    createdAt: c.createdAt.toISOString(),
-    shop: { ...c.shop, createdAt: c.shop.createdAt.toISOString() },
+    createdAt: c.createdAt instanceof Date ? c.createdAt.toISOString() : c.createdAt,
+    shop: shopMap.get(c.shopId) ? {
+      ...shopMap.get(c.shopId),
+      createdAt: shopMap.get(c.shopId).createdAt instanceof Date 
+        ? shopMap.get(c.shopId).createdAt.toISOString() 
+        : shopMap.get(c.shopId).createdAt
+    } : undefined,
   }));
 
   res.json({

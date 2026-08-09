@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import bcrypt from "bcryptjs";
-import prisma from "../lib/prisma";
+import { getDb } from "../lib/mongodb";
 import { signToken } from "../middlewares/auth";
 import { LoginBody } from "@workspace/api-zod";
 
@@ -14,8 +14,9 @@ router.post("/auth/login", async (req, res): Promise<void> => {
   }
 
   const { username, password } = parsed.data;
+  const db = getDb();
 
-  const user = await prisma.user.findUnique({ where: { username } });
+  const user = await db.collection("users").findOne({ username });
   if (!user) {
     res.status(401).json({ error: "Invalid username or password" });
     return;

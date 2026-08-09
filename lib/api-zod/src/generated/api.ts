@@ -47,9 +47,11 @@ export const ListShopsResponse = zod.object({
   "shopName": zod.string(),
   "ownerName": zod.string(),
   "mobile": zod.string(),
-  "address": zod.string(),
-  "remarks": zod.string().nullish(),
-  "photoBase64": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "accuracy": zod.number().nullish(),
+  "locationCapturedAt": zod.string().nullish(),
+  "photoUrl": zod.string().nullish(),
   "createdAt": zod.string()
 })),
   "total": zod.number(),
@@ -66,14 +68,14 @@ export const ListShopsResponse = zod.object({
 
 
 
-
 export const CreateShopBody = zod.object({
   "shopName": zod.string().min(1),
   "ownerName": zod.string().min(1),
   "mobile": zod.string().min(1),
-  "address": zod.string().min(1),
-  "remarks": zod.string().optional(),
-  "photoBase64": zod.string().optional()
+  "latitude": zod.number().optional(),
+  "longitude": zod.number().optional(),
+  "accuracy": zod.number().optional(),
+  "photoBase64": zod.string()
 })
 
 export const CreateShopResponse = zod.object({
@@ -82,9 +84,11 @@ export const CreateShopResponse = zod.object({
   "shopName": zod.string(),
   "ownerName": zod.string(),
   "mobile": zod.string(),
-  "address": zod.string(),
-  "remarks": zod.string().nullish(),
-  "photoBase64": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "accuracy": zod.number().nullish(),
+  "locationCapturedAt": zod.string().nullish(),
+  "photoUrl": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -102,9 +106,11 @@ export const GetShopResponse = zod.object({
   "shopName": zod.string(),
   "ownerName": zod.string(),
   "mobile": zod.string(),
-  "address": zod.string(),
-  "remarks": zod.string().nullish(),
-  "photoBase64": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "accuracy": zod.number().nullish(),
+  "locationCapturedAt": zod.string().nullish(),
+  "photoUrl": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -121,13 +127,13 @@ export const UpdateShopParams = zod.object({
 
 
 
-
 export const UpdateShopBody = zod.object({
   "shopName": zod.string().min(1).optional(),
   "ownerName": zod.string().min(1).optional(),
   "mobile": zod.string().min(1).optional(),
-  "address": zod.string().min(1).optional(),
-  "remarks": zod.string().optional(),
+  "latitude": zod.number().optional(),
+  "longitude": zod.number().optional(),
+  "accuracy": zod.number().optional(),
   "photoBase64": zod.string().optional()
 })
 
@@ -137,9 +143,11 @@ export const UpdateShopResponse = zod.object({
   "shopName": zod.string(),
   "ownerName": zod.string(),
   "mobile": zod.string(),
-  "address": zod.string(),
-  "remarks": zod.string().nullish(),
-  "photoBase64": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "accuracy": zod.number().nullish(),
+  "locationCapturedAt": zod.string().nullish(),
+  "photoUrl": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -176,9 +184,11 @@ export const ListCollectionsResponse = zod.object({
   "shopName": zod.string(),
   "ownerName": zod.string(),
   "mobile": zod.string(),
-  "address": zod.string(),
-  "remarks": zod.string().nullish(),
-  "photoBase64": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "accuracy": zod.number().nullish(),
+  "locationCapturedAt": zod.string().nullish(),
+  "photoUrl": zod.string().nullish(),
   "createdAt": zod.string()
 }).optional(),
   "collectionDate": zod.string(),
@@ -214,9 +224,11 @@ export const CreateCollectionResponse = zod.object({
   "shopName": zod.string(),
   "ownerName": zod.string(),
   "mobile": zod.string(),
-  "address": zod.string(),
-  "remarks": zod.string().nullish(),
-  "photoBase64": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "accuracy": zod.number().nullish(),
+  "locationCapturedAt": zod.string().nullish(),
+  "photoUrl": zod.string().nullish(),
   "createdAt": zod.string()
 }).optional(),
   "collectionDate": zod.string(),
@@ -246,9 +258,11 @@ export const GetCollectionResponse = zod.object({
   "shopName": zod.string(),
   "ownerName": zod.string(),
   "mobile": zod.string(),
-  "address": zod.string(),
-  "remarks": zod.string().nullish(),
-  "photoBase64": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "accuracy": zod.number().nullish(),
+  "locationCapturedAt": zod.string().nullish(),
+  "photoUrl": zod.string().nullish(),
   "createdAt": zod.string()
 }).optional(),
   "collectionDate": zod.string(),
@@ -284,9 +298,11 @@ export const UpdatePaymentStatusResponse = zod.object({
   "shopName": zod.string(),
   "ownerName": zod.string(),
   "mobile": zod.string(),
-  "address": zod.string(),
-  "remarks": zod.string().nullish(),
-  "photoBase64": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "accuracy": zod.number().nullish(),
+  "locationCapturedAt": zod.string().nullish(),
+  "photoUrl": zod.string().nullish(),
   "createdAt": zod.string()
 }).optional(),
   "collectionDate": zod.string(),
@@ -321,9 +337,11 @@ export const GetReportsResponse = zod.object({
   "shopName": zod.string(),
   "ownerName": zod.string(),
   "mobile": zod.string(),
-  "address": zod.string(),
-  "remarks": zod.string().nullish(),
-  "photoBase64": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "accuracy": zod.number().nullish(),
+  "locationCapturedAt": zod.string().nullish(),
+  "photoUrl": zod.string().nullish(),
   "createdAt": zod.string()
 }),
   "collectionDate": zod.string(),
@@ -379,9 +397,11 @@ export const GetDashboardResponse = zod.object({
   "shopName": zod.string(),
   "ownerName": zod.string(),
   "mobile": zod.string(),
-  "address": zod.string(),
-  "remarks": zod.string().nullish(),
-  "photoBase64": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "accuracy": zod.number().nullish(),
+  "locationCapturedAt": zod.string().nullish(),
+  "photoUrl": zod.string().nullish(),
   "createdAt": zod.string()
 }).optional(),
   "collectionDate": zod.string(),

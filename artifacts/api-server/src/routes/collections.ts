@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import prisma from "../lib/prisma";
+import { getDb, getNextSequenceValue } from "../lib/mongodb";
 import { requireAuth } from "../middlewares/auth";
 import {
   ListCollectionsQueryParams,
@@ -8,37 +8,18 @@ import {
   UpdatePaymentStatusParams,
   UpdatePaymentStatusBody,
 } from "@workspace/api-zod";
+import { ObjectId } from "mongodb";
 
 const router: IRouter = Router();
 
 router.use(requireAuth);
 
-function serializeCollection(c: {
-  id: number;
-  shopId: number;
-  collectionDate: string;
-  weightKg: number;
-  ratePerKg: number;
-  totalAmount: number;
-  paymentStatus: string;
-  paymentDate: string | null;
-  paidBy: string | null;
-  createdAt: Date;
-  shop?: {
-    id: number;
-    shopId: string;
-    shopName: string;
-    ownerName: string;
-    mobile: string;
-    address: string;
-    createdAt: Date;
-  };
-}) {
+function serializeCollection(c: any, shop?: any) {
   return {
     ...c,
-    createdAt: c.createdAt.toISOString(),
-    shop: c.shop
-      ? { ...c.shop, createdAt: c.shop.createdAt.toISOString() }
+    createdAt: c.createdAt instanceof Date ? c.createdAt.toISOString() : c.createdAt,
+    shop: shop
+      ? { ...shop, createdAt: shop.createdAt instanceof Date ? shop.createdAt.toISOString() : shop.createdAt }
       : undefined,
   };
 }
@@ -59,30 +40,39 @@ router.get("/collections", async (req, res): Promise<void> => {
     limit = 20,
   } = query.data;
 
-  const where: Record<string, unknown> = {};
-  if (shopId) where.shopId = Number(shopId);
-  if (paymentStatus) where.paymentStatus = paymentStatus;
+  const db = getDb();
+  const filter: Record<string, unknown> = {};
+  if (shopId) filter.shopId = Number(shopId);
+  if (paymentStatus) filter.paymentStatus = paymentStatus;
   if (startDate || endDate) {
-    where.collectionDate = {
-      ...(startDate ? { gte: startDate } : {}),
-      ...(endDate ? { lte: endDate } : {}),
+    filter.collectionDate = {
+      ...(startDate ? { $gte: startDate } : {}),
+      ...(endDate ? { $lte: endDate } : {}),
     };
   }
 
   const skip = (Number(page) - 1) * Number(limit);
   const [data, total] = await Promise.all([
-    prisma.collection.findMany({
-      where,
-      skip,
-      take: Number(limit),
-      orderBy: { collectionDate: "desc" },
-      include: { shop: true },
-    }),
-    prisma.collection.count({ where }),
+    db.collection("collections")
+      .find(filter)
+      .sort({ collectionDate: -1 })
+      .skip(skip)
+      .limit(Number(limit))
+      .toArray(),
+    db.collection("collections").countDocuments(filter),
   ]);
 
+  // Fetch shops for each collection
+  const shopIds = [...new Set(data.map((c: any) => c.shopId))];
+  const shops = await db.collection("shops")
+    .find({ id: { $in: shopIds } })
+    .toArray();
+  const shopMap = new Map(shops.map((s: any) => [s.id, s]));
+
+  const serialized = data.map((c: any) => serializeCollection(c, shopMap.get(c.shopId)));
+
   res.json({
-    data: data.map(serializeCollection),
+    data: serialized,
     total,
     page: Number(page),
     limit: Number(limit),
@@ -97,31 +87,36 @@ router.post("/collections", async (req, res): Promise<void> => {
   }
 
   const { shopId, collectionDate, weightKg } = parsed.data;
+  const db = getDb();
 
-  const shop = await prisma.shop.findUnique({ where: { id: shopId } });
+  const shop = await db.collection("shops").findOne({ id: shopId });
   if (!shop) {
     res.status(404).json({ error: "Shop not found" });
     return;
   }
 
-  const setting = await prisma.setting.findFirst();
+  const setting = await db.collection("settings").findOne({ id: 1 });
   const ratePerKg = setting?.pricePerKg ?? 12;
   const totalAmount = Math.round(weightKg * ratePerKg * 100) / 100;
 
-  const collection = await prisma.collection.create({
-    data: {
-      shopId,
-      collectionDate,
-      weightKg,
-      ratePerKg,
-      totalAmount,
-      paymentStatus: "PENDING",
-    },
-    include: { shop: true },
-  });
+  const id = await getNextSequenceValue("collectionId");
+  const collection = {
+    id,
+    shopId,
+    collectionDate,
+    weightKg,
+    ratePerKg,
+    totalAmount,
+    paymentStatus: "PENDING",
+    paymentDate: null,
+    paidBy: null,
+    createdAt: new Date()
+  };
 
-  req.log.info({ id: collection.id, shopId }, "Collection entry created");
-  res.status(201).json(serializeCollection(collection));
+  await db.collection("collections").insertOne(collection);
+
+  req.log.info({ id, shopId }, "Collection entry created");
+  res.status(201).json(serializeCollection(collection, shop));
 });
 
 router.get("/collections/:id", async (req, res): Promise<void> => {
@@ -131,17 +126,16 @@ router.get("/collections/:id", async (req, res): Promise<void> => {
     return;
   }
 
-  const collection = await prisma.collection.findUnique({
-    where: { id: params.data.id },
-    include: { shop: true },
-  });
+  const db = getDb();
+  const collection = await db.collection("collections").findOne({ id: params.data.id });
 
   if (!collection) {
     res.status(404).json({ error: "Collection not found" });
     return;
   }
 
-  res.json(serializeCollection(collection));
+  const shop = await db.collection("shops").findOne({ id: collection.shopId });
+  res.json(serializeCollection(collection, shop));
 });
 
 router.patch("/collections/:id/payment", async (req, res): Promise<void> => {
@@ -157,26 +151,33 @@ router.patch("/collections/:id/payment", async (req, res): Promise<void> => {
     return;
   }
 
-  const existing = await prisma.collection.findUnique({
-    where: { id: params.data.id },
-  });
+  const db = getDb();
+  const existing = await db.collection("collections").findOne({ id: params.data.id });
   if (!existing) {
     res.status(404).json({ error: "Collection not found" });
     return;
   }
 
   const { paymentStatus, paymentDate, paidBy } = parsed.data;
-  const updated = await prisma.collection.update({
-    where: { id: params.data.id },
-    data: {
-      paymentStatus,
-      paymentDate: paymentDate ?? null,
-      paidBy: paidBy ?? null,
+  const updated = await db.collection("collections").findOneAndUpdate(
+    { id: params.data.id },
+    {
+      $set: {
+        paymentStatus,
+        paymentDate: paymentDate ?? null,
+        paidBy: paidBy ?? null,
+      }
     },
-    include: { shop: true },
-  });
+    { returnDocument: "after" }
+  );
 
-  res.json(serializeCollection(updated));
+  if (!updated) {
+    res.status(404).json({ error: "Collection not found" });
+    return;
+  }
+
+  const shop = await db.collection("shops").findOne({ id: updated.value.shopId });
+  res.json(serializeCollection(updated.value, shop));
 });
 
 export default router;

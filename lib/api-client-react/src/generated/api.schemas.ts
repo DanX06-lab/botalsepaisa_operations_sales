@@ -26,11 +26,16 @@ export interface Shop {
   shopName: string;
   ownerName: string;
   mobile: string;
-  address: string;
   /** @nullable */
-  remarks?: string | null;
+  latitude?: number | null;
   /** @nullable */
-  photoBase64?: string | null;
+  longitude?: number | null;
+  /** @nullable */
+  accuracy?: number | null;
+  /** @nullable */
+  locationCapturedAt?: string | null;
+  /** @nullable */
+  photoUrl?: string | null;
   createdAt: string;
 }
 
@@ -41,10 +46,10 @@ export interface ShopInput {
   ownerName: string;
   /** @minLength 1 */
   mobile: string;
-  /** @minLength 1 */
-  address: string;
-  remarks?: string;
-  photoBase64?: string;
+  latitude?: number;
+  longitude?: number;
+  accuracy?: number;
+  photoBase64: string;
 }
 
 export interface ShopUpdate {
@@ -54,9 +59,9 @@ export interface ShopUpdate {
   ownerName?: string;
   /** @minLength 1 */
   mobile?: string;
-  /** @minLength 1 */
-  address?: string;
-  remarks?: string;
+  latitude?: number;
+  longitude?: number;
+  accuracy?: number;
   photoBase64?: string;
 }
 

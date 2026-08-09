@@ -13,10 +13,9 @@ import { useDebounce } from '@/hooks/use-debounce';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Search, Plus, Edit2, Trash2, MapPin, Phone, User, Store, Camera, X, Image } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Phone, User, Store, Camera, X, Image, MapPin, CheckCircle, AlertCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -42,12 +41,13 @@ type FormData = {
   shopName: string;
   ownerName: string;
   mobile: string;
-  address: string;
-  remarks: string;
+  latitude: number | null;
+  longitude: number | null;
+  accuracy: number | null;
   photoBase64: string;
 };
 
-const EMPTY_FORM: FormData = { shopName: '', ownerName: '', mobile: '', address: '', remarks: '', photoBase64: '' };
+const EMPTY_FORM: FormData = { shopName: '', ownerName: '', mobile: '', latitude: null, longitude: null, accuracy: null, photoBase64: '' };
 
 export default function Shops() {
   const [page, setPage] = useState(1);
@@ -68,6 +68,8 @@ export default function Shops() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isPhotoOpen, setIsPhotoOpen] = useState(false);
   const [viewPhoto, setViewPhoto] = useState<string | null>(null);
+  const [locationStatus, setLocationStatus] = useState<'idle' | 'capturing' | 'success' | 'error'>('idle');
+  const [locationError, setLocationError] = useState<string>('');
   
   const [selectedShop, setSelectedShop] = useState<any>(null);
   const [formData, setFormData] = useState<FormData>(EMPTY_FORM);
@@ -114,14 +116,34 @@ export default function Shops() {
 
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.shopName || !formData.ownerName || !formData.mobile) {
+      toast({ title: "Validation Error", description: "Shop name, owner name, and mobile are required", variant: "destructive" });
+      return;
+    }
+    
+    // GPS coordinates are mandatory for new shop
+    if (formData.latitude === null || formData.longitude === null) {
+      toast({ title: "GPS Required", description: "GPS location capture is required to add a new shop", variant: "destructive" });
+      return;
+    }
+    
+    // Photo is required for new shop
+    if (!formData.photoBase64) {
+      toast({ title: "Photo Required", description: "Camera permission is required to capture the shop photo", variant: "destructive" });
+      return;
+    }
+    
     createShop.mutate({
       data: {
         shopName: formData.shopName,
         ownerName: formData.ownerName,
         mobile: formData.mobile,
-        address: formData.address,
-        ...(formData.remarks ? { remarks: formData.remarks } : {}),
-        ...(formData.photoBase64 ? { photoBase64: formData.photoBase64 } : {}),
+        latitude: formData.latitude ?? undefined,
+        longitude: formData.longitude ?? undefined,
+        accuracy: formData.accuracy ?? undefined,
+        photoBase64: formData.photoBase64,
       }
     });
   };
@@ -135,9 +157,10 @@ export default function Shops() {
         shopName: formData.shopName,
         ownerName: formData.ownerName,
         mobile: formData.mobile,
-        address: formData.address,
-        remarks: formData.remarks,
-        photoBase64: formData.photoBase64,
+        ...(formData.latitude !== null && { latitude: formData.latitude }),
+        ...(formData.longitude !== null && { longitude: formData.longitude }),
+        ...(formData.accuracy !== null && { accuracy: formData.accuracy }),
+        ...(formData.photoBase64 && { photoBase64: formData.photoBase64 }),
       }
     });
   };
@@ -153,10 +176,12 @@ export default function Shops() {
       shopName: shop.shopName,
       ownerName: shop.ownerName,
       mobile: shop.mobile,
-      address: shop.address,
-      remarks: shop.remarks ?? '',
-      photoBase64: shop.photoBase64 ?? '',
+      latitude: shop.latitude ?? null,
+      longitude: shop.longitude ?? null,
+      accuracy: shop.accuracy ?? null,
+      photoBase64: shop.photoUrl ?? '', // Use photoUrl from Cloudinary
     });
+    setLocationStatus('idle');
     setIsEditOpen(true);
   };
 
@@ -186,6 +211,55 @@ export default function Shops() {
   const clearPhoto = () => {
     setFormData(prev => ({ ...prev, photoBase64: '' }));
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  // Handle GPS capture
+  const handleCaptureLocation = () => {
+    if (!navigator.geolocation) {
+      toast({ title: "GPS Not Supported", description: "Geolocation is not supported by your browser", variant: "destructive" });
+      return;
+    }
+
+    setLocationStatus('capturing');
+    setLocationError('');
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setFormData(prev => ({
+          ...prev,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          accuracy: position.coords.accuracy
+        }));
+        setLocationStatus('success');
+        toast({ 
+          title: "Location Captured", 
+          description: `GPS accuracy: ${Math.round(position.coords.accuracy)}m` 
+        });
+      },
+      (error) => {
+        setLocationStatus('error');
+        let errorMessage = 'Failed to capture location';
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = 'Location permission denied. Please enable GPS access.';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = 'Location information is unavailable.';
+            break;
+          case error.TIMEOUT:
+            errorMessage = 'Location request timed out.';
+            break;
+        }
+        setLocationError(errorMessage);
+        toast({ title: "GPS Error", description: errorMessage, variant: "destructive" });
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
   };
 
   return (
@@ -248,10 +322,10 @@ export default function Shops() {
                           <TableCell>
                             <div className="flex flex-col gap-1.5">
                               <Badge variant="secondary" className="font-mono text-xs w-fit">{shop.shopId}</Badge>
-                              {shop.photoBase64 && (
+                              {shop.photoUrl && (
                                 <button
                                   type="button"
-                                  onClick={() => { setViewPhoto(shop.photoBase64!); setIsPhotoOpen(true); }}
+                                  onClick={() => { setViewPhoto(shop.photoUrl!); setIsPhotoOpen(true); }}
                                   className="flex items-center gap-1 text-xs text-primary hover:underline"
                                 >
                                   <Image className="h-3 w-3" /> Photo
@@ -264,21 +338,25 @@ export default function Shops() {
                             <div className="flex items-center text-xs text-muted-foreground mt-1">
                               <User className="h-3 w-3 mr-1" /> {shop.ownerName}
                             </div>
-                            {shop.remarks && (
-                              <div className="text-xs text-muted-foreground mt-1 italic line-clamp-1">
-                                "{shop.remarks}"
-                              </div>
-                            )}
                           </TableCell>
                           <TableCell>
                             <div className="flex flex-col gap-1 text-sm text-muted-foreground">
                               <div className="flex items-center">
                                 <Phone className="h-3.5 w-3.5 mr-1.5" /> {shop.mobile}
                               </div>
-                              <div className="flex items-start">
-                                <MapPin className="h-3.5 w-3.5 mr-1.5 mt-0.5 shrink-0" /> 
-                                <span className="line-clamp-1">{shop.address}</span>
-                              </div>
+                              {shop.latitude && shop.longitude && (
+                                <div className="flex items-center">
+                                  <MapPin className="h-3.5 w-3.5 mr-1.5" />
+                                  <span className="text-xs">
+                                    {shop.latitude.toFixed(4)}, {shop.longitude.toFixed(4)}
+                                  </span>
+                                  {shop.accuracy && (
+                                    <span className="text-xs text-muted-foreground ml-1">
+                                      (±{Math.round(shop.accuracy)}m)
+                                    </span>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </TableCell>
                           <TableCell className="text-right">
@@ -350,29 +428,57 @@ export default function Shops() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="mobile">Mobile Number</Label>
-                <Input required id="mobile" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
-                <Input required id="address" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
+                <Input required id="mobile" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} placeholder="10-digit mobile number" />
               </div>
 
-              {/* Remarks */}
+              {/* GPS Location Capture - MANDATORY */}
               <div className="space-y-2">
-                <Label htmlFor="remarks">Remarks <span className="text-muted-foreground text-xs">(optional)</span></Label>
-                <Textarea
-                  id="remarks"
-                  placeholder="Any notes about this shop or location…"
-                  value={formData.remarks}
-                  onChange={e => setFormData({...formData, remarks: e.target.value})}
-                  rows={3}
-                  className="resize-none"
-                />
+                <Label>GPS Location <span className="text-red-500 text-xs">(required)</span></Label>
+                {locationStatus === 'success' ? (
+                  <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-green-900 dark:text-green-100">✓ Location captured</div>
+                      <div className="text-xs text-green-700 dark:text-green-300">
+                        GPS accuracy: {formData.accuracy ? Math.round(formData.accuracy) : 'N/A'}m
+                      </div>
+                    </div>
+                    <Button type="button" variant="outline" size="sm" onClick={handleCaptureLocation}>
+                      Recapture
+                    </Button>
+                  </div>
+                ) : locationStatus === 'error' ? (
+                  <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-red-900 dark:text-red-100">GPS capture failed</div>
+                      <div className="text-xs text-red-700 dark:text-red-300">{locationError}</div>
+                    </div>
+                    <Button type="button" variant="outline" size="sm" onClick={handleCaptureLocation}>
+                      Retry
+                    </Button>
+                  </div>
+                ) : locationStatus === 'capturing' ? (
+                  <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <div className="animate-spin h-5 w-5 border-2 border-blue-600 border-t-transparent rounded-full" />
+                    <div className="text-sm text-blue-900 dark:text-blue-100">Capturing GPS location...</div>
+                  </div>
+                ) : (
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={handleCaptureLocation}
+                  >
+                    <MapPin className="h-4 w-4 mr-2" />
+                    Capture Current GPS Location
+                  </Button>
+                )}
               </div>
 
-              {/* Photo capture */}
+              {/* Photo capture - REQUIRED for new shop */}
               <div className="space-y-2">
-                <Label>Shop Photo <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                <Label>Shop Photo {isEditOpen ? <span className="text-muted-foreground text-xs">(optional)</span> : <span className="text-red-500 text-xs">(required)</span>}</Label>
                 {formData.photoBase64 ? (
                   <div className="relative rounded-lg overflow-hidden border border-border">
                     <img
@@ -388,6 +494,9 @@ export default function Shops() {
                     >
                       <X className="h-4 w-4" />
                     </button>
+                    <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                      ✓ Shop photo captured
+                    </div>
                   </div>
                 ) : (
                   <button
@@ -396,8 +505,8 @@ export default function Shops() {
                     className="w-full h-32 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-primary hover:text-primary transition-colors cursor-pointer bg-muted/30"
                   >
                     <Camera className="h-8 w-8" />
-                    <span className="text-sm font-medium">Take photo or choose from gallery</span>
-                    <span className="text-xs">Max 5 MB</span>
+                    <span className="text-sm font-medium">Capture Shop Photo</span>
+                    <span className="text-xs">Camera required</span>
                   </button>
                 )}
                 {/* Hidden file input — capture="environment" opens rear camera on mobile */}
@@ -412,9 +521,17 @@ export default function Shops() {
               </div>
 
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => { setIsAddOpen(false); setIsEditOpen(false); }}>Cancel</Button>
-                <Button type="submit" disabled={createShop.isPending || updateShop.isPending}>
-                  {createShop.isPending || updateShop.isPending ? 'Saving...' : 'Save'}
+                <Button type="button" variant="outline" onClick={() => { 
+                  setIsAddOpen(false); 
+                  setIsEditOpen(false); 
+                  setLocationStatus('idle');
+                  setFormData(EMPTY_FORM);
+                }}>Cancel</Button>
+                <Button 
+                  type="submit" 
+                  disabled={createShop.isPending || updateShop.isPending || locationStatus === 'capturing'}
+                >
+                  {createShop.isPending || updateShop.isPending ? 'Saving...' : 'Save Shop'}
                 </Button>
               </DialogFooter>
             </form>

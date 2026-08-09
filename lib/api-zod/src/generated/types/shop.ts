@@ -12,10 +12,15 @@ export interface Shop {
   shopName: string;
   ownerName: string;
   mobile: string;
-  address: string;
   /** @nullable */
-  remarks?: string | null;
+  latitude?: number | null;
   /** @nullable */
-  photoBase64?: string | null;
+  longitude?: number | null;
+  /** @nullable */
+  accuracy?: number | null;
+  /** @nullable */
+  locationCapturedAt?: string | null;
+  /** @nullable */
+  photoUrl?: string | null;
   createdAt: string;
 }

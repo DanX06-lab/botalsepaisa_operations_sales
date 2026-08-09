@@ -13,8 +13,8 @@ export interface ShopUpdate {
   ownerName?: string;
   /** @minLength 1 */
   mobile?: string;
-  /** @minLength 1 */
-  address?: string;
-  remarks?: string;
+  latitude?: number;
+  longitude?: number;
+  accuracy?: number;
   photoBase64?: string;
 }

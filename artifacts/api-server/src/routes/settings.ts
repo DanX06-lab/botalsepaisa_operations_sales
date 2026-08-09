@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import prisma from "../lib/prisma";
+import { getDb } from "../lib/mongodb";
 import { requireAuth } from "../middlewares/auth";
 import { UpdateSettingsBody } from "@workspace/api-zod";
 
@@ -8,9 +8,11 @@ const router: IRouter = Router();
 router.use(requireAuth);
 
 router.get("/settings", async (_req, res): Promise<void> => {
-  let setting = await prisma.setting.findFirst();
+  const db = getDb();
+  let setting = await db.collection("settings").findOne({ id: 1 });
   if (!setting) {
-    setting = await prisma.setting.create({ data: { pricePerKg: 12 } });
+    await db.collection("settings").insertOne({ id: 1, pricePerKg: 12 });
+    setting = { id: 1, pricePerKg: 12 } as any;
   }
   res.json(setting);
 });
@@ -22,18 +24,14 @@ router.put("/settings", async (req, res): Promise<void> => {
     return;
   }
 
-  let setting = await prisma.setting.findFirst();
-  if (!setting) {
-    setting = await prisma.setting.create({
-      data: { pricePerKg: parsed.data.pricePerKg },
-    });
-  } else {
-    setting = await prisma.setting.update({
-      where: { id: setting.id },
-      data: { pricePerKg: parsed.data.pricePerKg },
-    });
-  }
+  const db = getDb();
+  const result = await db.collection("settings").findOneAndUpdate(
+    { id: 1 },
+    { $set: { pricePerKg: parsed.data.pricePerKg } },
+    { upsert: true, returnDocument: "after" }
+  );
 
+  const setting = result?.value || { id: 1, pricePerKg: parsed.data.pricePerKg };
   req.log.info({ pricePerKg: setting.pricePerKg }, "Settings updated");
   res.json(setting);
 });

@@ -1,7 +1,15 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.SESSION_SECRET ?? "botalsepaisa-secret-key";
+const JWT_SECRET = process.env.SESSION_SECRET;
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
+
+if (!JWT_SECRET) {
+  throw new Error("SESSION_SECRET environment variable is required");
+}
+
+// Type assertion after runtime check
+const SECRET: string = JWT_SECRET;
 
 export interface AuthPayload {
   userId: number;
@@ -18,7 +26,7 @@ declare global {
 }
 
 export function signToken(payload: AuthPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+  return jwt.sign(payload, SECRET, { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions);
 }
 
 export function requireAuth(
@@ -34,7 +42,7 @@ export function requireAuth(
 
   const token = authHeader.slice(7);
   try {
-    const payload = jwt.verify(token, JWT_SECRET) as AuthPayload;
+    const payload = jwt.verify(token, SECRET as string) as unknown as AuthPayload;
     req.user = payload;
     next();
   } catch {

@@ -13,8 +13,8 @@ export interface ShopInput {
   ownerName: string;
   /** @minLength 1 */
   mobile: string;
-  /** @minLength 1 */
-  address: string;
-  remarks?: string;
-  photoBase64?: string;
+  latitude?: number;
+  longitude?: number;
+  accuracy?: number;
+  photoBase64: string;
 }
