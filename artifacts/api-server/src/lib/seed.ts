@@ -9,13 +9,13 @@ export async function seed() {
   const adminUsername = process.env.ADMIN_USERNAME || "admin";
   const adminPassword = process.env.ADMIN_PASSWORD;
   
-  if (!adminPassword) {
-    throw new Error("ADMIN_PASSWORD environment variable is required");
+  if (!adminPassword || typeof adminPassword !== 'string' || adminPassword.trim() === '') {
+    throw new Error("ADMIN_PASSWORD environment variable is required and must be a non-empty string");
   }
   
   const existing = await db.collection("users").findOne({ username: adminUsername });
   if (!existing) {
-    const passwordHash = await bcrypt.hash(adminPassword, 10);
+    const passwordHash = await bcrypt.hash(adminPassword.trim(), 10);
     const userId = await getNextSequenceValue("userId");
     await db.collection("users").insertOne({
       id: userId,
