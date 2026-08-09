@@ -25,6 +25,14 @@ export async function seed() {
       createdAt: new Date()
     });
     logger.info(`Admin user created (username: ${adminUsername})`);
+  } else if (!existing.passwordHash || typeof existing.passwordHash !== 'string') {
+    // Fix existing user with invalid password hash
+    const passwordHash = await bcrypt.hash(adminPassword.trim(), 10);
+    await db.collection("users").updateOne(
+      { username: adminUsername },
+      { $set: { passwordHash } }
+    );
+    logger.info(`Admin user password hash fixed (username: ${adminUsername})`);
   }
 
   // Ensure default settings exist

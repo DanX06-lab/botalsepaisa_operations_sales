@@ -22,6 +22,11 @@ router.post("/auth/login", async (req, res): Promise<void> => {
     return;
   }
 
+  if (!user.passwordHash || typeof user.passwordHash !== 'string') {
+    res.status(500).json({ error: "Invalid user data: password hash missing" });
+    return;
+  }
+
   const valid = await bcrypt.compare(password, user.passwordHash);
   if (!valid) {
     res.status(401).json({ error: "Invalid username or password" });
