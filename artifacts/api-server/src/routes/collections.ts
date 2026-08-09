@@ -86,7 +86,7 @@ router.post("/collections", async (req, res): Promise<void> => {
     return;
   }
 
-  const { shopId, collectionDate, weightKg } = parsed.data;
+  const { shopId, collectionDate, weightKg, routeId, routeStopSequence } = parsed.data;
   const db = getDb();
 
   const shop = await db.collection("shops").findOne({ id: shopId });
@@ -110,12 +110,14 @@ router.post("/collections", async (req, res): Promise<void> => {
     paymentStatus: "PENDING",
     paymentDate: null,
     paidBy: null,
+    routeId: routeId ?? null,
+    routeStopSequence: routeStopSequence ?? null,
     createdAt: new Date()
   };
 
   await db.collection("collections").insertOne(collection);
 
-  req.log.info({ id, shopId }, "Collection entry created");
+  req.log.info({ id, shopId, routeId }, "Collection entry created");
   res.status(201).json(serializeCollection(collection, shop));
 });
 

@@ -8,4 +8,6 @@
 
 export interface SettingsUpdate {
   pricePerKg: number;
+  homeLatitude?: number | null;
+  homeLongitude?: number | null;
 }

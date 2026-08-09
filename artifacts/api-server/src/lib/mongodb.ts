@@ -67,6 +67,15 @@ export async function createIndexes(): Promise<void> {
   // Counters collection indexes
   await database.collection("counters").createIndex({ name: 1 }, { unique: true });
   
+  // Routes collection indexes
+  await database.collection("routes").createIndex({ routeDate: 1 });
+  await database.collection("routes").createIndex({ createdBy: 1 });
+  await database.collection("routes").createIndex({ status: 1 });
+  await database.collection("routes").createIndex({ routeDate: 1, createdBy: 1 }, { unique: true, partialFilterExpression: { status: { $in: ["PLANNED", "IN_PROGRESS"] } } });
+  
+  // Collections collection index for routeId
+  await database.collection("collections").createIndex({ routeId: 1 });
+  
   logger.info("MongoDB indexes created");
 }
 

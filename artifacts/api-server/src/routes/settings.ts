@@ -24,15 +24,35 @@ router.put("/settings", async (req, res): Promise<void> => {
     return;
   }
 
+  const { pricePerKg, homeLatitude, homeLongitude } = parsed.data;
+  
+  const updateData: Record<string, unknown> = { pricePerKg };
+  
+  if (homeLatitude !== undefined) {
+    if (homeLatitude < -90 || homeLatitude > 90) {
+      res.status(400).json({ error: "Latitude must be between -90 and 90" });
+      return;
+    }
+    updateData.homeLatitude = homeLatitude;
+  }
+  
+  if (homeLongitude !== undefined) {
+    if (homeLongitude < -180 || homeLongitude > 180) {
+      res.status(400).json({ error: "Longitude must be between -180 and 180" });
+      return;
+    }
+    updateData.homeLongitude = homeLongitude;
+  }
+
   const db = getDb();
   const result = await db.collection("settings").findOneAndUpdate(
     { id: 1 },
-    { $set: { pricePerKg: parsed.data.pricePerKg } },
+    { $set: updateData },
     { upsert: true, returnDocument: "after" }
   );
 
-  const setting = result?.value || { id: 1, pricePerKg: parsed.data.pricePerKg };
-  req.log.info({ pricePerKg: setting.pricePerKg }, "Settings updated");
+  const setting = result?.value || { id: 1, pricePerKg };
+  req.log.info({ pricePerKg: setting.pricePerKg, homeLatitude: setting.homeLatitude, homeLongitude: setting.homeLongitude }, "Settings updated");
   res.json(setting);
 });
 

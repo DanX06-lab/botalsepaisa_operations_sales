@@ -22,6 +22,8 @@ tags:
     description: Application settings
   - name: dashboard
     description: Dashboard summary
+  - name: routes
+    description: Route planning
 
 paths:
   /healthz:
@@ -347,6 +349,268 @@ paths:
               schema:
                 $ref: "#/components/schemas/DashboardSummary"
 
+  /routes/today:
+    get:
+      operationId: getTodayRoute
+      tags: [routes]
+      summary: Get today's route
+      responses:
+        "200":
+          description: Today's route
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        "404":
+          description: No route found for today
+
+  /routes:
+    get:
+      operationId: listRoutes
+      tags: [routes]
+      summary: List all routes
+      responses:
+        "200":
+          description: List of routes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Route"
+
+  /routes/eligible-shops:
+    get:
+      operationId: getEligibleShops
+      tags: [routes]
+      summary: Get shops with valid GPS for route planning
+      responses:
+        "200":
+          description: List of eligible shops
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Shop"
+
+  /routes/generate:
+    post:
+      operationId: generateRoute
+      tags: [routes]
+      summary: Generate a new route
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RouteGenerateRequest"
+      responses:
+        "201":
+          description: Route created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        "400":
+          description: Invalid request
+        "409":
+          description: Route already exists for this date
+
+  /routes/{id}:
+    get:
+      operationId: getRoute
+      tags: [routes]
+      summary: Get a specific route
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Route found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        "404":
+          description: Route not found
+
+  /routes/{id}/start:
+    post:
+      operationId: startRoute
+      tags: [routes]
+      summary: Start a route
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Route started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        "400":
+          description: Invalid status
+        "404":
+          description: Route not found
+
+  /routes/{id}/complete:
+    post:
+      operationId: completeRoute
+      tags: [routes]
+      summary: Complete a route
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Route completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        "400":
+          description: Invalid status or pending stops
+        "404":
+          description: Route not found
+
+  /routes/{id}/cancel:
+    post:
+      operationId: cancelRoute
+      tags: [routes]
+      summary: Cancel a route
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Route cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        "400":
+          description: Cannot cancel completed route
+        "404":
+          description: Route not found
+
+  /routes/{id}/regenerate:
+    post:
+      operationId: regenerateRoute
+      tags: [routes]
+      summary: Regenerate a route
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RouteGenerateRequest"
+      responses:
+        "201":
+          description: New route created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        "400":
+          description: Invalid request
+        "404":
+          description: Route not found
+
+  /routes/{id}/stops/{stopId}/visit:
+    post:
+      operationId: visitStop
+      tags: [routes]
+      summary: Mark a stop as visited
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: stopId
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                collectionId:
+                  type: number
+      responses:
+        "200":
+          description: Stop marked as visited
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        "400":
+          description: Invalid status
+        "404":
+          description: Route or stop not found
+
+  /routes/{id}/stops/{stopId}/skip:
+    post:
+      operationId: skipStop
+      tags: [routes]
+      summary: Skip a stop
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: stopId
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [skipReason]
+              properties:
+                skipReason:
+                  type: string
+      responses:
+        "200":
+          description: Stop skipped
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        "400":
+          description: Invalid status or missing reason
+        "404":
+          description: Route or stop not found
+
 components:
   schemas:
     HealthStatus:
@@ -485,6 +749,10 @@ components:
           type: ["string", "null"]
         paidBy:
           type: ["string", "null"]
+        routeId:
+          type: ["number", "null"]
+        routeStopSequence:
+          type: ["number", "null"]
         createdAt:
           type: string
 
@@ -498,6 +766,10 @@ components:
           type: string
         weightKg:
           type: number
+        routeId:
+          type: ["number", "null"]
+        routeStopSequence:
+          type: ["number", "null"]
 
     CollectionList:
       type: object
@@ -573,6 +845,10 @@ components:
           type: number
         pricePerKg:
           type: number
+        homeLatitude:
+          type: ["number", "null"]
+        homeLongitude:
+          type: ["number", "null"]
 
     SettingsUpdate:
       type: object
@@ -580,6 +856,10 @@ components:
       properties:
         pricePerKg:
           type: number
+        homeLatitude:
+          type: ["number", "null"]
+        homeLongitude:
+          type: ["number", "null"]
 
     DashboardSummary:
       type: object
@@ -597,3 +877,80 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Collection"
+
+    RouteStop:
+      type: object
+      required: [sequence, shopId, shopName, latitude, longitude, distanceFromPreviousKm, estimatedArrivalMinutes, status]
+      properties:
+        sequence:
+          type: number
+        shopId:
+          type: number
+        shopName:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        distanceFromPreviousKm:
+          type: number
+        estimatedArrivalMinutes:
+          type: number
+        status:
+          type: string
+          enum: ["PENDING", "VISITED", "SKIPPED"]
+        visitedAt:
+          type: ["string", "null"]
+        collectionId:
+          type: ["number", "null"]
+        skipReason:
+          type: ["string", "null"]
+
+    Route:
+      type: object
+      required: [id, routeDate, createdBy, homeLocation, stops, totalShops, totalDistanceKm, estimatedDurationMinutes, status, createdAt]
+      properties:
+        id:
+          type: number
+        routeDate:
+          type: string
+        createdBy:
+          type: number
+        homeLocation:
+          type: object
+          required: [latitude, longitude]
+          properties:
+            latitude:
+              type: number
+            longitude:
+              type: number
+        stops:
+          type: array
+          items:
+            $ref: "#/components/schemas/RouteStop"
+        totalShops:
+          type: number
+        totalDistanceKm:
+          type: number
+        estimatedDurationMinutes:
+          type: number
+        status:
+          type: string
+          enum: ["PLANNED", "IN_PROGRESS", "COMPLETED", "CANCELLED"]
+        createdAt:
+          type: string
+        startedAt:
+          type: ["string", "null"]
+        completedAt:
+          type: ["string", "null"]
+
+    RouteGenerateRequest:
+      type: object
+      required: [routeDate, shopIds]
+      properties:
+        routeDate:
+          type: string
+        shopIds:
+          type: array
+          items:
+            type: number

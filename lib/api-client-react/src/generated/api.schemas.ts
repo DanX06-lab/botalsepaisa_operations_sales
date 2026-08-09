@@ -85,6 +85,10 @@ export interface Collection {
   paymentDate?: string | null;
   /** @nullable */
   paidBy?: string | null;
+  /** @nullable */
+  routeId?: number | null;
+  /** @nullable */
+  routeStopSequence?: number | null;
   createdAt: string;
 }
 
@@ -92,6 +96,10 @@ export interface CollectionInput {
   shopId: number;
   collectionDate: string;
   weightKg: number;
+  /** @nullable */
+  routeId?: number | null;
+  /** @nullable */
+  routeStopSequence?: number | null;
 }
 
 export interface CollectionList {
@@ -146,6 +154,48 @@ export interface DashboardSummary {
   totalAmountPayable: number;
   pendingPayments: number;
   recentCollections: Collection[];
+}
+
+export interface RouteStop {
+  sequence: number;
+  shopId: number;
+  shopName: string;
+  latitude: number;
+  longitude: number;
+  distanceFromPreviousKm: number;
+  estimatedArrivalMinutes: number;
+  status: 'PENDING' | 'VISITED' | 'SKIPPED';
+  /** @nullable */
+  visitedAt?: string | null;
+  /** @nullable */
+  collectionId?: number | null;
+  /** @nullable */
+  skipReason?: string | null;
+}
+
+export interface Route {
+  id: number;
+  routeDate: string;
+  createdBy: number;
+  homeLocation: {
+    latitude: number;
+    longitude: number;
+  };
+  stops: RouteStop[];
+  totalShops: number;
+  totalDistanceKm: number;
+  estimatedDurationMinutes: number;
+  status: 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  createdAt: string;
+  /** @nullable */
+  startedAt?: string | null;
+  /** @nullable */
+  completedAt?: string | null;
+}
+
+export interface RouteGenerateRequest {
+  routeDate: string;
+  shopIds: number[];
 }
 
 export type ListShopsParams = {

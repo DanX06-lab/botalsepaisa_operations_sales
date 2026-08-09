@@ -19,7 +19,9 @@ import {
   FileText,
   Settings as SettingsIcon,
   LogOut,
-  Droplet
+  Droplet,
+  Route as RouteIcon,
+  History
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -31,6 +33,8 @@ export function Layout({ children }: { children: ReactNode }) {
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Shops', path: '/shops', icon: Store },
     { name: 'Collections', path: '/collections', icon: Package },
+    { name: 'Route Planner', path: '/routes', icon: RouteIcon },
+    { name: 'Route History', path: '/routes/history', icon: History },
     { name: 'Reports', path: '/reports', icon: FileText },
     { name: 'Settings', path: '/settings', icon: SettingsIcon },
   ];

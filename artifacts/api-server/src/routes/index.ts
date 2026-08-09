@@ -6,6 +6,7 @@ import collectionsRouter from "./collections";
 import reportsRouter from "./reports";
 import settingsRouter from "./settings";
 import dashboardRouter from "./dashboard";
+import routesRouter from "./routes";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(collectionsRouter);
 router.use(reportsRouter);
 router.use(settingsRouter);
 router.use(dashboardRouter);
+router.use(routesRouter);
 
 export default router;

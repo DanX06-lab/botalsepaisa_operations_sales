@@ -7,6 +7,8 @@ import Shops from '@/pages/shops';
 import Collections from '@/pages/collections';
 import Reports from '@/pages/reports';
 import Settings from '@/pages/settings';
+import Routes from '@/pages/routes';
+import RouteHistory from '@/pages/route-history';
 import NotFound from '@/pages/not-found';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -28,6 +30,8 @@ function Router() {
       <Route path="/collections" component={Collections} />
       <Route path="/reports" component={Reports} />
       <Route path="/settings" component={Settings} />
+      <Route path="/routes" component={Routes} />
+      <Route path="/routes/history" component={RouteHistory} />
       <Route component={NotFound} />
     </Switch>
   );
