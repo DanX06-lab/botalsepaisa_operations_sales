@@ -50,33 +50,46 @@ export async function closeMongoDB(): Promise<void> {
 export async function createIndexes(): Promise<void> {
   const database = getDb();
   
-  // Users collection indexes
-  await database.collection("users").createIndex({ username: 1 }, { name: "username_idx", unique: true });
+  const indexes = [
+    // Users collection indexes
+    { collection: "users", keys: { username: 1 }, options: { name: "username_idx", unique: true } },
+    
+    // Shops collection indexes
+    { collection: "shops", keys: { shopId: 1 }, options: { name: "shopId_idx", unique: true, sparse: true } },
+    { collection: "shops", keys: { shopName: 1 }, options: { name: "shopName_idx" } },
+    { collection: "shops", keys: { ownerName: 1 }, options: { name: "ownerName_idx" } },
+    { collection: "shops", keys: { mobile: 1 }, options: { name: "mobile_idx" } },
+    
+    // Collections collection indexes
+    { collection: "collections", keys: { shopId: 1 }, options: { name: "collection_shopId_idx" } },
+    { collection: "collections", keys: { collectionDate: 1 }, options: { name: "collectionDate_idx" } },
+    { collection: "collections", keys: { paymentStatus: 1 }, options: { name: "paymentStatus_idx" } },
+    { collection: "collections", keys: { routeId: 1 }, options: { name: "collection_routeId_idx" } },
+    
+    // Counters collection indexes
+    { collection: "counters", keys: { name: 1 }, options: { name: "counter_name_idx", unique: true } },
+    
+    // Routes collection indexes
+    { collection: "routes", keys: { routeDate: 1 }, options: { name: "routeDate_idx" } },
+    { collection: "routes", keys: { createdBy: 1 }, options: { name: "createdBy_idx" } },
+    { collection: "routes", keys: { status: 1 }, options: { name: "route_status_idx" } },
+    { collection: "routes", keys: { routeDate: 1, createdBy: 1 }, options: { name: "routeDate_createdBy_idx", unique: true, partialFilterExpression: { status: { $in: ["PLANNED", "IN_PROGRESS"] } } } },
+  ];
+
+  for (const index of indexes) {
+    try {
+      await database.collection(index.collection).createIndex(index.keys as any, index.options);
+    } catch (error: any) {
+      if (error.code === 85) {
+        // IndexOptionsConflict - index already exists with different name
+        logger.warn(`Index on ${index.collection} already exists, skipping`);
+      } else {
+        logger.error(`Failed to create index on ${index.collection}:`, error);
+      }
+    }
+  }
   
-  // Shops collection indexes
-  await database.collection("shops").createIndex({ shopId: 1 }, { name: "shopId_idx", unique: true, sparse: true });
-  await database.collection("shops").createIndex({ shopName: 1 }, { name: "shopName_idx" });
-  await database.collection("shops").createIndex({ ownerName: 1 }, { name: "ownerName_idx" });
-  await database.collection("shops").createIndex({ mobile: 1 }, { name: "mobile_idx" });
-  
-  // Collections collection indexes
-  await database.collection("collections").createIndex({ shopId: 1 }, { name: "collection_shopId_idx" });
-  await database.collection("collections").createIndex({ collectionDate: 1 }, { name: "collectionDate_idx" });
-  await database.collection("collections").createIndex({ paymentStatus: 1 }, { name: "paymentStatus_idx" });
-  
-  // Counters collection indexes
-  await database.collection("counters").createIndex({ name: 1 }, { name: "counter_name_idx", unique: true });
-  
-  // Routes collection indexes
-  await database.collection("routes").createIndex({ routeDate: 1 }, { name: "routeDate_idx" });
-  await database.collection("routes").createIndex({ createdBy: 1 }, { name: "createdBy_idx" });
-  await database.collection("routes").createIndex({ status: 1 }, { name: "route_status_idx" });
-  await database.collection("routes").createIndex({ routeDate: 1, createdBy: 1 }, { name: "routeDate_createdBy_idx", unique: true, partialFilterExpression: { status: { $in: ["PLANNED", "IN_PROGRESS"] } } });
-  
-  // Collections collection index for routeId
-  await database.collection("collections").createIndex({ routeId: 1 }, { name: "collection_routeId_idx" });
-  
-  logger.info("MongoDB indexes created");
+  logger.info("MongoDB indexes created/verified");
 }
 
 // Atomic sequence generator for numeric IDs
