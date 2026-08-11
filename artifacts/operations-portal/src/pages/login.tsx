@@ -19,6 +19,10 @@ export default function Login() {
   const loginMutation = useLogin({
     mutation: {
       onSuccess: (data) => {
+        if (!data || !data.token) {
+          setError('Backend API unavailable. Please set VITE_API_BASE_URL environment variable on your frontend deployment.');
+          return;
+        }
         login(data.token, data.username, data.role);
         setLocation('/dashboard');
       },
