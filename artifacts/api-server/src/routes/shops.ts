@@ -84,7 +84,7 @@ router.post("/shops", async (req, res): Promise<void> => {
   // Validate mobile format (Indian mobile)
   const mobileRegex = /^[6-9]\d{9}$/;
   if (!mobileRegex.test(mobile)) {
-    res.status(400).json({ error: "Invalid Indian mobile number format" });
+    res.status(400).json({ error: "Enter a valid 10-digit mobile number." });
     return;
   }
 
@@ -198,7 +198,7 @@ router.put("/shops/:id", async (req, res): Promise<void> => {
   if (parsed.data.mobile !== undefined) {
     const mobileRegex = /^[6-9]\d{9}$/;
     if (!mobileRegex.test(parsed.data.mobile)) {
-      res.status(400).json({ error: "Invalid Indian mobile number format" });
+      res.status(400).json({ error: "Enter a valid 10-digit mobile number." });
       return;
     }
     updateData.mobile = parsed.data.mobile;

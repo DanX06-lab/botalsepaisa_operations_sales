@@ -40,7 +40,6 @@ import { Label } from '@/components/ui/label';
 type FormData = {
   shopName: string;
   ownerName: string;
-  countryCode: string;
   phoneNumber: string;
   latitude: number | null;
   longitude: number | null;
@@ -48,7 +47,10 @@ type FormData = {
   photoBase64: string;
 };
 
-const EMPTY_FORM: FormData = { shopName: '', ownerName: '', countryCode: '+91', phoneNumber: '', latitude: null, longitude: null, accuracy: null, photoBase64: '' };
+const EMPTY_FORM: FormData = { shopName: '', ownerName: '', phoneNumber: '', latitude: null, longitude: null, accuracy: null, photoBase64: '' };
+
+const MOBILE_REGEX = /^[6-9][0-9]{9}$/;
+const isValidPhone = (phone: string) => MOBILE_REGEX.test(phone.trim());
 
 export default function Shops() {
   const [page, setPage] = useState(1);
@@ -74,6 +76,7 @@ export default function Shops() {
   
   const [selectedShop, setSelectedShop] = useState<any>(null);
   const [formData, setFormData] = useState<FormData>(EMPTY_FORM);
+  const [phoneTouched, setPhoneTouched] = useState(false);
 
   const createShop = useCreateShop({
     mutation: {
@@ -82,6 +85,7 @@ export default function Shops() {
         queryClient.invalidateQueries({ queryKey: getListShopsQueryKey() });
         setIsAddOpen(false);
         setFormData(EMPTY_FORM);
+        setPhoneTouched(false);
       },
       onError: (err: any) => {
         toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -95,6 +99,7 @@ export default function Shops() {
         toast({ title: "Success", description: "Shop updated successfully" });
         queryClient.invalidateQueries({ queryKey: getListShopsQueryKey() });
         setIsEditOpen(false);
+        setPhoneTouched(false);
       },
       onError: (err: any) => {
         toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -117,10 +122,16 @@ export default function Shops() {
 
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setPhoneTouched(true);
     
     // Validate required fields
     if (!formData.shopName || !formData.ownerName || !formData.phoneNumber) {
       toast({ title: "Validation Error", description: "Shop name, owner name, and mobile are required", variant: "destructive" });
+      return;
+    }
+
+    if (!isValidPhone(formData.phoneNumber)) {
+      toast({ title: "Validation Error", description: "Enter a valid 10-digit mobile number.", variant: "destructive" });
       return;
     }
     
@@ -140,7 +151,7 @@ export default function Shops() {
       data: {
         shopName: formData.shopName,
         ownerName: formData.ownerName,
-        mobile: formData.countryCode + formData.phoneNumber,
+        mobile: formData.phoneNumber.trim(),
         latitude: formData.latitude ?? undefined,
         longitude: formData.longitude ?? undefined,
         accuracy: formData.accuracy ?? undefined,
@@ -152,12 +163,19 @@ export default function Shops() {
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedShop) return;
+    setPhoneTouched(true);
+
+    if (!formData.phoneNumber || !isValidPhone(formData.phoneNumber)) {
+      toast({ title: "Validation Error", description: "Enter a valid 10-digit mobile number.", variant: "destructive" });
+      return;
+    }
+
     updateShop.mutate({
       id: selectedShop.id,
       data: {
         shopName: formData.shopName,
         ownerName: formData.ownerName,
-        mobile: formData.countryCode + formData.phoneNumber,
+        mobile: formData.phoneNumber.trim(),
         ...(formData.latitude !== null && { latitude: formData.latitude }),
         ...(formData.longitude !== null && { longitude: formData.longitude }),
         ...(formData.accuracy !== null && { accuracy: formData.accuracy }),
@@ -173,26 +191,20 @@ export default function Shops() {
 
   const openEdit = (shop: any) => {
     setSelectedShop(shop);
-    // Parse mobile number to separate country code and phone number
-    let countryCode = '+91';
-    let phoneNumber = shop.mobile;
-    if (shop.mobile && shop.mobile.startsWith('+')) {
-      const match = shop.mobile.match(/^(\+\d{1,3})(\d+)$/);
-      if (match) {
-        countryCode = match[1];
-        phoneNumber = match[2];
-      }
+    let phoneNumber = shop.mobile || '';
+    if (phoneNumber.startsWith('+91') && phoneNumber.length === 13) {
+      phoneNumber = phoneNumber.slice(3);
     }
     setFormData({
       shopName: shop.shopName,
       ownerName: shop.ownerName,
-      countryCode,
       phoneNumber,
       latitude: shop.latitude ?? null,
       longitude: shop.longitude ?? null,
       accuracy: shop.accuracy ?? null,
-      photoBase64: shop.photoUrl ?? '', // Use photoUrl from Cloudinary
+      photoBase64: shop.photoUrl ?? '',
     });
+    setPhoneTouched(false);
     setLocationStatus('idle');
     setIsEditOpen(true);
   };
@@ -285,6 +297,7 @@ export default function Shops() {
             </div>
             <Button onClick={() => {
               setFormData(EMPTY_FORM);
+              setPhoneTouched(false);
               setIsAddOpen(true);
             }}>
               <Plus className="h-4 w-4 mr-2" />
@@ -423,6 +436,7 @@ export default function Shops() {
           if (!open) {
             setIsAddOpen(false);
             setIsEditOpen(false);
+            setPhoneTouched(false);
           }
         }}>
           <DialogContent className="max-h-[90vh] overflow-y-auto">
@@ -439,25 +453,23 @@ export default function Shops() {
                 <Input required id="ownerName" value={formData.ownerName} onChange={e => setFormData({...formData, ownerName: e.target.value})} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="mobile">Mobile Number</Label>
-                <div className="flex gap-2">
-                  <Input 
-                    required 
-                    id="countryCode" 
-                    value={formData.countryCode} 
-                    onChange={e => setFormData({...formData, countryCode: e.target.value})} 
-                    placeholder="+91" 
-                    className="w-24"
-                  />
-                  <Input 
-                    required 
-                    id="phoneNumber" 
-                    value={formData.phoneNumber} 
-                    onChange={e => setFormData({...formData, phoneNumber: e.target.value})} 
-                    placeholder="10-digit mobile number" 
-                    className="flex-1"
-                  />
-                </div>
+                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <Input 
+                  required 
+                  id="phoneNumber" 
+                  name="phoneNumber"
+                  type="tel"
+                  inputMode="numeric"
+                  autoComplete="tel"
+                  value={formData.phoneNumber} 
+                  onChange={e => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))} 
+                  onBlur={() => setPhoneTouched(true)}
+                  placeholder="9876543210" 
+                  className="w-full"
+                />
+                {phoneTouched && !isValidPhone(formData.phoneNumber) && (
+                  <p className="text-xs text-destructive">Enter a valid 10-digit mobile number.</p>
+                )}
               </div>
 
               {/* GPS Location Capture - MANDATORY */}
