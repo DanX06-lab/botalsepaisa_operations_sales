@@ -51,30 +51,30 @@ export async function createIndexes(): Promise<void> {
   const database = getDb();
   
   // Users collection indexes
-  await database.collection("users").createIndex({ username: 1 }, { unique: true });
+  await database.collection("users").createIndex({ username: 1 }, { name: "username_idx", unique: true });
   
   // Shops collection indexes
-  await database.collection("shops").createIndex({ shopId: 1 }, { unique: true, sparse: true });
-  await database.collection("shops").createIndex({ shopName: 1 });
-  await database.collection("shops").createIndex({ ownerName: 1 });
-  await database.collection("shops").createIndex({ mobile: 1 });
+  await database.collection("shops").createIndex({ shopId: 1 }, { name: "shopId_idx", unique: true, sparse: true });
+  await database.collection("shops").createIndex({ shopName: 1 }, { name: "shopName_idx" });
+  await database.collection("shops").createIndex({ ownerName: 1 }, { name: "ownerName_idx" });
+  await database.collection("shops").createIndex({ mobile: 1 }, { name: "mobile_idx" });
   
   // Collections collection indexes
-  await database.collection("collections").createIndex({ shopId: 1 });
-  await database.collection("collections").createIndex({ collectionDate: 1 });
-  await database.collection("collections").createIndex({ paymentStatus: 1 });
+  await database.collection("collections").createIndex({ shopId: 1 }, { name: "collection_shopId_idx" });
+  await database.collection("collections").createIndex({ collectionDate: 1 }, { name: "collectionDate_idx" });
+  await database.collection("collections").createIndex({ paymentStatus: 1 }, { name: "paymentStatus_idx" });
   
   // Counters collection indexes
-  await database.collection("counters").createIndex({ name: 1 }, { unique: true });
+  await database.collection("counters").createIndex({ name: 1 }, { name: "counter_name_idx", unique: true });
   
   // Routes collection indexes
-  await database.collection("routes").createIndex({ routeDate: 1 });
-  await database.collection("routes").createIndex({ createdBy: 1 });
-  await database.collection("routes").createIndex({ status: 1 });
-  await database.collection("routes").createIndex({ routeDate: 1, createdBy: 1 }, { unique: true, partialFilterExpression: { status: { $in: ["PLANNED", "IN_PROGRESS"] } } });
+  await database.collection("routes").createIndex({ routeDate: 1 }, { name: "routeDate_idx" });
+  await database.collection("routes").createIndex({ createdBy: 1 }, { name: "createdBy_idx" });
+  await database.collection("routes").createIndex({ status: 1 }, { name: "route_status_idx" });
+  await database.collection("routes").createIndex({ routeDate: 1, createdBy: 1 }, { name: "routeDate_createdBy_idx", unique: true, partialFilterExpression: { status: { $in: ["PLANNED", "IN_PROGRESS"] } } });
   
   // Collections collection index for routeId
-  await database.collection("collections").createIndex({ routeId: 1 });
+  await database.collection("collections").createIndex({ routeId: 1 }, { name: "collection_routeId_idx" });
   
   logger.info("MongoDB indexes created");
 }
