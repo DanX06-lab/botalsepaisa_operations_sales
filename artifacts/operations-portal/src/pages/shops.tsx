@@ -49,8 +49,21 @@ type FormData = {
 
 const EMPTY_FORM: FormData = { shopName: '', ownerName: '', phoneNumber: '', latitude: null, longitude: null, accuracy: null, photoBase64: '' };
 
-const MOBILE_REGEX = /^[6-9][0-9]{9}$/;
-const isValidPhone = (phone: string) => MOBILE_REGEX.test(phone.trim());
+const normalizePhoneNumber = (phone: string): string => {
+  if (!phone) return '';
+  let digits = phone.replace(/\D/g, '');
+  if (digits.length === 12 && digits.startsWith('91')) {
+    digits = digits.slice(2);
+  } else if (digits.length === 11 && digits.startsWith('0')) {
+    digits = digits.slice(1);
+  }
+  return digits;
+};
+
+const isValidPhone = (phone: string) => {
+  const normalized = normalizePhoneNumber(phone);
+  return /^[6-9]\d{9}$/.test(normalized);
+};
 
 export default function Shops() {
   const [page, setPage] = useState(1);
@@ -151,7 +164,7 @@ export default function Shops() {
       data: {
         shopName: formData.shopName,
         ownerName: formData.ownerName,
-        mobile: formData.phoneNumber.trim(),
+        mobile: normalizePhoneNumber(formData.phoneNumber),
         latitude: formData.latitude ?? undefined,
         longitude: formData.longitude ?? undefined,
         accuracy: formData.accuracy ?? undefined,
@@ -175,7 +188,7 @@ export default function Shops() {
       data: {
         shopName: formData.shopName,
         ownerName: formData.ownerName,
-        mobile: formData.phoneNumber.trim(),
+        mobile: normalizePhoneNumber(formData.phoneNumber),
         ...(formData.latitude !== null && { latitude: formData.latitude }),
         ...(formData.longitude !== null && { longitude: formData.longitude }),
         ...(formData.accuracy !== null && { accuracy: formData.accuracy }),

@@ -22,6 +22,17 @@ function serializeShop(s: any) {
   };
 }
 
+function normalizePhoneNumber(phone: string): string {
+  if (!phone) return '';
+  let digits = phone.replace(/\D/g, '');
+  if (digits.length === 12 && digits.startsWith('91')) {
+    digits = digits.slice(2);
+  } else if (digits.length === 11 && digits.startsWith('0')) {
+    digits = digits.slice(1);
+  }
+  return digits;
+}
+
 router.get("/shops", async (req, res): Promise<void> => {
   const query = ListShopsQueryParams.safeParse(req.query);
   if (!query.success) {
@@ -82,8 +93,8 @@ router.post("/shops", async (req, res): Promise<void> => {
   }
 
   // Validate mobile format (Indian mobile)
-  const mobileRegex = /^[6-9]\d{9}$/;
-  if (!mobileRegex.test(mobile)) {
+  const normalizedMobile = normalizePhoneNumber(mobile);
+  if (!/^[6-9]\d{9}$/.test(normalizedMobile)) {
     res.status(400).json({ error: "Enter a valid 10-digit mobile number." });
     return;
   }
@@ -139,7 +150,7 @@ router.post("/shops", async (req, res): Promise<void> => {
     shopId,
     shopName,
     ownerName,
-    mobile,
+    mobile: normalizedMobile,
     latitude,
     longitude,
     accuracy: accuracy ?? null,
@@ -196,12 +207,12 @@ router.put("/shops/:id", async (req, res): Promise<void> => {
   if (parsed.data.shopName !== undefined) updateData.shopName = parsed.data.shopName;
   if (parsed.data.ownerName !== undefined) updateData.ownerName = parsed.data.ownerName;
   if (parsed.data.mobile !== undefined) {
-    const mobileRegex = /^[6-9]\d{9}$/;
-    if (!mobileRegex.test(parsed.data.mobile)) {
+    const normalizedMobile = normalizePhoneNumber(parsed.data.mobile);
+    if (!/^[6-9]\d{9}$/.test(normalizedMobile)) {
       res.status(400).json({ error: "Enter a valid 10-digit mobile number." });
       return;
     }
-    updateData.mobile = parsed.data.mobile;
+    updateData.mobile = normalizedMobile;
   }
   if (parsed.data.latitude !== undefined) {
     if (parsed.data.latitude < -90 || parsed.data.latitude > 90) {
