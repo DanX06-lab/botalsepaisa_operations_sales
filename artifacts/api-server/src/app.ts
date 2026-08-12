@@ -9,9 +9,7 @@ const app: Express = express();
 // Configure CORS based on environment
 const corsOrigins = process.env.CORS_ORIGINS 
   ? process.env.CORS_ORIGINS.split(",").map(origin => origin.trim())
-  : process.env.NODE_ENV === "production"
-    ? [] // In production, require explicit CORS_ORIGINS
-    : ["http://localhost:5173", "http://localhost:23010"];
+  : true;
 
 app.use(
   pinoHttp({
@@ -32,8 +30,9 @@ app.use(
     },
   }),
 );
+
 app.use(cors({
-  origin: corsOrigins.length > 0 ? corsOrigins : false,
+  origin: corsOrigins,
   credentials: true,
 }));
 app.use(express.json({ limit: "10mb" }));
