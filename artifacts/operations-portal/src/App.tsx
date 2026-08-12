@@ -24,6 +24,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={RootRedirect} />
+      <Route path="/index.html"><Redirect to="/" /></Route>
       <Route path="/login" component={Login} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/shops" component={Shops} />
