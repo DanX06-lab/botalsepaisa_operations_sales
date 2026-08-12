@@ -36,6 +36,21 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const COUNTRY_CODES = [
+  { value: "+91", label: "🇮🇳 +91 (IN)" },
+  { value: "+1", label: "🇺🇸 +1 (US)" },
+  { value: "+44", label: "🇬🇧 +44 (UK)" },
+  { value: "+61", label: "🇦🇺 +61 (AU)" },
+  { value: "+971", label: "🇦🇪 +971 (AE)" },
+];
 
 type FormData = {
   shopName: string;
@@ -441,14 +456,21 @@ export default function Shops() {
               <div className="space-y-2">
                 <Label htmlFor="mobile">Mobile Number</Label>
                 <div className="flex gap-2">
-                  <Input 
-                    required 
-                    id="countryCode" 
-                    value={formData.countryCode} 
-                    onChange={e => setFormData({...formData, countryCode: e.target.value})} 
-                    placeholder="+91" 
-                    className="w-24"
-                  />
+                  <Select
+                    value={formData.countryCode}
+                    onValueChange={(value) => setFormData({ ...formData, countryCode: value })}
+                  >
+                    <SelectTrigger className="w-[130px]">
+                      <SelectValue placeholder="+91" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {COUNTRY_CODES.map((country) => (
+                        <SelectItem key={country.value} value={country.value}>
+                          {country.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <Input 
                     required 
                     id="phoneNumber" 
