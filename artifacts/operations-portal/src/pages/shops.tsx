@@ -207,7 +207,7 @@ export default function Shops() {
         ...(formData.latitude !== null && { latitude: formData.latitude }),
         ...(formData.longitude !== null && { longitude: formData.longitude }),
         ...(formData.accuracy !== null && { accuracy: formData.accuracy }),
-        ...(formData.photoBase64 && { photoBase64: formData.photoBase64 }),
+        ...(formData.photoBase64 && formData.photoBase64.startsWith('data:') && { photoBase64: formData.photoBase64 }),
       }
     });
   };
