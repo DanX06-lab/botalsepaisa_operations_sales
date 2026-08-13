@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Layout } from '@/components/Layout';
 import { 
-  useGetApiProspects, 
-  usePostApiProspects, 
-  usePutApiProspectsIdConvert,
+  useListProspects, 
+  useCreateProspect, 
+  useConvertProspect,
 } from '@workspace/api-client-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@/hooks/use-debounce';
@@ -49,7 +49,7 @@ export default function Prospects() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: prospectsData, isLoading } = useGetApiProspects({
+  const { data: prospectsData, isLoading } = useListProspects({
     search: debouncedSearch || undefined,
     zone: activeZone === 'All' ? undefined : activeZone
   });
@@ -57,7 +57,7 @@ export default function Prospects() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>(EMPTY_FORM);
 
-  const createProspect = usePostApiProspects({
+  const createProspect = useCreateProspect({
     mutation: {
       onSuccess: () => {
         toast({ title: "Success", description: "Prospect added successfully" });
@@ -71,7 +71,7 @@ export default function Prospects() {
     }
   });
 
-  const convertToShop = usePutApiProspectsIdConvert({
+  const convertToShop = useConvertProspect({
     mutation: {
       onSuccess: () => {
         toast({ title: "Success", description: "Prospect converted to shop successfully" });
