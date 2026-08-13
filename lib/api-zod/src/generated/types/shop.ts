@@ -22,5 +22,7 @@ export interface Shop {
   locationCapturedAt?: string | null;
   /** @nullable */
   photoUrl?: string | null;
+  /** @nullable */
+  remark?: string | null;
   createdAt: string;
 }

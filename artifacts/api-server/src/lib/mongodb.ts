@@ -91,6 +91,9 @@ export async function createIndexes(): Promise<void> {
     
     // Sync History collection indexes
     { collection: "sync_history", keys: { timestamp: -1 }, options: { name: "sh_timestamp_idx" } },
+
+    // Verification History collection indexes
+    { collection: "verification_history", keys: { business_id: 1 }, options: { name: "vh_business_id_idx" } },
   ];
 
   for (const index of indexes) {

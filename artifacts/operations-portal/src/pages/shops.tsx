@@ -61,9 +61,10 @@ type FormData = {
   longitude: number | null;
   accuracy: number | null;
   photoBase64: string;
+  remark: string;
 };
 
-const EMPTY_FORM: FormData = { shopName: '', ownerName: '', phoneNumber: '', countryCode: '+91', latitude: null, longitude: null, accuracy: null, photoBase64: '' };
+const EMPTY_FORM: FormData = { shopName: '', ownerName: '', phoneNumber: '', countryCode: '+91', latitude: null, longitude: null, accuracy: null, photoBase64: '', remark: '' };
 
 const normalizePhoneNumber = (phone: string): string => {
   if (!phone) return '';
@@ -185,6 +186,7 @@ export default function Shops() {
         longitude: formData.longitude ?? undefined,
         accuracy: formData.accuracy ?? undefined,
         photoBase64: formData.photoBase64,
+        remark: formData.remark,
       }
     });
   };
@@ -209,6 +211,7 @@ export default function Shops() {
         ...(formData.longitude !== null && { longitude: formData.longitude }),
         ...(formData.accuracy !== null && { accuracy: formData.accuracy }),
         ...(formData.photoBase64 && formData.photoBase64.startsWith('data:') && { photoBase64: formData.photoBase64 }),
+        ...(formData.remark !== undefined && { remark: formData.remark }),
       }
     });
   };
@@ -233,6 +236,7 @@ export default function Shops() {
       longitude: shop.longitude ?? null,
       accuracy: shop.accuracy ?? null,
       photoBase64: shop.photoUrl ?? '',
+      remark: shop.remark || '',
     });
     setPhoneTouched(false);
     setLocationStatus('idle');
@@ -393,6 +397,11 @@ export default function Shops() {
                             <div className="flex items-center text-xs text-muted-foreground mt-1">
                               <User className="h-3 w-3 mr-1" /> {shop.ownerName}
                             </div>
+                            {shop.remark && (
+                              <div className="text-xs text-muted-foreground mt-1">
+                                <span className="font-medium">Remark:</span> {shop.remark}
+                              </div>
+                            )}
                           </TableCell>
                           <TableCell>
                             <div className="flex flex-col gap-1 text-sm text-muted-foreground">
@@ -517,6 +526,10 @@ export default function Shops() {
                 {phoneTouched && !isValidPhone(formData.phoneNumber) && (
                   <p className="text-xs text-destructive">Enter a valid 10-digit mobile number.</p>
                 )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="remark">Remark (Optional)</Label>
+                <Input id="remark" value={formData.remark} onChange={e => setFormData({...formData, remark: e.target.value})} placeholder="Any additional details..." />
               </div>
 
               {/* GPS Location Capture - MANDATORY */}

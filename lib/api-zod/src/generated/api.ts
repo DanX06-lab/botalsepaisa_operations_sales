@@ -117,6 +117,265 @@ export const CreateIntelligenceBusinessResponse = zod.object({
 
 
 /**
+ * @summary Update intelligence business
+ */
+export const UpdateIntelligenceBusinessParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const UpdateIntelligenceBusinessBody = zod.object({
+  "name": zod.string(),
+  "business_type": zod.string(),
+  "address": zod.string(),
+  "latitude": zod.number().optional(),
+  "longitude": zod.number().optional(),
+  "normalized_name": zod.string().optional(),
+  "street": zod.string().optional(),
+  "locality": zod.string().optional(),
+  "city": zod.string().optional(),
+  "pincode": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "website": zod.string().optional(),
+  "maps_url": zod.string().optional(),
+  "rating": zod.number().optional(),
+  "review_count": zod.number().optional(),
+  "price_range": zod.string().optional(),
+  "cuisine": zod.array(zod.string()).optional(),
+  "categories": zod.array(zod.string()).optional(),
+  "opening_hours": zod.record(zod.string(), zod.string()).optional(),
+  "zone_id": zod.string().optional(),
+  "area_id": zod.string().optional(),
+  "borough_id": zod.string().optional(),
+  "ward_id": zod.string().optional(),
+  "source": zod.string().optional(),
+  "source_id": zod.string().optional(),
+  "source_url": zod.string().optional()
+})
+
+export const UpdateIntelligenceBusinessResponse = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "normalized_name": zod.string().nullish(),
+  "business_type": zod.string(),
+  "address": zod.string(),
+  "street": zod.string().nullish(),
+  "locality": zod.string().nullish(),
+  "city": zod.string().nullish(),
+  "pincode": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "maps_url": zod.string().nullish(),
+  "rating": zod.number().nullish(),
+  "review_count": zod.number().nullish(),
+  "price_range": zod.string().nullish(),
+  "cuisine": zod.array(zod.string()).optional(),
+  "categories": zod.array(zod.string()).optional(),
+  "opening_hours": zod.record(zod.string(), zod.string()).optional(),
+  "zone_id": zod.string().nullish(),
+  "area_id": zod.string().nullish(),
+  "borough_id": zod.string().nullish(),
+  "ward_id": zod.string().nullish(),
+  "source": zod.string().nullish(),
+  "source_id": zod.string().nullish(),
+  "source_url": zod.string().nullish(),
+  "verification_status": zod.string().nullish(),
+  "last_verified": zod.string().nullish(),
+  "last_updated": zod.string().nullish(),
+  "created_at": zod.string(),
+  "updated_at": zod.string()
+})
+
+
+/**
+ * @summary Get verification queue
+ */
+export const GetVerificationQueueQueryParams = zod.object({
+  "status": zod.coerce.string().optional(),
+  "type": zod.coerce.string().optional(),
+  "zone_id": zod.coerce.string().optional(),
+  "area_id": zod.coerce.string().optional(),
+  "ward_id": zod.coerce.string().optional(),
+  "borough_id": zod.coerce.string().optional(),
+  "source": zod.coerce.string().optional(),
+  "search": zod.coerce.string().optional(),
+  "page": zod.coerce.number().optional(),
+  "limit": zod.coerce.number().optional()
+})
+
+export const GetVerificationQueueResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "normalized_name": zod.string().nullish(),
+  "business_type": zod.string(),
+  "address": zod.string(),
+  "street": zod.string().nullish(),
+  "locality": zod.string().nullish(),
+  "city": zod.string().nullish(),
+  "pincode": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "maps_url": zod.string().nullish(),
+  "rating": zod.number().nullish(),
+  "review_count": zod.number().nullish(),
+  "price_range": zod.string().nullish(),
+  "cuisine": zod.array(zod.string()).optional(),
+  "categories": zod.array(zod.string()).optional(),
+  "opening_hours": zod.record(zod.string(), zod.string()).optional(),
+  "zone_id": zod.string().nullish(),
+  "area_id": zod.string().nullish(),
+  "borough_id": zod.string().nullish(),
+  "ward_id": zod.string().nullish(),
+  "source": zod.string().nullish(),
+  "source_id": zod.string().nullish(),
+  "source_url": zod.string().nullish(),
+  "verification_status": zod.string().nullish(),
+  "last_verified": zod.string().nullish(),
+  "last_updated": zod.string().nullish(),
+  "created_at": zod.string(),
+  "updated_at": zod.string()
+})).optional(),
+  "total": zod.number().optional(),
+  "page": zod.number().optional(),
+  "limit": zod.number().optional()
+})
+
+
+/**
+ * @summary Get verification history
+ */
+export const GetVerificationHistoryParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetVerificationHistoryResponseItem = zod.object({
+  "id": zod.string(),
+  "business_id": zod.string(),
+  "previous_status": zod.string().nullish(),
+  "new_status": zod.string(),
+  "changed_by": zod.string().nullish(),
+  "changed_at": zod.string(),
+  "reason_note": zod.string().nullish()
+})
+export const GetVerificationHistoryResponse = zod.array(GetVerificationHistoryResponseItem)
+
+
+/**
+ * @summary Update verification status
+ */
+export const UpdateVerificationStatusParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const UpdateVerificationStatusBody = zod.object({
+  "status": zod.string(),
+  "note": zod.string().optional()
+})
+
+export const UpdateVerificationStatusResponse = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "normalized_name": zod.string().nullish(),
+  "business_type": zod.string(),
+  "address": zod.string(),
+  "street": zod.string().nullish(),
+  "locality": zod.string().nullish(),
+  "city": zod.string().nullish(),
+  "pincode": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "maps_url": zod.string().nullish(),
+  "rating": zod.number().nullish(),
+  "review_count": zod.number().nullish(),
+  "price_range": zod.string().nullish(),
+  "cuisine": zod.array(zod.string()).optional(),
+  "categories": zod.array(zod.string()).optional(),
+  "opening_hours": zod.record(zod.string(), zod.string()).optional(),
+  "zone_id": zod.string().nullish(),
+  "area_id": zod.string().nullish(),
+  "borough_id": zod.string().nullish(),
+  "ward_id": zod.string().nullish(),
+  "source": zod.string().nullish(),
+  "source_id": zod.string().nullish(),
+  "source_url": zod.string().nullish(),
+  "verification_status": zod.string().nullish(),
+  "last_verified": zod.string().nullish(),
+  "last_updated": zod.string().nullish(),
+  "created_at": zod.string(),
+  "updated_at": zod.string()
+})
+
+
+/**
+ * @summary Bulk update verification status
+ */
+export const BulkUpdateVerificationStatusBody = zod.object({
+  "business_ids": zod.array(zod.string()),
+  "status": zod.string(),
+  "note": zod.string().optional()
+})
+
+export const BulkUpdateVerificationStatusResponse = zod.object({
+  "success": zod.boolean().optional(),
+  "count": zod.number().optional()
+})
+
+
+/**
+ * @summary Mark business as duplicate
+ */
+export const MarkAsDuplicateParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const MarkAsDuplicateBody = zod.object({
+  "target_id": zod.string(),
+  "note": zod.string().optional()
+})
+
+export const MarkAsDuplicateResponse = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "normalized_name": zod.string().nullish(),
+  "business_type": zod.string(),
+  "address": zod.string(),
+  "street": zod.string().nullish(),
+  "locality": zod.string().nullish(),
+  "city": zod.string().nullish(),
+  "pincode": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "maps_url": zod.string().nullish(),
+  "rating": zod.number().nullish(),
+  "review_count": zod.number().nullish(),
+  "price_range": zod.string().nullish(),
+  "cuisine": zod.array(zod.string()).optional(),
+  "categories": zod.array(zod.string()).optional(),
+  "opening_hours": zod.record(zod.string(), zod.string()).optional(),
+  "zone_id": zod.string().nullish(),
+  "area_id": zod.string().nullish(),
+  "borough_id": zod.string().nullish(),
+  "ward_id": zod.string().nullish(),
+  "source": zod.string().nullish(),
+  "source_id": zod.string().nullish(),
+  "source_url": zod.string().nullish(),
+  "verification_status": zod.string().nullish(),
+  "last_verified": zod.string().nullish(),
+  "last_updated": zod.string().nullish(),
+  "created_at": zod.string(),
+  "updated_at": zod.string()
+})
+
+
+/**
  * @summary List intelligence businesses for a map view
  */
 export const ListIntelligenceMapQueryParams = zod.object({
@@ -284,6 +543,158 @@ export const GetDiscoveryHistoryResponseItem = zod.object({
   "errors": zod.number()
 })
 export const GetDiscoveryHistoryResponse = zod.array(GetDiscoveryHistoryResponseItem)
+
+
+/**
+ * @summary Get coverage overview
+ */
+export const GetCoverageOverviewQueryParams = zod.object({
+  "zone_id": zod.coerce.string().optional(),
+  "area_id": zod.coerce.string().optional(),
+  "ward_id": zod.coerce.string().optional(),
+  "borough_id": zod.coerce.string().optional(),
+  "business_type": zod.coerce.string().optional(),
+  "verification_status": zod.coerce.string().optional(),
+  "source": zod.coerce.string().optional()
+})
+
+export const GetCoverageOverviewResponse = zod.object({
+  "total": zod.number().optional(),
+  "cafes": zod.number().optional(),
+  "restaurants": zod.number().optional(),
+  "verified": zod.number().optional(),
+  "unverified": zod.number().optional(),
+  "duplicates": zod.number().optional(),
+  "unassigned": zod.number().optional()
+})
+
+
+/**
+ * @summary Get coverage by zones
+ */
+export const GetZoneCoverageQueryParams = zod.object({
+  "zone_id": zod.coerce.string().optional(),
+  "area_id": zod.coerce.string().optional(),
+  "ward_id": zod.coerce.string().optional(),
+  "borough_id": zod.coerce.string().optional(),
+  "business_type": zod.coerce.string().optional(),
+  "verification_status": zod.coerce.string().optional(),
+  "source": zod.coerce.string().optional()
+})
+
+export const GetZoneCoverageResponseItem = zod.object({
+  "zone_id": zod.string().optional(),
+  "total": zod.number().optional(),
+  "cafes": zod.number().optional(),
+  "restaurants": zod.number().optional(),
+  "verified": zod.number().optional()
+})
+export const GetZoneCoverageResponse = zod.array(GetZoneCoverageResponseItem)
+
+
+/**
+ * @summary Get coverage by areas
+ */
+export const GetAreaCoverageQueryParams = zod.object({
+  "zone_id": zod.coerce.string().optional(),
+  "area_id": zod.coerce.string().optional(),
+  "ward_id": zod.coerce.string().optional(),
+  "borough_id": zod.coerce.string().optional(),
+  "business_type": zod.coerce.string().optional(),
+  "verification_status": zod.coerce.string().optional(),
+  "source": zod.coerce.string().optional()
+})
+
+export const GetAreaCoverageResponseItem = zod.object({
+  "area_id": zod.string().optional(),
+  "zone_id": zod.string().optional(),
+  "total": zod.number().optional()
+})
+export const GetAreaCoverageResponse = zod.array(GetAreaCoverageResponseItem)
+
+
+/**
+ * @summary Get coverage by wards
+ */
+export const GetWardCoverageQueryParams = zod.object({
+  "zone_id": zod.coerce.string().optional(),
+  "area_id": zod.coerce.string().optional(),
+  "ward_id": zod.coerce.string().optional(),
+  "borough_id": zod.coerce.string().optional(),
+  "business_type": zod.coerce.string().optional(),
+  "verification_status": zod.coerce.string().optional(),
+  "source": zod.coerce.string().optional()
+})
+
+export const GetWardCoverageResponseItem = zod.object({
+  "ward_id": zod.string().optional(),
+  "borough_id": zod.string().optional(),
+  "total": zod.number().optional()
+})
+export const GetWardCoverageResponse = zod.array(GetWardCoverageResponseItem)
+
+
+/**
+ * @summary Get coverage by boroughs
+ */
+export const GetBoroughCoverageQueryParams = zod.object({
+  "zone_id": zod.coerce.string().optional(),
+  "area_id": zod.coerce.string().optional(),
+  "ward_id": zod.coerce.string().optional(),
+  "borough_id": zod.coerce.string().optional(),
+  "business_type": zod.coerce.string().optional(),
+  "verification_status": zod.coerce.string().optional(),
+  "source": zod.coerce.string().optional()
+})
+
+export const GetBoroughCoverageResponseItem = zod.object({
+  "borough_id": zod.string().optional(),
+  "total": zod.number().optional()
+})
+export const GetBoroughCoverageResponse = zod.array(GetBoroughCoverageResponseItem)
+
+
+/**
+ * @summary Get coverage by sources
+ */
+export const GetSourceCoverageQueryParams = zod.object({
+  "zone_id": zod.coerce.string().optional(),
+  "area_id": zod.coerce.string().optional(),
+  "ward_id": zod.coerce.string().optional(),
+  "borough_id": zod.coerce.string().optional(),
+  "business_type": zod.coerce.string().optional(),
+  "verification_status": zod.coerce.string().optional(),
+  "source": zod.coerce.string().optional()
+})
+
+export const GetSourceCoverageResponseItem = zod.object({
+  "source": zod.string().optional(),
+  "total": zod.number().optional()
+})
+export const GetSourceCoverageResponse = zod.array(GetSourceCoverageResponseItem)
+
+
+/**
+ * @summary Get quality coverage metrics
+ */
+export const GetQualityCoverageQueryParams = zod.object({
+  "zone_id": zod.coerce.string().optional(),
+  "area_id": zod.coerce.string().optional(),
+  "ward_id": zod.coerce.string().optional(),
+  "borough_id": zod.coerce.string().optional(),
+  "business_type": zod.coerce.string().optional(),
+  "verification_status": zod.coerce.string().optional(),
+  "source": zod.coerce.string().optional()
+})
+
+export const GetQualityCoverageResponse = zod.object({
+  "missing_coordinates": zod.number().optional(),
+  "missing_address": zod.number().optional(),
+  "missing_phone": zod.number().optional(),
+  "missing_website": zod.number().optional(),
+  "missing_rating": zod.number().optional(),
+  "unassigned_zone_area": zod.number().optional()
+})
 
 
 /**
@@ -490,6 +901,7 @@ export const ListShopsResponse = zod.object({
   "accuracy": zod.number().nullish(),
   "locationCapturedAt": zod.string().nullish(),
   "photoUrl": zod.string().nullish(),
+  "remark": zod.string().nullish(),
   "createdAt": zod.string()
 })),
   "total": zod.number(),
@@ -513,7 +925,8 @@ export const CreateShopBody = zod.object({
   "latitude": zod.number().optional(),
   "longitude": zod.number().optional(),
   "accuracy": zod.number().optional(),
-  "photoBase64": zod.string()
+  "photoBase64": zod.string(),
+  "remark": zod.string().optional()
 })
 
 export const CreateShopResponse = zod.object({
@@ -527,6 +940,7 @@ export const CreateShopResponse = zod.object({
   "accuracy": zod.number().nullish(),
   "locationCapturedAt": zod.string().nullish(),
   "photoUrl": zod.string().nullish(),
+  "remark": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -549,6 +963,7 @@ export const GetShopResponse = zod.object({
   "accuracy": zod.number().nullish(),
   "locationCapturedAt": zod.string().nullish(),
   "photoUrl": zod.string().nullish(),
+  "remark": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -572,7 +987,8 @@ export const UpdateShopBody = zod.object({
   "latitude": zod.number().optional(),
   "longitude": zod.number().optional(),
   "accuracy": zod.number().optional(),
-  "photoBase64": zod.string().optional()
+  "photoBase64": zod.string().optional(),
+  "remark": zod.string().optional()
 })
 
 export const UpdateShopResponse = zod.object({
@@ -586,6 +1002,7 @@ export const UpdateShopResponse = zod.object({
   "accuracy": zod.number().nullish(),
   "locationCapturedAt": zod.string().nullish(),
   "photoUrl": zod.string().nullish(),
+  "remark": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -627,6 +1044,7 @@ export const ListCollectionsResponse = zod.object({
   "accuracy": zod.number().nullish(),
   "locationCapturedAt": zod.string().nullish(),
   "photoUrl": zod.string().nullish(),
+  "remark": zod.string().nullish(),
   "createdAt": zod.string()
 }).optional(),
   "collectionDate": zod.string(),
@@ -671,6 +1089,7 @@ export const CreateCollectionResponse = zod.object({
   "accuracy": zod.number().nullish(),
   "locationCapturedAt": zod.string().nullish(),
   "photoUrl": zod.string().nullish(),
+  "remark": zod.string().nullish(),
   "createdAt": zod.string()
 }).optional(),
   "collectionDate": zod.string(),
@@ -707,6 +1126,7 @@ export const GetCollectionResponse = zod.object({
   "accuracy": zod.number().nullish(),
   "locationCapturedAt": zod.string().nullish(),
   "photoUrl": zod.string().nullish(),
+  "remark": zod.string().nullish(),
   "createdAt": zod.string()
 }).optional(),
   "collectionDate": zod.string(),
@@ -749,6 +1169,7 @@ export const UpdatePaymentStatusResponse = zod.object({
   "accuracy": zod.number().nullish(),
   "locationCapturedAt": zod.string().nullish(),
   "photoUrl": zod.string().nullish(),
+  "remark": zod.string().nullish(),
   "createdAt": zod.string()
 }).optional(),
   "collectionDate": zod.string(),
@@ -790,6 +1211,7 @@ export const GetReportsResponse = zod.object({
   "accuracy": zod.number().nullish(),
   "locationCapturedAt": zod.string().nullish(),
   "photoUrl": zod.string().nullish(),
+  "remark": zod.string().nullish(),
   "createdAt": zod.string()
 }),
   "collectionDate": zod.string(),
@@ -856,6 +1278,7 @@ export const GetDashboardResponse = zod.object({
   "accuracy": zod.number().nullish(),
   "locationCapturedAt": zod.string().nullish(),
   "photoUrl": zod.string().nullish(),
+  "remark": zod.string().nullish(),
   "createdAt": zod.string()
 }).optional(),
   "collectionDate": zod.string(),
@@ -955,6 +1378,7 @@ export const GetEligibleShopsResponseItem = zod.object({
   "accuracy": zod.number().nullish(),
   "locationCapturedAt": zod.string().nullish(),
   "photoUrl": zod.string().nullish(),
+  "remark": zod.string().nullish(),
   "createdAt": zod.string()
 })
 export const GetEligibleShopsResponse = zod.array(GetEligibleShopsResponseItem)

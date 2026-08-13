@@ -28,6 +28,8 @@ import IntelligenceImport from '@/pages/intelligence/import';
 import IntelligenceCoverage from '@/pages/intelligence/coverage';
 import IntelligenceDuplicates from '@/pages/intelligence/duplicates';
 import IntelligenceAnalytics from '@/pages/intelligence/analytics';
+import VerificationQueue from '@/pages/intelligence/verification/queue';
+import VerificationDetail from '@/pages/intelligence/verification/[id]';
 
 const queryClient = new QueryClient();
 
@@ -64,6 +66,8 @@ function Router() {
       <Route path="/intelligence/coverage" component={IntelligenceCoverage} />
       <Route path="/intelligence/duplicates" component={IntelligenceDuplicates} />
       <Route path="/intelligence/analytics" component={IntelligenceAnalytics} />
+      <Route path="/intelligence/verification/queue" component={VerificationQueue} />
+      <Route path="/intelligence/verification/:id" component={VerificationDetail} />
       <Route component={NotFound} />
     </Switch>
   );

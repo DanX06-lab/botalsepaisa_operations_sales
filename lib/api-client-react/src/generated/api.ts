@@ -20,13 +20,28 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AreaCoverage,
   AuthToken,
+  BoroughCoverage,
+  BulkUpdateVerificationStatus200,
+  BulkVerificationRequest,
   Collection,
   CollectionInput,
   CollectionList,
+  CoverageOverview,
   DashboardSummary,
+  DuplicateReviewRequest,
+  GetAreaCoverageParams,
+  GetBoroughCoverageParams,
+  GetCoverageOverviewParams,
   GetIntelligenceNearbyParams,
+  GetQualityCoverageParams,
   GetReportsParams,
+  GetSourceCoverageParams,
+  GetVerificationQueue200,
+  GetVerificationQueueParams,
+  GetWardCoverageParams,
+  GetZoneCoverageParams,
   HealthStatus,
   ImportHistory,
   ImportPreviewRequest,
@@ -46,6 +61,7 @@ import type {
   PickupStatusUpdate,
   Prospect,
   ProspectInput,
+  QualityCoverage,
   ReportResult,
   Route,
   RouteGenerateRequest,
@@ -56,11 +72,16 @@ import type {
   ShopList,
   ShopUpdate,
   SkipStopInput,
+  SourceCoverage,
   SyncHistory,
   SyncResponse,
+  VerificationHistory,
+  VerificationStatusRequest,
   VerifyWebhookParams,
   VisitStopInput,
-  WhatsAppWebhookPayload
+  WardCoverage,
+  WhatsAppWebhookPayload,
+  ZoneCoverage
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -236,6 +257,454 @@ export const useCreateIntelligenceBusiness = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getCreateIntelligenceBusinessMutationOptions(options));
+    }
+
+export const getUpdateIntelligenceBusinessUrl = (id: string,) => {
+
+
+
+
+  return `/api/intelligence/businesses/${id}`
+}
+
+/**
+ * @summary Update intelligence business
+ */
+export const updateIntelligenceBusiness = async (id: string,
+    intelligenceBusinessInput: IntelligenceBusinessInput, options?: Parameters<typeof customFetch>[1]): Promise<IntelligenceBusiness> => {
+
+  return customFetch<IntelligenceBusiness>(getUpdateIntelligenceBusinessUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(intelligenceBusinessInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateIntelligenceBusinessMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateIntelligenceBusiness>>, TError,{id: string;data: BodyType<IntelligenceBusinessInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateIntelligenceBusiness>>, TError,{id: string;data: BodyType<IntelligenceBusinessInput>}, TContext> => {
+
+const mutationKey = ['updateIntelligenceBusiness'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateIntelligenceBusiness>>, {id: string;data: BodyType<IntelligenceBusinessInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateIntelligenceBusiness(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateIntelligenceBusinessMutationResult = NonNullable<Awaited<ReturnType<typeof updateIntelligenceBusiness>>>
+    export type UpdateIntelligenceBusinessMutationBody = BodyType<IntelligenceBusinessInput>
+    export type UpdateIntelligenceBusinessMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update intelligence business
+ */
+export const useUpdateIntelligenceBusiness = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateIntelligenceBusiness>>, TError,{id: string;data: BodyType<IntelligenceBusinessInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateIntelligenceBusiness>>,
+        TError,
+        {id: string;data: BodyType<IntelligenceBusinessInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateIntelligenceBusinessMutationOptions(options));
+    }
+
+export const getGetVerificationQueueUrl = (params?: GetVerificationQueueParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/intelligence/verification/queue?${stringifiedParams}` : `/api/intelligence/verification/queue`
+}
+
+/**
+ * @summary Get verification queue
+ */
+export const getVerificationQueue = async (params?: GetVerificationQueueParams, options?: Parameters<typeof customFetch>[1]): Promise<GetVerificationQueue200> => {
+
+  return customFetch<GetVerificationQueue200>(getGetVerificationQueueUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetVerificationQueueQueryKey = (params?: GetVerificationQueueParams,) => {
+    return [
+    `/api/intelligence/verification/queue`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetVerificationQueueQueryOptions = <TData = Awaited<ReturnType<typeof getVerificationQueue>>, TError = ErrorType<unknown>>(params?: GetVerificationQueueParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVerificationQueue>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetVerificationQueueQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getVerificationQueue>>> = ({ signal }) => getVerificationQueue(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getVerificationQueue>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetVerificationQueueQueryResult = NonNullable<Awaited<ReturnType<typeof getVerificationQueue>>>
+export type GetVerificationQueueQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get verification queue
+ */
+
+export function useGetVerificationQueue<TData = Awaited<ReturnType<typeof getVerificationQueue>>, TError = ErrorType<unknown>>(
+ params?: GetVerificationQueueParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVerificationQueue>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetVerificationQueueQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetVerificationHistoryUrl = (id: string,) => {
+
+
+
+
+  return `/api/intelligence/verification/${id}/history`
+}
+
+/**
+ * @summary Get verification history
+ */
+export const getVerificationHistory = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<VerificationHistory[]> => {
+
+  return customFetch<VerificationHistory[]>(getGetVerificationHistoryUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetVerificationHistoryQueryKey = (id: string,) => {
+    return [
+    `/api/intelligence/verification/${id}/history`
+    ] as const;
+    }
+
+
+export const getGetVerificationHistoryQueryOptions = <TData = Awaited<ReturnType<typeof getVerificationHistory>>, TError = ErrorType<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVerificationHistory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetVerificationHistoryQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getVerificationHistory>>> = ({ signal }) => getVerificationHistory(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getVerificationHistory>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetVerificationHistoryQueryResult = NonNullable<Awaited<ReturnType<typeof getVerificationHistory>>>
+export type GetVerificationHistoryQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get verification history
+ */
+
+export function useGetVerificationHistory<TData = Awaited<ReturnType<typeof getVerificationHistory>>, TError = ErrorType<unknown>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVerificationHistory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetVerificationHistoryQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateVerificationStatusUrl = (id: string,) => {
+
+
+
+
+  return `/api/intelligence/verification/${id}/status`
+}
+
+/**
+ * @summary Update verification status
+ */
+export const updateVerificationStatus = async (id: string,
+    verificationStatusRequest: VerificationStatusRequest, options?: Parameters<typeof customFetch>[1]): Promise<IntelligenceBusiness> => {
+
+  return customFetch<IntelligenceBusiness>(getUpdateVerificationStatusUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(verificationStatusRequest)
+  }
+);}
+
+
+
+
+
+export const getUpdateVerificationStatusMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateVerificationStatus>>, TError,{id: string;data: BodyType<VerificationStatusRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateVerificationStatus>>, TError,{id: string;data: BodyType<VerificationStatusRequest>}, TContext> => {
+
+const mutationKey = ['updateVerificationStatus'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateVerificationStatus>>, {id: string;data: BodyType<VerificationStatusRequest>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateVerificationStatus(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateVerificationStatusMutationResult = NonNullable<Awaited<ReturnType<typeof updateVerificationStatus>>>
+    export type UpdateVerificationStatusMutationBody = BodyType<VerificationStatusRequest>
+    export type UpdateVerificationStatusMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update verification status
+ */
+export const useUpdateVerificationStatus = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateVerificationStatus>>, TError,{id: string;data: BodyType<VerificationStatusRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateVerificationStatus>>,
+        TError,
+        {id: string;data: BodyType<VerificationStatusRequest>},
+        TContext
+      > => {
+      return useMutation(getUpdateVerificationStatusMutationOptions(options));
+    }
+
+export const getBulkUpdateVerificationStatusUrl = () => {
+
+
+
+
+  return `/api/intelligence/verification/bulk-status`
+}
+
+/**
+ * @summary Bulk update verification status
+ */
+export const bulkUpdateVerificationStatus = async (bulkVerificationRequest: BulkVerificationRequest, options?: Parameters<typeof customFetch>[1]): Promise<BulkUpdateVerificationStatus200> => {
+
+  return customFetch<BulkUpdateVerificationStatus200>(getBulkUpdateVerificationStatusUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(bulkVerificationRequest)
+  }
+);}
+
+
+
+
+
+export const getBulkUpdateVerificationStatusMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof bulkUpdateVerificationStatus>>, TError,{data: BodyType<BulkVerificationRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof bulkUpdateVerificationStatus>>, TError,{data: BodyType<BulkVerificationRequest>}, TContext> => {
+
+const mutationKey = ['bulkUpdateVerificationStatus'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof bulkUpdateVerificationStatus>>, {data: BodyType<BulkVerificationRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  bulkUpdateVerificationStatus(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type BulkUpdateVerificationStatusMutationResult = NonNullable<Awaited<ReturnType<typeof bulkUpdateVerificationStatus>>>
+    export type BulkUpdateVerificationStatusMutationBody = BodyType<BulkVerificationRequest>
+    export type BulkUpdateVerificationStatusMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Bulk update verification status
+ */
+export const useBulkUpdateVerificationStatus = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof bulkUpdateVerificationStatus>>, TError,{data: BodyType<BulkVerificationRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof bulkUpdateVerificationStatus>>,
+        TError,
+        {data: BodyType<BulkVerificationRequest>},
+        TContext
+      > => {
+      return useMutation(getBulkUpdateVerificationStatusMutationOptions(options));
+    }
+
+export const getMarkAsDuplicateUrl = (id: string,) => {
+
+
+
+
+  return `/api/intelligence/verification/${id}/duplicate`
+}
+
+/**
+ * @summary Mark business as duplicate
+ */
+export const markAsDuplicate = async (id: string,
+    duplicateReviewRequest: DuplicateReviewRequest, options?: Parameters<typeof customFetch>[1]): Promise<IntelligenceBusiness> => {
+
+  return customFetch<IntelligenceBusiness>(getMarkAsDuplicateUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(duplicateReviewRequest)
+  }
+);}
+
+
+
+
+
+export const getMarkAsDuplicateMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof markAsDuplicate>>, TError,{id: string;data: BodyType<DuplicateReviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof markAsDuplicate>>, TError,{id: string;data: BodyType<DuplicateReviewRequest>}, TContext> => {
+
+const mutationKey = ['markAsDuplicate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof markAsDuplicate>>, {id: string;data: BodyType<DuplicateReviewRequest>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  markAsDuplicate(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type MarkAsDuplicateMutationResult = NonNullable<Awaited<ReturnType<typeof markAsDuplicate>>>
+    export type MarkAsDuplicateMutationBody = BodyType<DuplicateReviewRequest>
+    export type MarkAsDuplicateMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Mark business as duplicate
+ */
+export const useMarkAsDuplicate = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof markAsDuplicate>>, TError,{id: string;data: BodyType<DuplicateReviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof markAsDuplicate>>,
+        TError,
+        {id: string;data: BodyType<DuplicateReviewRequest>},
+        TContext
+      > => {
+      return useMutation(getMarkAsDuplicateMutationOptions(options));
     }
 
 export const getListIntelligenceMapUrl = (params?: ListIntelligenceMapParams,) => {
@@ -761,6 +1230,594 @@ export function useGetDiscoveryHistory<TData = Awaited<ReturnType<typeof getDisc
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetDiscoveryHistoryQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetCoverageOverviewUrl = (params?: GetCoverageOverviewParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/intelligence/coverage/overview?${stringifiedParams}` : `/api/intelligence/coverage/overview`
+}
+
+/**
+ * @summary Get coverage overview
+ */
+export const getCoverageOverview = async (params?: GetCoverageOverviewParams, options?: Parameters<typeof customFetch>[1]): Promise<CoverageOverview> => {
+
+  return customFetch<CoverageOverview>(getGetCoverageOverviewUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetCoverageOverviewQueryKey = (params?: GetCoverageOverviewParams,) => {
+    return [
+    `/api/intelligence/coverage/overview`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetCoverageOverviewQueryOptions = <TData = Awaited<ReturnType<typeof getCoverageOverview>>, TError = ErrorType<unknown>>(params?: GetCoverageOverviewParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCoverageOverview>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCoverageOverviewQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCoverageOverview>>> = ({ signal }) => getCoverageOverview(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCoverageOverview>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetCoverageOverviewQueryResult = NonNullable<Awaited<ReturnType<typeof getCoverageOverview>>>
+export type GetCoverageOverviewQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get coverage overview
+ */
+
+export function useGetCoverageOverview<TData = Awaited<ReturnType<typeof getCoverageOverview>>, TError = ErrorType<unknown>>(
+ params?: GetCoverageOverviewParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCoverageOverview>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetCoverageOverviewQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetZoneCoverageUrl = (params?: GetZoneCoverageParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/intelligence/coverage/zones?${stringifiedParams}` : `/api/intelligence/coverage/zones`
+}
+
+/**
+ * @summary Get coverage by zones
+ */
+export const getZoneCoverage = async (params?: GetZoneCoverageParams, options?: Parameters<typeof customFetch>[1]): Promise<ZoneCoverage[]> => {
+
+  return customFetch<ZoneCoverage[]>(getGetZoneCoverageUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetZoneCoverageQueryKey = (params?: GetZoneCoverageParams,) => {
+    return [
+    `/api/intelligence/coverage/zones`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetZoneCoverageQueryOptions = <TData = Awaited<ReturnType<typeof getZoneCoverage>>, TError = ErrorType<unknown>>(params?: GetZoneCoverageParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getZoneCoverage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetZoneCoverageQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getZoneCoverage>>> = ({ signal }) => getZoneCoverage(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getZoneCoverage>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetZoneCoverageQueryResult = NonNullable<Awaited<ReturnType<typeof getZoneCoverage>>>
+export type GetZoneCoverageQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get coverage by zones
+ */
+
+export function useGetZoneCoverage<TData = Awaited<ReturnType<typeof getZoneCoverage>>, TError = ErrorType<unknown>>(
+ params?: GetZoneCoverageParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getZoneCoverage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetZoneCoverageQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetAreaCoverageUrl = (params?: GetAreaCoverageParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/intelligence/coverage/areas?${stringifiedParams}` : `/api/intelligence/coverage/areas`
+}
+
+/**
+ * @summary Get coverage by areas
+ */
+export const getAreaCoverage = async (params?: GetAreaCoverageParams, options?: Parameters<typeof customFetch>[1]): Promise<AreaCoverage[]> => {
+
+  return customFetch<AreaCoverage[]>(getGetAreaCoverageUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetAreaCoverageQueryKey = (params?: GetAreaCoverageParams,) => {
+    return [
+    `/api/intelligence/coverage/areas`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetAreaCoverageQueryOptions = <TData = Awaited<ReturnType<typeof getAreaCoverage>>, TError = ErrorType<unknown>>(params?: GetAreaCoverageParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAreaCoverage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAreaCoverageQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAreaCoverage>>> = ({ signal }) => getAreaCoverage(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAreaCoverage>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAreaCoverageQueryResult = NonNullable<Awaited<ReturnType<typeof getAreaCoverage>>>
+export type GetAreaCoverageQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get coverage by areas
+ */
+
+export function useGetAreaCoverage<TData = Awaited<ReturnType<typeof getAreaCoverage>>, TError = ErrorType<unknown>>(
+ params?: GetAreaCoverageParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAreaCoverage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAreaCoverageQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetWardCoverageUrl = (params?: GetWardCoverageParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/intelligence/coverage/wards?${stringifiedParams}` : `/api/intelligence/coverage/wards`
+}
+
+/**
+ * @summary Get coverage by wards
+ */
+export const getWardCoverage = async (params?: GetWardCoverageParams, options?: Parameters<typeof customFetch>[1]): Promise<WardCoverage[]> => {
+
+  return customFetch<WardCoverage[]>(getGetWardCoverageUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetWardCoverageQueryKey = (params?: GetWardCoverageParams,) => {
+    return [
+    `/api/intelligence/coverage/wards`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetWardCoverageQueryOptions = <TData = Awaited<ReturnType<typeof getWardCoverage>>, TError = ErrorType<unknown>>(params?: GetWardCoverageParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getWardCoverage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetWardCoverageQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWardCoverage>>> = ({ signal }) => getWardCoverage(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getWardCoverage>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetWardCoverageQueryResult = NonNullable<Awaited<ReturnType<typeof getWardCoverage>>>
+export type GetWardCoverageQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get coverage by wards
+ */
+
+export function useGetWardCoverage<TData = Awaited<ReturnType<typeof getWardCoverage>>, TError = ErrorType<unknown>>(
+ params?: GetWardCoverageParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getWardCoverage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetWardCoverageQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetBoroughCoverageUrl = (params?: GetBoroughCoverageParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/intelligence/coverage/boroughs?${stringifiedParams}` : `/api/intelligence/coverage/boroughs`
+}
+
+/**
+ * @summary Get coverage by boroughs
+ */
+export const getBoroughCoverage = async (params?: GetBoroughCoverageParams, options?: Parameters<typeof customFetch>[1]): Promise<BoroughCoverage[]> => {
+
+  return customFetch<BoroughCoverage[]>(getGetBoroughCoverageUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetBoroughCoverageQueryKey = (params?: GetBoroughCoverageParams,) => {
+    return [
+    `/api/intelligence/coverage/boroughs`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetBoroughCoverageQueryOptions = <TData = Awaited<ReturnType<typeof getBoroughCoverage>>, TError = ErrorType<unknown>>(params?: GetBoroughCoverageParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBoroughCoverage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBoroughCoverageQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBoroughCoverage>>> = ({ signal }) => getBoroughCoverage(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBoroughCoverage>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetBoroughCoverageQueryResult = NonNullable<Awaited<ReturnType<typeof getBoroughCoverage>>>
+export type GetBoroughCoverageQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get coverage by boroughs
+ */
+
+export function useGetBoroughCoverage<TData = Awaited<ReturnType<typeof getBoroughCoverage>>, TError = ErrorType<unknown>>(
+ params?: GetBoroughCoverageParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBoroughCoverage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetBoroughCoverageQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetSourceCoverageUrl = (params?: GetSourceCoverageParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/intelligence/coverage/sources?${stringifiedParams}` : `/api/intelligence/coverage/sources`
+}
+
+/**
+ * @summary Get coverage by sources
+ */
+export const getSourceCoverage = async (params?: GetSourceCoverageParams, options?: Parameters<typeof customFetch>[1]): Promise<SourceCoverage[]> => {
+
+  return customFetch<SourceCoverage[]>(getGetSourceCoverageUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetSourceCoverageQueryKey = (params?: GetSourceCoverageParams,) => {
+    return [
+    `/api/intelligence/coverage/sources`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetSourceCoverageQueryOptions = <TData = Awaited<ReturnType<typeof getSourceCoverage>>, TError = ErrorType<unknown>>(params?: GetSourceCoverageParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSourceCoverage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSourceCoverageQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSourceCoverage>>> = ({ signal }) => getSourceCoverage(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSourceCoverage>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetSourceCoverageQueryResult = NonNullable<Awaited<ReturnType<typeof getSourceCoverage>>>
+export type GetSourceCoverageQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get coverage by sources
+ */
+
+export function useGetSourceCoverage<TData = Awaited<ReturnType<typeof getSourceCoverage>>, TError = ErrorType<unknown>>(
+ params?: GetSourceCoverageParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSourceCoverage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetSourceCoverageQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetQualityCoverageUrl = (params?: GetQualityCoverageParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/intelligence/coverage/quality?${stringifiedParams}` : `/api/intelligence/coverage/quality`
+}
+
+/**
+ * @summary Get quality coverage metrics
+ */
+export const getQualityCoverage = async (params?: GetQualityCoverageParams, options?: Parameters<typeof customFetch>[1]): Promise<QualityCoverage> => {
+
+  return customFetch<QualityCoverage>(getGetQualityCoverageUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetQualityCoverageQueryKey = (params?: GetQualityCoverageParams,) => {
+    return [
+    `/api/intelligence/coverage/quality`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetQualityCoverageQueryOptions = <TData = Awaited<ReturnType<typeof getQualityCoverage>>, TError = ErrorType<unknown>>(params?: GetQualityCoverageParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getQualityCoverage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetQualityCoverageQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getQualityCoverage>>> = ({ signal }) => getQualityCoverage(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getQualityCoverage>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetQualityCoverageQueryResult = NonNullable<Awaited<ReturnType<typeof getQualityCoverage>>>
+export type GetQualityCoverageQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get quality coverage metrics
+ */
+
+export function useGetQualityCoverage<TData = Awaited<ReturnType<typeof getQualityCoverage>>, TError = ErrorType<unknown>>(
+ params?: GetQualityCoverageParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getQualityCoverage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetQualityCoverageQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

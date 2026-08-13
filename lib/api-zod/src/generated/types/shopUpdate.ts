@@ -17,4 +17,5 @@ export interface ShopUpdate {
   longitude?: number;
   accuracy?: number;
   photoBase64?: string;
+  remark?: string;
 }

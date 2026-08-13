@@ -5,6 +5,55 @@
  * BotalSePaisa Operations Portal API
  * OpenAPI spec version: 0.1.0
  */
+export interface CoverageOverview {
+  total?: number;
+  cafes?: number;
+  restaurants?: number;
+  verified?: number;
+  unverified?: number;
+  duplicates?: number;
+  unassigned?: number;
+}
+
+export interface ZoneCoverage {
+  zone_id?: string;
+  total?: number;
+  cafes?: number;
+  restaurants?: number;
+  verified?: number;
+}
+
+export interface AreaCoverage {
+  area_id?: string;
+  zone_id?: string;
+  total?: number;
+}
+
+export interface WardCoverage {
+  ward_id?: string;
+  borough_id?: string;
+  total?: number;
+}
+
+export interface BoroughCoverage {
+  borough_id?: string;
+  total?: number;
+}
+
+export interface SourceCoverage {
+  source?: string;
+  total?: number;
+}
+
+export interface QualityCoverage {
+  missing_coordinates?: number;
+  missing_address?: number;
+  missing_phone?: number;
+  missing_website?: number;
+  missing_rating?: number;
+  unassigned_zone_area?: number;
+}
+
 export interface IntelligenceMapMarker {
   id?: string;
   name?: string;
@@ -96,6 +145,8 @@ export interface Shop {
   locationCapturedAt?: string | null;
   /** @nullable */
   photoUrl?: string | null;
+  /** @nullable */
+  remark?: string | null;
   createdAt: string;
 }
 
@@ -110,6 +161,7 @@ export interface ShopInput {
   longitude?: number;
   accuracy?: number;
   photoBase64: string;
+  remark?: string;
 }
 
 export interface ShopUpdate {
@@ -123,6 +175,7 @@ export interface ShopUpdate {
   longitude?: number;
   accuracy?: number;
   photoBase64?: string;
+  remark?: string;
 }
 
 export interface ShopList {
@@ -505,6 +558,60 @@ export interface SyncResponse {
   history: SyncHistory;
 }
 
+export interface VerificationHistory {
+  id: string;
+  business_id: string;
+  /** @nullable */
+  previous_status?: string | null;
+  new_status: string;
+  /** @nullable */
+  changed_by?: string | null;
+  changed_at: string;
+  /** @nullable */
+  reason_note?: string | null;
+}
+
+export interface VerificationStatusRequest {
+  status: string;
+  note?: string;
+}
+
+export interface BulkVerificationRequest {
+  business_ids: string[];
+  status: string;
+  note?: string;
+}
+
+export interface DuplicateReviewRequest {
+  target_id: string;
+  note?: string;
+}
+
+export type GetVerificationQueueParams = {
+status?: string;
+type?: string;
+zone_id?: string;
+area_id?: string;
+ward_id?: string;
+borough_id?: string;
+source?: string;
+search?: string;
+page?: number;
+limit?: number;
+};
+
+export type GetVerificationQueue200 = {
+  data?: IntelligenceBusiness[];
+  total?: number;
+  page?: number;
+  limit?: number;
+};
+
+export type BulkUpdateVerificationStatus200 = {
+  success?: boolean;
+  count?: number;
+};
+
 export type ListIntelligenceMapParams = {
 min_lng?: number;
 min_lat?: number;
@@ -522,6 +629,76 @@ export type GetIntelligenceNearbyParams = {
 lng?: number;
 lat?: number;
 radius_km?: number;
+};
+
+export type GetCoverageOverviewParams = {
+zone_id?: string;
+area_id?: string;
+ward_id?: string;
+borough_id?: string;
+business_type?: string;
+verification_status?: string;
+source?: string;
+};
+
+export type GetZoneCoverageParams = {
+zone_id?: string;
+area_id?: string;
+ward_id?: string;
+borough_id?: string;
+business_type?: string;
+verification_status?: string;
+source?: string;
+};
+
+export type GetAreaCoverageParams = {
+zone_id?: string;
+area_id?: string;
+ward_id?: string;
+borough_id?: string;
+business_type?: string;
+verification_status?: string;
+source?: string;
+};
+
+export type GetWardCoverageParams = {
+zone_id?: string;
+area_id?: string;
+ward_id?: string;
+borough_id?: string;
+business_type?: string;
+verification_status?: string;
+source?: string;
+};
+
+export type GetBoroughCoverageParams = {
+zone_id?: string;
+area_id?: string;
+ward_id?: string;
+borough_id?: string;
+business_type?: string;
+verification_status?: string;
+source?: string;
+};
+
+export type GetSourceCoverageParams = {
+zone_id?: string;
+area_id?: string;
+ward_id?: string;
+borough_id?: string;
+business_type?: string;
+verification_status?: string;
+source?: string;
+};
+
+export type GetQualityCoverageParams = {
+zone_id?: string;
+area_id?: string;
+ward_id?: string;
+borough_id?: string;
+business_type?: string;
+verification_status?: string;
+source?: string;
 };
 
 export type ListPickupsParams = {

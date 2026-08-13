@@ -83,7 +83,8 @@ router.post("/shops", async (req, res): Promise<void> => {
     latitude, 
     longitude, 
     accuracy, 
-    photoBase64 
+    photoBase64,
+    remark
   } = parsed.data;
 
   // Validate required fields
@@ -151,6 +152,7 @@ router.post("/shops", async (req, res): Promise<void> => {
     accuracy: accuracy ?? null,
     locationCapturedAt: new Date(),
     photoUrl,
+    remark: remark || null,
     createdAt: new Date()
   };
 
@@ -201,6 +203,7 @@ router.put("/shops/:id", async (req, res): Promise<void> => {
   
   if (parsed.data.shopName !== undefined) updateData.shopName = parsed.data.shopName;
   if (parsed.data.ownerName !== undefined) updateData.ownerName = parsed.data.ownerName;
+  if (parsed.data.remark !== undefined) updateData.remark = parsed.data.remark;
   if (parsed.data.mobile !== undefined) {
     const normalizedMobile = normalizePhoneNumber(parsed.data.mobile);
     if (!/^[6-9]\d{9}$/.test(normalizedMobile)) {

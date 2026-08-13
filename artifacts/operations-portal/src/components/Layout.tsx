@@ -57,6 +57,7 @@ export function Layout({ children }: { children: ReactNode }) {
         { name: 'Coverage', path: '/intelligence/coverage' },
         { name: 'Duplicates', path: '/intelligence/duplicates' },
         { name: 'Analytics', path: '/intelligence/analytics' },
+        { name: 'Verification Queue', path: '/intelligence/verification/queue' },
       ]
     },
     { name: 'Collections', path: '/collections', icon: Package },
