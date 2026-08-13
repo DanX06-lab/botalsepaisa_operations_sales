@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { getDb, generateShopId } from "../lib/mongodb";
+import { getDb, getNextSequenceValue } from "../lib/mongodb";
 import { uploadShopPhoto, deleteShopPhoto } from "../lib/cloudinary";
 import { requireAuth } from "../middlewares/auth";
 import {
@@ -137,13 +137,8 @@ router.post("/shops", async (req, res): Promise<void> => {
   }
 
   // Generate shop ID
-  const shopId = await generateShopId();
-  const id = await db.collection("counters").findOneAndUpdate(
-    { name: "shopId" },
-    { $inc: { value: 1 } },
-    { upsert: true, returnDocument: "after" }
-  );
-  const shopNumericId = id ? id.value : 1;
+  const shopNumericId = await getNextSequenceValue("shopId");
+  const shopId = `BSP${String(shopNumericId).padStart(4, "0")}`;
 
   const shop = {
     id: shopNumericId,

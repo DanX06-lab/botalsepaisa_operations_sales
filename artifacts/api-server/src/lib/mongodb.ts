@@ -60,6 +60,11 @@ export async function createIndexes(): Promise<void> {
     { collection: "shops", keys: { ownerName: 1 }, options: { name: "ownerName_idx" } },
     { collection: "shops", keys: { mobile: 1 }, options: { name: "mobile_idx" } },
     
+    // Prospects collection indexes
+    { collection: "prospects", keys: { prospectId: 1 }, options: { name: "prospectId_idx", unique: true, sparse: true } },
+    { collection: "prospects", keys: { zone: 1 }, options: { name: "zone_idx" } },
+    { collection: "prospects", keys: { status: 1 }, options: { name: "status_idx" } },
+    
     // Collections collection indexes
     { collection: "collections", keys: { shopId: 1 }, options: { name: "collection_shopId_idx" } },
     { collection: "collections", keys: { collectionDate: 1 }, options: { name: "collectionDate_idx" } },
@@ -114,4 +119,9 @@ export async function getNextSequenceValue(sequenceName: string): Promise<number
 export async function generateShopId(): Promise<string> {
   const nextId = await getNextSequenceValue("shopId");
   return `BSP${String(nextId).padStart(4, "0")}`;
+}
+
+export async function generateProspectId(): Promise<string> {
+  const nextId = await getNextSequenceValue("prospectId");
+  return `PRP${String(nextId).padStart(4, "0")}`;
 }

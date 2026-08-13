@@ -24,8 +24,68 @@ tags:
     description: Dashboard summary
   - name: routes
     description: Route planning
+  - name: prospects
+    description: Prospect management
 
 paths:
+  /prospects:
+    get:
+      operationId: listProspects
+      tags: [prospects]
+      summary: List all prospects
+      parameters:
+        - name: zone
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of prospects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Prospect"
+    post:
+      operationId: createProspect
+      tags: [prospects]
+      summary: Create a new prospect
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProspectInput"
+      responses:
+        "201":
+          description: Prospect created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Prospect"
+
+  /prospects/{id}/convert:
+    put:
+      operationId: convertProspect
+      tags: [prospects]
+      summary: Convert a prospect to a shop
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Prospect converted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Prospect"
+        "404":
+          description: Prospect not found
+
   /healthz:
     get:
       operationId: healthCheck
@@ -557,10 +617,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                collectionId:
-                  type: number
+              $ref: "#/components/schemas/VisitStopInput"
       responses:
         "200":
           description: Stop marked as visited
@@ -594,11 +651,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: [skipReason]
-              properties:
-                skipReason:
-                  type: string
+              $ref: "#/components/schemas/SkipStopInput"
       responses:
         "200":
           description: Stop skipped
@@ -613,6 +666,58 @@ paths:
 
 components:
   schemas:
+    ProspectInput:
+      type: object
+      required: [name, address, zone]
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        zone:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+
+    VisitStopInput:
+      type: object
+      properties:
+        collectionId:
+          type: number
+
+    SkipStopInput:
+      type: object
+      required: [skipReason]
+      properties:
+        skipReason:
+          type: string
+
+    Prospect:
+      type: object
+      required: [id, prospectId, name, address, zone, status, createdAt]
+      properties:
+        id:
+          type: number
+        prospectId:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+        zone:
+          type: string
+        status:
+          type: string
+          enum: ["PENDING", "CONVERTED"]
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        createdAt:
+          type: string
+
     HealthStatus:
       type: object
       required: [status]

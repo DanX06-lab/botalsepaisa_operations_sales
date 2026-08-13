@@ -20,5 +20,9 @@ export interface Collection {
   paymentDate?: string | null;
   /** @nullable */
   paidBy?: string | null;
+  /** @nullable */
+  routeId?: number | null;
+  /** @nullable */
+  routeStopSequence?: number | null;
   createdAt: string;
 }

@@ -9,6 +9,71 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary List all prospects
+ */
+export const ListProspectsQueryParams = zod.object({
+  "zone": zod.coerce.string().optional()
+})
+
+export const ListProspectsResponseItem = zod.object({
+  "id": zod.number(),
+  "prospectId": zod.string(),
+  "name": zod.string(),
+  "address": zod.string(),
+  "zone": zod.string(),
+  "status": zod.enum(['PENDING', 'CONVERTED']),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "createdAt": zod.string()
+})
+export const ListProspectsResponse = zod.array(ListProspectsResponseItem)
+
+
+/**
+ * @summary Create a new prospect
+ */
+export const CreateProspectBody = zod.object({
+  "name": zod.string(),
+  "address": zod.string(),
+  "zone": zod.string(),
+  "latitude": zod.number().optional(),
+  "longitude": zod.number().optional()
+})
+
+export const CreateProspectResponse = zod.object({
+  "id": zod.number(),
+  "prospectId": zod.string(),
+  "name": zod.string(),
+  "address": zod.string(),
+  "zone": zod.string(),
+  "status": zod.enum(['PENDING', 'CONVERTED']),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Convert a prospect to a shop
+ */
+export const ConvertProspectParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ConvertProspectResponse = zod.object({
+  "id": zod.number(),
+  "prospectId": zod.string(),
+  "name": zod.string(),
+  "address": zod.string(),
+  "zone": zod.string(),
+  "status": zod.enum(['PENDING', 'CONVERTED']),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "createdAt": zod.string()
+})
+
+
+/**
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({
@@ -198,6 +263,8 @@ export const ListCollectionsResponse = zod.object({
   "paymentStatus": zod.string(),
   "paymentDate": zod.string().nullish(),
   "paidBy": zod.string().nullish(),
+  "routeId": zod.number().nullish(),
+  "routeStopSequence": zod.number().nullish(),
   "createdAt": zod.string()
 })),
   "total": zod.number(),
@@ -212,7 +279,9 @@ export const ListCollectionsResponse = zod.object({
 export const CreateCollectionBody = zod.object({
   "shopId": zod.number(),
   "collectionDate": zod.string(),
-  "weightKg": zod.number()
+  "weightKg": zod.number(),
+  "routeId": zod.number().nullish(),
+  "routeStopSequence": zod.number().nullish()
 })
 
 export const CreateCollectionResponse = zod.object({
@@ -238,6 +307,8 @@ export const CreateCollectionResponse = zod.object({
   "paymentStatus": zod.string(),
   "paymentDate": zod.string().nullish(),
   "paidBy": zod.string().nullish(),
+  "routeId": zod.number().nullish(),
+  "routeStopSequence": zod.number().nullish(),
   "createdAt": zod.string()
 })
 
@@ -272,6 +343,8 @@ export const GetCollectionResponse = zod.object({
   "paymentStatus": zod.string(),
   "paymentDate": zod.string().nullish(),
   "paidBy": zod.string().nullish(),
+  "routeId": zod.number().nullish(),
+  "routeStopSequence": zod.number().nullish(),
   "createdAt": zod.string()
 })
 
@@ -312,6 +385,8 @@ export const UpdatePaymentStatusResponse = zod.object({
   "paymentStatus": zod.string(),
   "paymentDate": zod.string().nullish(),
   "paidBy": zod.string().nullish(),
+  "routeId": zod.number().nullish(),
+  "routeStopSequence": zod.number().nullish(),
   "createdAt": zod.string()
 })
 
@@ -363,7 +438,9 @@ export const GetReportsResponse = zod.object({
  */
 export const GetSettingsResponse = zod.object({
   "id": zod.number(),
-  "pricePerKg": zod.number()
+  "pricePerKg": zod.number(),
+  "homeLatitude": zod.number().nullish(),
+  "homeLongitude": zod.number().nullish()
 })
 
 
@@ -371,12 +448,16 @@ export const GetSettingsResponse = zod.object({
  * @summary Update settings
  */
 export const UpdateSettingsBody = zod.object({
-  "pricePerKg": zod.number()
+  "pricePerKg": zod.number(),
+  "homeLatitude": zod.number().nullish(),
+  "homeLongitude": zod.number().nullish()
 })
 
 export const UpdateSettingsResponse = zod.object({
   "id": zod.number(),
-  "pricePerKg": zod.number()
+  "pricePerKg": zod.number(),
+  "homeLatitude": zod.number().nullish(),
+  "homeLongitude": zod.number().nullish()
 })
 
 
@@ -411,8 +492,418 @@ export const GetDashboardResponse = zod.object({
   "paymentStatus": zod.string(),
   "paymentDate": zod.string().nullish(),
   "paidBy": zod.string().nullish(),
+  "routeId": zod.number().nullish(),
+  "routeStopSequence": zod.number().nullish(),
   "createdAt": zod.string()
 }))
+})
+
+
+/**
+ * @summary Get today's route
+ */
+export const GetTodayRouteResponse = zod.object({
+  "id": zod.number(),
+  "routeDate": zod.string(),
+  "createdBy": zod.number(),
+  "homeLocation": zod.object({
+  "latitude": zod.number(),
+  "longitude": zod.number()
+}),
+  "stops": zod.array(zod.object({
+  "sequence": zod.number(),
+  "shopId": zod.number(),
+  "shopName": zod.string(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "distanceFromPreviousKm": zod.number(),
+  "estimatedArrivalMinutes": zod.number(),
+  "status": zod.enum(['PENDING', 'VISITED', 'SKIPPED']),
+  "visitedAt": zod.string().nullish(),
+  "collectionId": zod.number().nullish(),
+  "skipReason": zod.string().nullish()
+})),
+  "totalShops": zod.number(),
+  "totalDistanceKm": zod.number(),
+  "estimatedDurationMinutes": zod.number(),
+  "status": zod.enum(['PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+  "createdAt": zod.string(),
+  "startedAt": zod.string().nullish(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary List all routes
+ */
+export const ListRoutesResponseItem = zod.object({
+  "id": zod.number(),
+  "routeDate": zod.string(),
+  "createdBy": zod.number(),
+  "homeLocation": zod.object({
+  "latitude": zod.number(),
+  "longitude": zod.number()
+}),
+  "stops": zod.array(zod.object({
+  "sequence": zod.number(),
+  "shopId": zod.number(),
+  "shopName": zod.string(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "distanceFromPreviousKm": zod.number(),
+  "estimatedArrivalMinutes": zod.number(),
+  "status": zod.enum(['PENDING', 'VISITED', 'SKIPPED']),
+  "visitedAt": zod.string().nullish(),
+  "collectionId": zod.number().nullish(),
+  "skipReason": zod.string().nullish()
+})),
+  "totalShops": zod.number(),
+  "totalDistanceKm": zod.number(),
+  "estimatedDurationMinutes": zod.number(),
+  "status": zod.enum(['PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+  "createdAt": zod.string(),
+  "startedAt": zod.string().nullish(),
+  "completedAt": zod.string().nullish()
+})
+export const ListRoutesResponse = zod.array(ListRoutesResponseItem)
+
+
+/**
+ * @summary Get shops with valid GPS for route planning
+ */
+export const GetEligibleShopsResponseItem = zod.object({
+  "id": zod.number(),
+  "shopId": zod.string(),
+  "shopName": zod.string(),
+  "ownerName": zod.string(),
+  "mobile": zod.string(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "accuracy": zod.number().nullish(),
+  "locationCapturedAt": zod.string().nullish(),
+  "photoUrl": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const GetEligibleShopsResponse = zod.array(GetEligibleShopsResponseItem)
+
+
+/**
+ * @summary Generate a new route
+ */
+export const GenerateRouteBody = zod.object({
+  "routeDate": zod.string(),
+  "shopIds": zod.array(zod.number())
+})
+
+export const GenerateRouteResponse = zod.object({
+  "id": zod.number(),
+  "routeDate": zod.string(),
+  "createdBy": zod.number(),
+  "homeLocation": zod.object({
+  "latitude": zod.number(),
+  "longitude": zod.number()
+}),
+  "stops": zod.array(zod.object({
+  "sequence": zod.number(),
+  "shopId": zod.number(),
+  "shopName": zod.string(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "distanceFromPreviousKm": zod.number(),
+  "estimatedArrivalMinutes": zod.number(),
+  "status": zod.enum(['PENDING', 'VISITED', 'SKIPPED']),
+  "visitedAt": zod.string().nullish(),
+  "collectionId": zod.number().nullish(),
+  "skipReason": zod.string().nullish()
+})),
+  "totalShops": zod.number(),
+  "totalDistanceKm": zod.number(),
+  "estimatedDurationMinutes": zod.number(),
+  "status": zod.enum(['PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+  "createdAt": zod.string(),
+  "startedAt": zod.string().nullish(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get a specific route
+ */
+export const GetRouteParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetRouteResponse = zod.object({
+  "id": zod.number(),
+  "routeDate": zod.string(),
+  "createdBy": zod.number(),
+  "homeLocation": zod.object({
+  "latitude": zod.number(),
+  "longitude": zod.number()
+}),
+  "stops": zod.array(zod.object({
+  "sequence": zod.number(),
+  "shopId": zod.number(),
+  "shopName": zod.string(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "distanceFromPreviousKm": zod.number(),
+  "estimatedArrivalMinutes": zod.number(),
+  "status": zod.enum(['PENDING', 'VISITED', 'SKIPPED']),
+  "visitedAt": zod.string().nullish(),
+  "collectionId": zod.number().nullish(),
+  "skipReason": zod.string().nullish()
+})),
+  "totalShops": zod.number(),
+  "totalDistanceKm": zod.number(),
+  "estimatedDurationMinutes": zod.number(),
+  "status": zod.enum(['PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+  "createdAt": zod.string(),
+  "startedAt": zod.string().nullish(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Start a route
+ */
+export const StartRouteParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const StartRouteResponse = zod.object({
+  "id": zod.number(),
+  "routeDate": zod.string(),
+  "createdBy": zod.number(),
+  "homeLocation": zod.object({
+  "latitude": zod.number(),
+  "longitude": zod.number()
+}),
+  "stops": zod.array(zod.object({
+  "sequence": zod.number(),
+  "shopId": zod.number(),
+  "shopName": zod.string(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "distanceFromPreviousKm": zod.number(),
+  "estimatedArrivalMinutes": zod.number(),
+  "status": zod.enum(['PENDING', 'VISITED', 'SKIPPED']),
+  "visitedAt": zod.string().nullish(),
+  "collectionId": zod.number().nullish(),
+  "skipReason": zod.string().nullish()
+})),
+  "totalShops": zod.number(),
+  "totalDistanceKm": zod.number(),
+  "estimatedDurationMinutes": zod.number(),
+  "status": zod.enum(['PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+  "createdAt": zod.string(),
+  "startedAt": zod.string().nullish(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Complete a route
+ */
+export const CompleteRouteParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const CompleteRouteResponse = zod.object({
+  "id": zod.number(),
+  "routeDate": zod.string(),
+  "createdBy": zod.number(),
+  "homeLocation": zod.object({
+  "latitude": zod.number(),
+  "longitude": zod.number()
+}),
+  "stops": zod.array(zod.object({
+  "sequence": zod.number(),
+  "shopId": zod.number(),
+  "shopName": zod.string(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "distanceFromPreviousKm": zod.number(),
+  "estimatedArrivalMinutes": zod.number(),
+  "status": zod.enum(['PENDING', 'VISITED', 'SKIPPED']),
+  "visitedAt": zod.string().nullish(),
+  "collectionId": zod.number().nullish(),
+  "skipReason": zod.string().nullish()
+})),
+  "totalShops": zod.number(),
+  "totalDistanceKm": zod.number(),
+  "estimatedDurationMinutes": zod.number(),
+  "status": zod.enum(['PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+  "createdAt": zod.string(),
+  "startedAt": zod.string().nullish(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Cancel a route
+ */
+export const CancelRouteParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const CancelRouteResponse = zod.object({
+  "id": zod.number(),
+  "routeDate": zod.string(),
+  "createdBy": zod.number(),
+  "homeLocation": zod.object({
+  "latitude": zod.number(),
+  "longitude": zod.number()
+}),
+  "stops": zod.array(zod.object({
+  "sequence": zod.number(),
+  "shopId": zod.number(),
+  "shopName": zod.string(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "distanceFromPreviousKm": zod.number(),
+  "estimatedArrivalMinutes": zod.number(),
+  "status": zod.enum(['PENDING', 'VISITED', 'SKIPPED']),
+  "visitedAt": zod.string().nullish(),
+  "collectionId": zod.number().nullish(),
+  "skipReason": zod.string().nullish()
+})),
+  "totalShops": zod.number(),
+  "totalDistanceKm": zod.number(),
+  "estimatedDurationMinutes": zod.number(),
+  "status": zod.enum(['PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+  "createdAt": zod.string(),
+  "startedAt": zod.string().nullish(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Regenerate a route
+ */
+export const RegenerateRouteParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const RegenerateRouteBody = zod.object({
+  "routeDate": zod.string(),
+  "shopIds": zod.array(zod.number())
+})
+
+export const RegenerateRouteResponse = zod.object({
+  "id": zod.number(),
+  "routeDate": zod.string(),
+  "createdBy": zod.number(),
+  "homeLocation": zod.object({
+  "latitude": zod.number(),
+  "longitude": zod.number()
+}),
+  "stops": zod.array(zod.object({
+  "sequence": zod.number(),
+  "shopId": zod.number(),
+  "shopName": zod.string(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "distanceFromPreviousKm": zod.number(),
+  "estimatedArrivalMinutes": zod.number(),
+  "status": zod.enum(['PENDING', 'VISITED', 'SKIPPED']),
+  "visitedAt": zod.string().nullish(),
+  "collectionId": zod.number().nullish(),
+  "skipReason": zod.string().nullish()
+})),
+  "totalShops": zod.number(),
+  "totalDistanceKm": zod.number(),
+  "estimatedDurationMinutes": zod.number(),
+  "status": zod.enum(['PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+  "createdAt": zod.string(),
+  "startedAt": zod.string().nullish(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Mark a stop as visited
+ */
+export const VisitStopParams = zod.object({
+  "id": zod.coerce.number(),
+  "stopId": zod.coerce.number()
+})
+
+export const VisitStopBody = zod.object({
+  "collectionId": zod.number().optional()
+})
+
+export const VisitStopResponse = zod.object({
+  "id": zod.number(),
+  "routeDate": zod.string(),
+  "createdBy": zod.number(),
+  "homeLocation": zod.object({
+  "latitude": zod.number(),
+  "longitude": zod.number()
+}),
+  "stops": zod.array(zod.object({
+  "sequence": zod.number(),
+  "shopId": zod.number(),
+  "shopName": zod.string(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "distanceFromPreviousKm": zod.number(),
+  "estimatedArrivalMinutes": zod.number(),
+  "status": zod.enum(['PENDING', 'VISITED', 'SKIPPED']),
+  "visitedAt": zod.string().nullish(),
+  "collectionId": zod.number().nullish(),
+  "skipReason": zod.string().nullish()
+})),
+  "totalShops": zod.number(),
+  "totalDistanceKm": zod.number(),
+  "estimatedDurationMinutes": zod.number(),
+  "status": zod.enum(['PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+  "createdAt": zod.string(),
+  "startedAt": zod.string().nullish(),
+  "completedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Skip a stop
+ */
+export const SkipStopParams = zod.object({
+  "id": zod.coerce.number(),
+  "stopId": zod.coerce.number()
+})
+
+export const SkipStopBody = zod.object({
+  "skipReason": zod.string()
+})
+
+export const SkipStopResponse = zod.object({
+  "id": zod.number(),
+  "routeDate": zod.string(),
+  "createdBy": zod.number(),
+  "homeLocation": zod.object({
+  "latitude": zod.number(),
+  "longitude": zod.number()
+}),
+  "stops": zod.array(zod.object({
+  "sequence": zod.number(),
+  "shopId": zod.number(),
+  "shopName": zod.string(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "distanceFromPreviousKm": zod.number(),
+  "estimatedArrivalMinutes": zod.number(),
+  "status": zod.enum(['PENDING', 'VISITED', 'SKIPPED']),
+  "visitedAt": zod.string().nullish(),
+  "collectionId": zod.number().nullish(),
+  "skipReason": zod.string().nullish()
+})),
+  "totalShops": zod.number(),
+  "totalDistanceKm": zod.number(),
+  "estimatedDurationMinutes": zod.number(),
+  "status": zod.enum(['PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+  "createdAt": zod.string(),
+  "startedAt": zod.string().nullish(),
+  "completedAt": zod.string().nullish()
 })
 
 
