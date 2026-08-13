@@ -5,6 +5,28 @@
  * BotalSePaisa Operations Portal API
  * OpenAPI spec version: 0.1.0
  */
+export interface IntelligenceMapMarker {
+  id?: string;
+  name?: string;
+  business_type?: string;
+  latitude?: number;
+  longitude?: number;
+  rating?: number;
+  review_count?: number;
+  price_range?: string;
+  cuisine?: string[];
+  zone_id?: string;
+  area_id?: string;
+  verification_status?: string;
+}
+
+export interface IntelligenceMapResponse {
+  data?: IntelligenceMapMarker[];
+  total_available?: number;
+  returned_count?: number;
+  limit_reached?: boolean;
+}
+
 export interface ProspectInput {
   name: string;
   address: string;
@@ -264,6 +286,255 @@ export interface RouteGenerateRequest {
   routeDate: string;
   shopIds: number[];
 }
+
+export type IntelligenceBusinessInputOpeningHours = {[key: string]: string};
+
+export interface IntelligenceBusinessInput {
+  name: string;
+  business_type: string;
+  address: string;
+  latitude?: number;
+  longitude?: number;
+  normalized_name?: string;
+  street?: string;
+  locality?: string;
+  city?: string;
+  pincode?: string;
+  phone?: string;
+  website?: string;
+  maps_url?: string;
+  rating?: number;
+  review_count?: number;
+  price_range?: string;
+  cuisine?: string[];
+  categories?: string[];
+  opening_hours?: IntelligenceBusinessInputOpeningHours;
+  zone_id?: string;
+  area_id?: string;
+  borough_id?: string;
+  ward_id?: string;
+  source?: string;
+  source_id?: string;
+  source_url?: string;
+}
+
+export type IntelligenceBusinessOpeningHours = {[key: string]: string};
+
+export interface IntelligenceBusiness {
+  id: string;
+  name: string;
+  /** @nullable */
+  normalized_name?: string | null;
+  business_type: string;
+  address: string;
+  /** @nullable */
+  street?: string | null;
+  /** @nullable */
+  locality?: string | null;
+  /** @nullable */
+  city?: string | null;
+  /** @nullable */
+  pincode?: string | null;
+  /** @nullable */
+  latitude?: number | null;
+  /** @nullable */
+  longitude?: number | null;
+  /** @nullable */
+  phone?: string | null;
+  /** @nullable */
+  website?: string | null;
+  /** @nullable */
+  maps_url?: string | null;
+  /** @nullable */
+  rating?: number | null;
+  /** @nullable */
+  review_count?: number | null;
+  /** @nullable */
+  price_range?: string | null;
+  cuisine?: string[];
+  categories?: string[];
+  opening_hours?: IntelligenceBusinessOpeningHours;
+  /** @nullable */
+  zone_id?: string | null;
+  /** @nullable */
+  area_id?: string | null;
+  /** @nullable */
+  borough_id?: string | null;
+  /** @nullable */
+  ward_id?: string | null;
+  /** @nullable */
+  source?: string | null;
+  /** @nullable */
+  source_id?: string | null;
+  /** @nullable */
+  source_url?: string | null;
+  /** @nullable */
+  verification_status?: string | null;
+  /** @nullable */
+  last_verified?: string | null;
+  /** @nullable */
+  last_updated?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type PickupRequestStatus = typeof PickupRequestStatus[keyof typeof PickupRequestStatus];
+
+
+export const PickupRequestStatus = {
+  PENDING: 'PENDING',
+  ASSIGNED: 'ASSIGNED',
+  PICKUP_IN_PROGRESS: 'PICKUP_IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export interface PickupRequest {
+  _id: string;
+  ticket_id: string;
+  customer_id: string;
+  whatsapp_number: string;
+  customer_name: string;
+  language: string;
+  /** @nullable */
+  script_preference?: string | null;
+  quantity_range: string;
+  weekend_batch: boolean;
+  latitude: number;
+  longitude: number;
+  /** @nullable */
+  landmark?: string | null;
+  status: PickupRequestStatus;
+  /** @nullable */
+  eta?: string | null;
+  /** @nullable */
+  assigned_to?: string | null;
+  source: string;
+  created_at: string;
+  updated_at: string;
+  /** @nullable */
+  completed_at?: string | null;
+  /** @nullable */
+  cancelled_at?: string | null;
+}
+
+export interface PickupList {
+  data: PickupRequest[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export type PickupStatusUpdateStatus = typeof PickupStatusUpdateStatus[keyof typeof PickupStatusUpdateStatus];
+
+
+export const PickupStatusUpdateStatus = {
+  PENDING: 'PENDING',
+  ASSIGNED: 'ASSIGNED',
+  PICKUP_IN_PROGRESS: 'PICKUP_IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export interface PickupStatusUpdate {
+  status: PickupStatusUpdateStatus;
+  /** @nullable */
+  eta?: string | null;
+  /** @nullable */
+  assigned_to?: string | null;
+}
+
+export interface WhatsAppWebhookPayload { [key: string]: unknown }
+
+export type ImportPreviewRequestRowsItem = { [key: string]: unknown };
+
+export interface ImportPreviewRequest {
+  filename: string;
+  rows: ImportPreviewRequestRowsItem[];
+}
+
+export type ImportPreviewResponseStats = {
+  total: number;
+  valid: number;
+  invalid: number;
+  duplicates: number;
+  missingCoords: number;
+  unassignedZones: number;
+  cafes: number;
+  restaurants: number;
+};
+
+export type ImportPreviewResponseRowsItem = { [key: string]: unknown };
+
+export interface ImportPreviewResponse {
+  stats: ImportPreviewResponseStats;
+  rows: ImportPreviewResponseRowsItem[];
+}
+
+export type ImportHistoryStats = {
+  total: number;
+  valid: number;
+  invalid: number;
+  duplicates: number;
+  missingCoords: number;
+  unassignedZones: number;
+  cafes: number;
+  restaurants: number;
+};
+
+export interface ImportHistory {
+  id: string;
+  filename: string;
+  stats: ImportHistoryStats;
+  importedAt: string;
+}
+
+export interface SyncHistory {
+  id: string;
+  timestamp: string;
+  records_discovered: number;
+  new_records: number;
+  updated_records: number;
+  duplicates: number;
+  invalid_records: number;
+  errors: number;
+}
+
+export interface SyncResponse {
+  message: string;
+  history: SyncHistory;
+}
+
+export type ListIntelligenceMapParams = {
+min_lng?: number;
+min_lat?: number;
+max_lng?: number;
+max_lat?: number;
+business_type?: string;
+zone_id?: string;
+area_id?: string;
+rating_min?: number;
+cuisine?: string;
+verification_status?: string;
+};
+
+export type GetIntelligenceNearbyParams = {
+lng?: number;
+lat?: number;
+radius_km?: number;
+};
+
+export type ListPickupsParams = {
+status?: string;
+page?: number;
+limit?: number;
+};
+
+export type VerifyWebhookParams = {
+'hub.mode': string;
+'hub.verify_token': string;
+'hub.challenge': string;
+};
 
 export type ListProspectsParams = {
 zone?: string;

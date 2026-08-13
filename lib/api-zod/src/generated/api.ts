@@ -9,6 +9,379 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary List all intelligence businesses
+ */
+export const ListIntelligenceBusinessesResponseItem = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "normalized_name": zod.string().nullish(),
+  "business_type": zod.string(),
+  "address": zod.string(),
+  "street": zod.string().nullish(),
+  "locality": zod.string().nullish(),
+  "city": zod.string().nullish(),
+  "pincode": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "maps_url": zod.string().nullish(),
+  "rating": zod.number().nullish(),
+  "review_count": zod.number().nullish(),
+  "price_range": zod.string().nullish(),
+  "cuisine": zod.array(zod.string()).optional(),
+  "categories": zod.array(zod.string()).optional(),
+  "opening_hours": zod.record(zod.string(), zod.string()).optional(),
+  "zone_id": zod.string().nullish(),
+  "area_id": zod.string().nullish(),
+  "borough_id": zod.string().nullish(),
+  "ward_id": zod.string().nullish(),
+  "source": zod.string().nullish(),
+  "source_id": zod.string().nullish(),
+  "source_url": zod.string().nullish(),
+  "verification_status": zod.string().nullish(),
+  "last_verified": zod.string().nullish(),
+  "last_updated": zod.string().nullish(),
+  "created_at": zod.string(),
+  "updated_at": zod.string()
+})
+export const ListIntelligenceBusinessesResponse = zod.array(ListIntelligenceBusinessesResponseItem)
+
+
+/**
+ * @summary Create a new intelligence business
+ */
+export const CreateIntelligenceBusinessBody = zod.object({
+  "name": zod.string(),
+  "business_type": zod.string(),
+  "address": zod.string(),
+  "latitude": zod.number().optional(),
+  "longitude": zod.number().optional(),
+  "normalized_name": zod.string().optional(),
+  "street": zod.string().optional(),
+  "locality": zod.string().optional(),
+  "city": zod.string().optional(),
+  "pincode": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "website": zod.string().optional(),
+  "maps_url": zod.string().optional(),
+  "rating": zod.number().optional(),
+  "review_count": zod.number().optional(),
+  "price_range": zod.string().optional(),
+  "cuisine": zod.array(zod.string()).optional(),
+  "categories": zod.array(zod.string()).optional(),
+  "opening_hours": zod.record(zod.string(), zod.string()).optional(),
+  "zone_id": zod.string().optional(),
+  "area_id": zod.string().optional(),
+  "borough_id": zod.string().optional(),
+  "ward_id": zod.string().optional(),
+  "source": zod.string().optional(),
+  "source_id": zod.string().optional(),
+  "source_url": zod.string().optional()
+})
+
+export const CreateIntelligenceBusinessResponse = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "normalized_name": zod.string().nullish(),
+  "business_type": zod.string(),
+  "address": zod.string(),
+  "street": zod.string().nullish(),
+  "locality": zod.string().nullish(),
+  "city": zod.string().nullish(),
+  "pincode": zod.string().nullish(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "maps_url": zod.string().nullish(),
+  "rating": zod.number().nullish(),
+  "review_count": zod.number().nullish(),
+  "price_range": zod.string().nullish(),
+  "cuisine": zod.array(zod.string()).optional(),
+  "categories": zod.array(zod.string()).optional(),
+  "opening_hours": zod.record(zod.string(), zod.string()).optional(),
+  "zone_id": zod.string().nullish(),
+  "area_id": zod.string().nullish(),
+  "borough_id": zod.string().nullish(),
+  "ward_id": zod.string().nullish(),
+  "source": zod.string().nullish(),
+  "source_id": zod.string().nullish(),
+  "source_url": zod.string().nullish(),
+  "verification_status": zod.string().nullish(),
+  "last_verified": zod.string().nullish(),
+  "last_updated": zod.string().nullish(),
+  "created_at": zod.string(),
+  "updated_at": zod.string()
+})
+
+
+/**
+ * @summary List intelligence businesses for a map view
+ */
+export const ListIntelligenceMapQueryParams = zod.object({
+  "min_lng": zod.coerce.number().optional(),
+  "min_lat": zod.coerce.number().optional(),
+  "max_lng": zod.coerce.number().optional(),
+  "max_lat": zod.coerce.number().optional(),
+  "business_type": zod.coerce.string().optional(),
+  "zone_id": zod.coerce.string().optional(),
+  "area_id": zod.coerce.string().optional(),
+  "rating_min": zod.coerce.number().optional(),
+  "cuisine": zod.coerce.string().optional(),
+  "verification_status": zod.coerce.string().optional()
+})
+
+export const ListIntelligenceMapResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.string().optional(),
+  "name": zod.string().optional(),
+  "business_type": zod.string().optional(),
+  "latitude": zod.number().optional(),
+  "longitude": zod.number().optional(),
+  "rating": zod.number().optional(),
+  "review_count": zod.number().optional(),
+  "price_range": zod.string().optional(),
+  "cuisine": zod.array(zod.string()).optional(),
+  "zone_id": zod.string().optional(),
+  "area_id": zod.string().optional(),
+  "verification_status": zod.string().optional()
+})).optional(),
+  "total_available": zod.number().optional(),
+  "returned_count": zod.number().optional(),
+  "limit_reached": zod.boolean().optional()
+})
+
+
+/**
+ * @summary Get nearby intelligence businesses
+ */
+export const GetIntelligenceNearbyQueryParams = zod.object({
+  "lng": zod.coerce.number().optional(),
+  "lat": zod.coerce.number().optional(),
+  "radius_km": zod.coerce.number().optional()
+})
+
+export const GetIntelligenceNearbyResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.string().optional(),
+  "name": zod.string().optional(),
+  "business_type": zod.string().optional(),
+  "latitude": zod.number().optional(),
+  "longitude": zod.number().optional(),
+  "rating": zod.number().optional(),
+  "review_count": zod.number().optional(),
+  "price_range": zod.string().optional(),
+  "cuisine": zod.array(zod.string()).optional(),
+  "zone_id": zod.string().optional(),
+  "area_id": zod.string().optional(),
+  "verification_status": zod.string().optional()
+})).optional(),
+  "total_available": zod.number().optional(),
+  "returned_count": zod.number().optional(),
+  "limit_reached": zod.boolean().optional()
+})
+
+
+/**
+ * @summary Preview CSV data import
+ */
+export const PreviewIntelligenceImportBody = zod.object({
+  "filename": zod.string(),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown()))
+})
+
+export const PreviewIntelligenceImportResponse = zod.object({
+  "stats": zod.object({
+  "total": zod.number(),
+  "valid": zod.number(),
+  "invalid": zod.number(),
+  "duplicates": zod.number(),
+  "missingCoords": zod.number(),
+  "unassignedZones": zod.number(),
+  "cafes": zod.number(),
+  "restaurants": zod.number()
+}),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown()))
+})
+
+
+/**
+ * @summary Confirm and execute CSV data import
+ */
+export const ConfirmIntelligenceImportBody = zod.object({
+  "filename": zod.string(),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown()))
+})
+
+export const ConfirmIntelligenceImportResponse = zod.object({
+  "id": zod.string(),
+  "filename": zod.string(),
+  "stats": zod.object({
+  "total": zod.number(),
+  "valid": zod.number(),
+  "invalid": zod.number(),
+  "duplicates": zod.number(),
+  "missingCoords": zod.number(),
+  "unassignedZones": zod.number(),
+  "cafes": zod.number(),
+  "restaurants": zod.number()
+}),
+  "importedAt": zod.string()
+})
+
+
+/**
+ * @summary Get import history logs
+ */
+export const GetIntelligenceImportHistoryResponseItem = zod.object({
+  "id": zod.string(),
+  "filename": zod.string(),
+  "stats": zod.object({
+  "total": zod.number(),
+  "valid": zod.number(),
+  "invalid": zod.number(),
+  "duplicates": zod.number(),
+  "missingCoords": zod.number(),
+  "unassignedZones": zod.number(),
+  "cafes": zod.number(),
+  "restaurants": zod.number()
+}),
+  "importedAt": zod.string()
+})
+export const GetIntelligenceImportHistoryResponse = zod.array(GetIntelligenceImportHistoryResponseItem)
+
+
+/**
+ * @summary Trigger an automatic discovery sync with OSM Overpass API
+ */
+export const SyncDiscoveryResponse = zod.object({
+  "message": zod.string(),
+  "history": zod.object({
+  "id": zod.string(),
+  "timestamp": zod.string(),
+  "records_discovered": zod.number(),
+  "new_records": zod.number(),
+  "updated_records": zod.number(),
+  "duplicates": zod.number(),
+  "invalid_records": zod.number(),
+  "errors": zod.number()
+})
+})
+
+
+/**
+ * @summary Get discovery sync history logs
+ */
+export const GetDiscoveryHistoryResponseItem = zod.object({
+  "id": zod.string(),
+  "timestamp": zod.string(),
+  "records_discovered": zod.number(),
+  "new_records": zod.number(),
+  "updated_records": zod.number(),
+  "duplicates": zod.number(),
+  "invalid_records": zod.number(),
+  "errors": zod.number()
+})
+export const GetDiscoveryHistoryResponse = zod.array(GetDiscoveryHistoryResponseItem)
+
+
+/**
+ * @summary List WhatsApp pickup requests
+ */
+export const ListPickupsQueryParams = zod.object({
+  "status": zod.coerce.string().optional(),
+  "page": zod.coerce.number().optional(),
+  "limit": zod.coerce.number().optional()
+})
+
+export const ListPickupsResponse = zod.object({
+  "data": zod.array(zod.object({
+  "_id": zod.string(),
+  "ticket_id": zod.string(),
+  "customer_id": zod.string(),
+  "whatsapp_number": zod.string(),
+  "customer_name": zod.string(),
+  "language": zod.string(),
+  "script_preference": zod.string().nullish(),
+  "quantity_range": zod.string(),
+  "weekend_batch": zod.boolean(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "landmark": zod.string().nullish(),
+  "status": zod.enum(['PENDING', 'ASSIGNED', 'PICKUP_IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+  "eta": zod.string().nullish(),
+  "assigned_to": zod.string().nullish(),
+  "source": zod.string(),
+  "created_at": zod.string(),
+  "updated_at": zod.string(),
+  "completed_at": zod.string().nullish(),
+  "cancelled_at": zod.string().nullish()
+})),
+  "total": zod.number(),
+  "page": zod.number(),
+  "limit": zod.number()
+})
+
+
+/**
+ * @summary Update pickup status
+ */
+export const UpdatePickupStatusParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const UpdatePickupStatusBody = zod.object({
+  "status": zod.enum(['PENDING', 'ASSIGNED', 'PICKUP_IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+  "eta": zod.string().nullish(),
+  "assigned_to": zod.string().nullish()
+})
+
+export const UpdatePickupStatusResponse = zod.object({
+  "_id": zod.string(),
+  "ticket_id": zod.string(),
+  "customer_id": zod.string(),
+  "whatsapp_number": zod.string(),
+  "customer_name": zod.string(),
+  "language": zod.string(),
+  "script_preference": zod.string().nullish(),
+  "quantity_range": zod.string(),
+  "weekend_batch": zod.boolean(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "landmark": zod.string().nullish(),
+  "status": zod.enum(['PENDING', 'ASSIGNED', 'PICKUP_IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+  "eta": zod.string().nullish(),
+  "assigned_to": zod.string().nullish(),
+  "source": zod.string(),
+  "created_at": zod.string(),
+  "updated_at": zod.string(),
+  "completed_at": zod.string().nullish(),
+  "cancelled_at": zod.string().nullish()
+})
+
+
+/**
+ * @summary Verify WhatsApp Webhook
+ */
+export const VerifyWebhookQueryParams = zod.object({
+  "hub.mode": zod.coerce.string(),
+  "hub.verify_token": zod.coerce.string(),
+  "hub.challenge": zod.coerce.string()
+})
+
+export const VerifyWebhookResponse = zod.string()
+
+
+/**
+ * @summary Handle WhatsApp incoming events
+ */
+export const HandleWebhookBody = zod.record(zod.string(), zod.unknown())
+
+export const HandleWebhookResponse = zod.unknown()
+
+
+/**
  * @summary List all prospects
  */
 export const ListProspectsQueryParams = zod.object({

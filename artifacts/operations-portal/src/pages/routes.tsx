@@ -111,7 +111,7 @@ export default function Routes() {
         // Mark the stop as visited with the collection ID
         if (todayRoute?.id && collectionStopId !== null) {
           visitStop.mutate({
-            path: { id: todayRoute.id, stopId: collectionStopId },
+            id: todayRoute.id, stopId: collectionStopId,
             data: { collectionId: data.id }
           });
         }
@@ -143,7 +143,7 @@ export default function Routes() {
   const handleStartRoute = () => {
     if (!todayRoute?.id) return;
     startRoute.mutate({
-      path: { id: todayRoute.id }
+      id: todayRoute.id 
     });
   };
 
@@ -157,7 +157,7 @@ export default function Routes() {
     }
     
     completeRoute.mutate({
-      path: { id: todayRoute.id }
+      id: todayRoute.id 
     });
   };
 
@@ -204,7 +204,7 @@ export default function Routes() {
     }
     
     skipStop.mutate({
-      path: { id: todayRoute.id, stopId: skipStopId },
+      id: todayRoute.id, stopId: skipStopId,
       data: { skipReason: skipReason.trim() }
     });
   };

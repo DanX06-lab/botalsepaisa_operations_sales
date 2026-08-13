@@ -50,7 +50,6 @@ export default function Prospects() {
   const queryClient = useQueryClient();
 
   const { data: prospectsData, isLoading } = useListProspects({
-    search: debouncedSearch || undefined,
     zone: activeZone === 'All' ? undefined : activeZone
   });
 
@@ -99,7 +98,7 @@ export default function Prospects() {
     });
   };
 
-  const handleConvert = (id: string) => {
+  const handleConvert = (id: number) => {
     convertToShop.mutate({ id });
   };
 
@@ -152,7 +151,7 @@ export default function Prospects() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-48 w-full rounded-xl" />)}
             </div>
-          ) : prospectsData?.data?.length === 0 ? (
+          ) : prospectsData?.length === 0 ? (
             <div className="text-center py-16 text-muted-foreground bg-card rounded-xl border border-dashed">
               <Users className="h-16 w-16 mx-auto text-muted-foreground/30 mb-4" />
               <h3 className="text-xl font-medium text-foreground mb-1">No prospects found</h3>
@@ -163,7 +162,7 @@ export default function Prospects() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {prospectsData?.data?.map((prospect: any) => (
+              {prospectsData?.map((prospect: any) => (
                 <Card key={prospect.id} className="overflow-hidden group hover:shadow-lg transition-all duration-300 border-border/50">
                   <div className="h-2 w-full bg-gradient-to-r from-primary/60 to-primary" />
                   <CardHeader className="pb-3">

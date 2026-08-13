@@ -25,13 +25,25 @@ import type {
   CollectionInput,
   CollectionList,
   DashboardSummary,
+  GetIntelligenceNearbyParams,
   GetReportsParams,
   HealthStatus,
+  ImportHistory,
+  ImportPreviewRequest,
+  ImportPreviewResponse,
+  IntelligenceBusiness,
+  IntelligenceBusinessInput,
+  IntelligenceMapResponse,
   ListCollectionsParams,
+  ListIntelligenceMapParams,
+  ListPickupsParams,
   ListProspectsParams,
   ListShopsParams,
   LoginCredentials,
   PaymentUpdate,
+  PickupList,
+  PickupRequest,
+  PickupStatusUpdate,
   Prospect,
   ProspectInput,
   ReportResult,
@@ -44,7 +56,11 @@ import type {
   ShopList,
   ShopUpdate,
   SkipStopInput,
-  VisitStopInput
+  SyncHistory,
+  SyncResponse,
+  VerifyWebhookParams,
+  VisitStopInput,
+  WhatsAppWebhookPayload
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -73,6 +89,1000 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getListIntelligenceBusinessesUrl = () => {
+
+
+
+
+  return `/api/intelligence/businesses`
+}
+
+/**
+ * @summary List all intelligence businesses
+ */
+export const listIntelligenceBusinesses = async ( options?: Parameters<typeof customFetch>[1]): Promise<IntelligenceBusiness[]> => {
+
+  return customFetch<IntelligenceBusiness[]>(getListIntelligenceBusinessesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListIntelligenceBusinessesQueryKey = () => {
+    return [
+    `/api/intelligence/businesses`
+    ] as const;
+    }
+
+
+export const getListIntelligenceBusinessesQueryOptions = <TData = Awaited<ReturnType<typeof listIntelligenceBusinesses>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listIntelligenceBusinesses>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListIntelligenceBusinessesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listIntelligenceBusinesses>>> = ({ signal }) => listIntelligenceBusinesses({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listIntelligenceBusinesses>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListIntelligenceBusinessesQueryResult = NonNullable<Awaited<ReturnType<typeof listIntelligenceBusinesses>>>
+export type ListIntelligenceBusinessesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List all intelligence businesses
+ */
+
+export function useListIntelligenceBusinesses<TData = Awaited<ReturnType<typeof listIntelligenceBusinesses>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listIntelligenceBusinesses>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListIntelligenceBusinessesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateIntelligenceBusinessUrl = () => {
+
+
+
+
+  return `/api/intelligence/businesses`
+}
+
+/**
+ * @summary Create a new intelligence business
+ */
+export const createIntelligenceBusiness = async (intelligenceBusinessInput: IntelligenceBusinessInput, options?: Parameters<typeof customFetch>[1]): Promise<IntelligenceBusiness> => {
+
+  return customFetch<IntelligenceBusiness>(getCreateIntelligenceBusinessUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(intelligenceBusinessInput)
+  }
+);}
+
+
+
+
+
+export const getCreateIntelligenceBusinessMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createIntelligenceBusiness>>, TError,{data: BodyType<IntelligenceBusinessInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createIntelligenceBusiness>>, TError,{data: BodyType<IntelligenceBusinessInput>}, TContext> => {
+
+const mutationKey = ['createIntelligenceBusiness'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createIntelligenceBusiness>>, {data: BodyType<IntelligenceBusinessInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createIntelligenceBusiness(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateIntelligenceBusinessMutationResult = NonNullable<Awaited<ReturnType<typeof createIntelligenceBusiness>>>
+    export type CreateIntelligenceBusinessMutationBody = BodyType<IntelligenceBusinessInput>
+    export type CreateIntelligenceBusinessMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create a new intelligence business
+ */
+export const useCreateIntelligenceBusiness = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createIntelligenceBusiness>>, TError,{data: BodyType<IntelligenceBusinessInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createIntelligenceBusiness>>,
+        TError,
+        {data: BodyType<IntelligenceBusinessInput>},
+        TContext
+      > => {
+      return useMutation(getCreateIntelligenceBusinessMutationOptions(options));
+    }
+
+export const getListIntelligenceMapUrl = (params?: ListIntelligenceMapParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/intelligence/businesses/map?${stringifiedParams}` : `/api/intelligence/businesses/map`
+}
+
+/**
+ * @summary List intelligence businesses for a map view
+ */
+export const listIntelligenceMap = async (params?: ListIntelligenceMapParams, options?: Parameters<typeof customFetch>[1]): Promise<IntelligenceMapResponse> => {
+
+  return customFetch<IntelligenceMapResponse>(getListIntelligenceMapUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListIntelligenceMapQueryKey = (params?: ListIntelligenceMapParams,) => {
+    return [
+    `/api/intelligence/businesses/map`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListIntelligenceMapQueryOptions = <TData = Awaited<ReturnType<typeof listIntelligenceMap>>, TError = ErrorType<unknown>>(params?: ListIntelligenceMapParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listIntelligenceMap>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListIntelligenceMapQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listIntelligenceMap>>> = ({ signal }) => listIntelligenceMap(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listIntelligenceMap>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListIntelligenceMapQueryResult = NonNullable<Awaited<ReturnType<typeof listIntelligenceMap>>>
+export type ListIntelligenceMapQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List intelligence businesses for a map view
+ */
+
+export function useListIntelligenceMap<TData = Awaited<ReturnType<typeof listIntelligenceMap>>, TError = ErrorType<unknown>>(
+ params?: ListIntelligenceMapParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listIntelligenceMap>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListIntelligenceMapQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetIntelligenceNearbyUrl = (params?: GetIntelligenceNearbyParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/intelligence/businesses/nearby?${stringifiedParams}` : `/api/intelligence/businesses/nearby`
+}
+
+/**
+ * @summary Get nearby intelligence businesses
+ */
+export const getIntelligenceNearby = async (params?: GetIntelligenceNearbyParams, options?: Parameters<typeof customFetch>[1]): Promise<IntelligenceMapResponse> => {
+
+  return customFetch<IntelligenceMapResponse>(getGetIntelligenceNearbyUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetIntelligenceNearbyQueryKey = (params?: GetIntelligenceNearbyParams,) => {
+    return [
+    `/api/intelligence/businesses/nearby`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetIntelligenceNearbyQueryOptions = <TData = Awaited<ReturnType<typeof getIntelligenceNearby>>, TError = ErrorType<unknown>>(params?: GetIntelligenceNearbyParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getIntelligenceNearby>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetIntelligenceNearbyQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getIntelligenceNearby>>> = ({ signal }) => getIntelligenceNearby(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getIntelligenceNearby>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetIntelligenceNearbyQueryResult = NonNullable<Awaited<ReturnType<typeof getIntelligenceNearby>>>
+export type GetIntelligenceNearbyQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get nearby intelligence businesses
+ */
+
+export function useGetIntelligenceNearby<TData = Awaited<ReturnType<typeof getIntelligenceNearby>>, TError = ErrorType<unknown>>(
+ params?: GetIntelligenceNearbyParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getIntelligenceNearby>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetIntelligenceNearbyQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getPreviewIntelligenceImportUrl = () => {
+
+
+
+
+  return `/api/intelligence/import/preview`
+}
+
+/**
+ * @summary Preview CSV data import
+ */
+export const previewIntelligenceImport = async (importPreviewRequest: ImportPreviewRequest, options?: Parameters<typeof customFetch>[1]): Promise<ImportPreviewResponse> => {
+
+  return customFetch<ImportPreviewResponse>(getPreviewIntelligenceImportUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(importPreviewRequest)
+  }
+);}
+
+
+
+
+
+export const getPreviewIntelligenceImportMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof previewIntelligenceImport>>, TError,{data: BodyType<ImportPreviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof previewIntelligenceImport>>, TError,{data: BodyType<ImportPreviewRequest>}, TContext> => {
+
+const mutationKey = ['previewIntelligenceImport'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof previewIntelligenceImport>>, {data: BodyType<ImportPreviewRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  previewIntelligenceImport(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PreviewIntelligenceImportMutationResult = NonNullable<Awaited<ReturnType<typeof previewIntelligenceImport>>>
+    export type PreviewIntelligenceImportMutationBody = BodyType<ImportPreviewRequest>
+    export type PreviewIntelligenceImportMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Preview CSV data import
+ */
+export const usePreviewIntelligenceImport = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof previewIntelligenceImport>>, TError,{data: BodyType<ImportPreviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof previewIntelligenceImport>>,
+        TError,
+        {data: BodyType<ImportPreviewRequest>},
+        TContext
+      > => {
+      return useMutation(getPreviewIntelligenceImportMutationOptions(options));
+    }
+
+export const getConfirmIntelligenceImportUrl = () => {
+
+
+
+
+  return `/api/intelligence/import/confirm`
+}
+
+/**
+ * @summary Confirm and execute CSV data import
+ */
+export const confirmIntelligenceImport = async (importPreviewRequest: ImportPreviewRequest, options?: Parameters<typeof customFetch>[1]): Promise<ImportHistory> => {
+
+  return customFetch<ImportHistory>(getConfirmIntelligenceImportUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(importPreviewRequest)
+  }
+);}
+
+
+
+
+
+export const getConfirmIntelligenceImportMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmIntelligenceImport>>, TError,{data: BodyType<ImportPreviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof confirmIntelligenceImport>>, TError,{data: BodyType<ImportPreviewRequest>}, TContext> => {
+
+const mutationKey = ['confirmIntelligenceImport'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmIntelligenceImport>>, {data: BodyType<ImportPreviewRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  confirmIntelligenceImport(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ConfirmIntelligenceImportMutationResult = NonNullable<Awaited<ReturnType<typeof confirmIntelligenceImport>>>
+    export type ConfirmIntelligenceImportMutationBody = BodyType<ImportPreviewRequest>
+    export type ConfirmIntelligenceImportMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Confirm and execute CSV data import
+ */
+export const useConfirmIntelligenceImport = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmIntelligenceImport>>, TError,{data: BodyType<ImportPreviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof confirmIntelligenceImport>>,
+        TError,
+        {data: BodyType<ImportPreviewRequest>},
+        TContext
+      > => {
+      return useMutation(getConfirmIntelligenceImportMutationOptions(options));
+    }
+
+export const getGetIntelligenceImportHistoryUrl = () => {
+
+
+
+
+  return `/api/intelligence/import/history`
+}
+
+/**
+ * @summary Get import history logs
+ */
+export const getIntelligenceImportHistory = async ( options?: Parameters<typeof customFetch>[1]): Promise<ImportHistory[]> => {
+
+  return customFetch<ImportHistory[]>(getGetIntelligenceImportHistoryUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetIntelligenceImportHistoryQueryKey = () => {
+    return [
+    `/api/intelligence/import/history`
+    ] as const;
+    }
+
+
+export const getGetIntelligenceImportHistoryQueryOptions = <TData = Awaited<ReturnType<typeof getIntelligenceImportHistory>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getIntelligenceImportHistory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetIntelligenceImportHistoryQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getIntelligenceImportHistory>>> = ({ signal }) => getIntelligenceImportHistory({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getIntelligenceImportHistory>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetIntelligenceImportHistoryQueryResult = NonNullable<Awaited<ReturnType<typeof getIntelligenceImportHistory>>>
+export type GetIntelligenceImportHistoryQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get import history logs
+ */
+
+export function useGetIntelligenceImportHistory<TData = Awaited<ReturnType<typeof getIntelligenceImportHistory>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getIntelligenceImportHistory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetIntelligenceImportHistoryQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getSyncDiscoveryUrl = () => {
+
+
+
+
+  return `/api/intelligence/discovery/sync`
+}
+
+/**
+ * @summary Trigger an automatic discovery sync with OSM Overpass API
+ */
+export const syncDiscovery = async ( options?: Parameters<typeof customFetch>[1]): Promise<SyncResponse> => {
+
+  return customFetch<SyncResponse>(getSyncDiscoveryUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getSyncDiscoveryMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof syncDiscovery>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof syncDiscovery>>, TError,void, TContext> => {
+
+const mutationKey = ['syncDiscovery'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof syncDiscovery>>, void> = () => {
+
+
+          return  syncDiscovery(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SyncDiscoveryMutationResult = NonNullable<Awaited<ReturnType<typeof syncDiscovery>>>
+
+    export type SyncDiscoveryMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Trigger an automatic discovery sync with OSM Overpass API
+ */
+export const useSyncDiscovery = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof syncDiscovery>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof syncDiscovery>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getSyncDiscoveryMutationOptions(options));
+    }
+
+export const getGetDiscoveryHistoryUrl = () => {
+
+
+
+
+  return `/api/intelligence/discovery/history`
+}
+
+/**
+ * @summary Get discovery sync history logs
+ */
+export const getDiscoveryHistory = async ( options?: Parameters<typeof customFetch>[1]): Promise<SyncHistory[]> => {
+
+  return customFetch<SyncHistory[]>(getGetDiscoveryHistoryUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDiscoveryHistoryQueryKey = () => {
+    return [
+    `/api/intelligence/discovery/history`
+    ] as const;
+    }
+
+
+export const getGetDiscoveryHistoryQueryOptions = <TData = Awaited<ReturnType<typeof getDiscoveryHistory>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDiscoveryHistory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDiscoveryHistoryQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDiscoveryHistory>>> = ({ signal }) => getDiscoveryHistory({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDiscoveryHistory>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDiscoveryHistoryQueryResult = NonNullable<Awaited<ReturnType<typeof getDiscoveryHistory>>>
+export type GetDiscoveryHistoryQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get discovery sync history logs
+ */
+
+export function useGetDiscoveryHistory<TData = Awaited<ReturnType<typeof getDiscoveryHistory>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDiscoveryHistory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDiscoveryHistoryQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListPickupsUrl = (params?: ListPickupsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/pickups?${stringifiedParams}` : `/api/pickups`
+}
+
+/**
+ * @summary List WhatsApp pickup requests
+ */
+export const listPickups = async (params?: ListPickupsParams, options?: Parameters<typeof customFetch>[1]): Promise<PickupList> => {
+
+  return customFetch<PickupList>(getListPickupsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListPickupsQueryKey = (params?: ListPickupsParams,) => {
+    return [
+    `/api/pickups`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListPickupsQueryOptions = <TData = Awaited<ReturnType<typeof listPickups>>, TError = ErrorType<unknown>>(params?: ListPickupsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPickups>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListPickupsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPickups>>> = ({ signal }) => listPickups(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPickups>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListPickupsQueryResult = NonNullable<Awaited<ReturnType<typeof listPickups>>>
+export type ListPickupsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List WhatsApp pickup requests
+ */
+
+export function useListPickups<TData = Awaited<ReturnType<typeof listPickups>>, TError = ErrorType<unknown>>(
+ params?: ListPickupsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPickups>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListPickupsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdatePickupStatusUrl = (id: string,) => {
+
+
+
+
+  return `/api/pickups/${id}/status`
+}
+
+/**
+ * @summary Update pickup status
+ */
+export const updatePickupStatus = async (id: string,
+    pickupStatusUpdate: PickupStatusUpdate, options?: Parameters<typeof customFetch>[1]): Promise<PickupRequest> => {
+
+  return customFetch<PickupRequest>(getUpdatePickupStatusUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(pickupStatusUpdate)
+  }
+);}
+
+
+
+
+
+export const getUpdatePickupStatusMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePickupStatus>>, TError,{id: string;data: BodyType<PickupStatusUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePickupStatus>>, TError,{id: string;data: BodyType<PickupStatusUpdate>}, TContext> => {
+
+const mutationKey = ['updatePickupStatus'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePickupStatus>>, {id: string;data: BodyType<PickupStatusUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updatePickupStatus(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePickupStatusMutationResult = NonNullable<Awaited<ReturnType<typeof updatePickupStatus>>>
+    export type UpdatePickupStatusMutationBody = BodyType<PickupStatusUpdate>
+    export type UpdatePickupStatusMutationError = ErrorType<void>
+
+    /**
+ * @summary Update pickup status
+ */
+export const useUpdatePickupStatus = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePickupStatus>>, TError,{id: string;data: BodyType<PickupStatusUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updatePickupStatus>>,
+        TError,
+        {id: string;data: BodyType<PickupStatusUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdatePickupStatusMutationOptions(options));
+    }
+
+export const getVerifyWebhookUrl = (params: VerifyWebhookParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/whatsapp/webhook?${stringifiedParams}` : `/api/whatsapp/webhook`
+}
+
+/**
+ * @summary Verify WhatsApp Webhook
+ */
+export const verifyWebhook = async (params: VerifyWebhookParams, options?: Parameters<typeof customFetch>[1]): Promise<string> => {
+
+  return customFetch<string>(getVerifyWebhookUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getVerifyWebhookQueryKey = (params?: VerifyWebhookParams,) => {
+    return [
+    `/api/whatsapp/webhook`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getVerifyWebhookQueryOptions = <TData = Awaited<ReturnType<typeof verifyWebhook>>, TError = ErrorType<void>>(params: VerifyWebhookParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof verifyWebhook>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getVerifyWebhookQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof verifyWebhook>>> = ({ signal }) => verifyWebhook(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof verifyWebhook>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type VerifyWebhookQueryResult = NonNullable<Awaited<ReturnType<typeof verifyWebhook>>>
+export type VerifyWebhookQueryError = ErrorType<void>
+
+
+/**
+ * @summary Verify WhatsApp Webhook
+ */
+
+export function useVerifyWebhook<TData = Awaited<ReturnType<typeof verifyWebhook>>, TError = ErrorType<void>>(
+ params: VerifyWebhookParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof verifyWebhook>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getVerifyWebhookQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getHandleWebhookUrl = () => {
+
+
+
+
+  return `/api/whatsapp/webhook`
+}
+
+/**
+ * @summary Handle WhatsApp incoming events
+ */
+export const handleWebhook = async (whatsAppWebhookPayload: WhatsAppWebhookPayload, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getHandleWebhookUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(whatsAppWebhookPayload)
+  }
+);}
+
+
+
+
+
+export const getHandleWebhookMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof handleWebhook>>, TError,{data: BodyType<WhatsAppWebhookPayload>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof handleWebhook>>, TError,{data: BodyType<WhatsAppWebhookPayload>}, TContext> => {
+
+const mutationKey = ['handleWebhook'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof handleWebhook>>, {data: BodyType<WhatsAppWebhookPayload>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  handleWebhook(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type HandleWebhookMutationResult = NonNullable<Awaited<ReturnType<typeof handleWebhook>>>
+    export type HandleWebhookMutationBody = BodyType<WhatsAppWebhookPayload>
+    export type HandleWebhookMutationError = ErrorType<void>
+
+    /**
+ * @summary Handle WhatsApp incoming events
+ */
+export const useHandleWebhook = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof handleWebhook>>, TError,{data: BodyType<WhatsAppWebhookPayload>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof handleWebhook>>,
+        TError,
+        {data: BodyType<WhatsAppWebhookPayload>},
+        TContext
+      > => {
+      return useMutation(getHandleWebhookMutationOptions(options));
+    }
 
 export const getListProspectsUrl = (params?: ListProspectsParams,) => {
   const normalizedParams = new URLSearchParams();

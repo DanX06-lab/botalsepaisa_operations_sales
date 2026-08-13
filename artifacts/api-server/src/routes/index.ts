@@ -8,6 +8,13 @@ import settingsRouter from "./settings";
 import dashboardRouter from "./dashboard";
 import routesRouter from "./routes";
 import prospectsRouter from "./prospects";
+import intelligenceRouter from "./intelligence";
+import whatsappRouter from "./whatsapp";
+import pickupsRouter from "./pickups";
+
+import intelligenceImportRouter from "./intelligence-import";
+import intelligenceDiscoveryRouter from "./intelligence-discovery";
+import intelligenceMapRouter from "./intelligence-map";
 
 const router: IRouter = Router();
 
@@ -20,5 +27,11 @@ router.use(settingsRouter);
 router.use(dashboardRouter);
 router.use(routesRouter);
 router.use(prospectsRouter);
+router.use(intelligenceRouter);
+router.use(intelligenceImportRouter);
+router.use(intelligenceDiscoveryRouter);
+router.use(intelligenceMapRouter);
+router.use(whatsappRouter);
+router.use(pickupsRouter);
 
 export default router;

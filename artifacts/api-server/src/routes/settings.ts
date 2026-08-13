@@ -29,7 +29,7 @@ router.put("/settings", async (req, res): Promise<void> => {
   const updateData: Record<string, unknown> = { pricePerKg };
   
   if (homeLatitude !== undefined) {
-    if (homeLatitude < -90 || homeLatitude > 90) {
+    if (homeLatitude !== null && (homeLatitude < -90 || homeLatitude > 90)) {
       res.status(400).json({ error: "Latitude must be between -90 and 90" });
       return;
     }
@@ -37,7 +37,7 @@ router.put("/settings", async (req, res): Promise<void> => {
   }
   
   if (homeLongitude !== undefined) {
-    if (homeLongitude < -180 || homeLongitude > 180) {
+    if (homeLongitude !== null && (homeLongitude < -180 || homeLongitude > 180)) {
       res.status(400).json({ error: "Longitude must be between -180 and 180" });
       return;
     }

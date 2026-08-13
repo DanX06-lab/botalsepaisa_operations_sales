@@ -56,13 +56,14 @@ type FormData = {
   shopName: string;
   ownerName: string;
   phoneNumber: string;
+  countryCode: string;
   latitude: number | null;
   longitude: number | null;
   accuracy: number | null;
   photoBase64: string;
 };
 
-const EMPTY_FORM: FormData = { shopName: '', ownerName: '', phoneNumber: '', latitude: null, longitude: null, accuracy: null, photoBase64: '' };
+const EMPTY_FORM: FormData = { shopName: '', ownerName: '', phoneNumber: '', countryCode: '+91', latitude: null, longitude: null, accuracy: null, photoBase64: '' };
 
 const normalizePhoneNumber = (phone: string): string => {
   if (!phone) return '';
@@ -226,8 +227,9 @@ export default function Shops() {
     setFormData({
       shopName: shop.shopName,
       ownerName: shop.ownerName,
-      phoneNumber,
-      latitude: shop.latitude ?? null,
+      phoneNumber: shop.mobile,
+      countryCode: '+91',
+      latitude: shop.latitude || null,
       longitude: shop.longitude ?? null,
       accuracy: shop.accuracy ?? null,
       photoBase64: shop.photoUrl ?? '',

@@ -26,8 +26,307 @@ tags:
     description: Route planning
   - name: prospects
     description: Prospect management
+  - name: intelligence
+    description: Intelligence module
+  - name: pickups
+    description: WhatsApp pickup requests
+  - name: whatsapp
+    description: WhatsApp webhook integration
 
 paths:
+  /intelligence/businesses:
+    get:
+      operationId: listIntelligenceBusinesses
+      tags: [intelligence]
+      summary: List all intelligence businesses
+      responses:
+        "200":
+          description: List of intelligence businesses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IntelligenceBusiness"
+    post:
+      operationId: createIntelligenceBusiness
+      tags: [intelligence]
+      summary: Create a new intelligence business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IntelligenceBusinessInput"
+      responses:
+        "201":
+          description: Intelligence Business created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntelligenceBusiness"
+
+  /intelligence/businesses/map:
+    get:
+      operationId: listIntelligenceMap
+      tags: [intelligence]
+      summary: List intelligence businesses for a map view
+      parameters:
+        - name: min_lng
+          in: query
+          schema:
+            type: number
+        - name: min_lat
+          in: query
+          schema:
+            type: number
+        - name: max_lng
+          in: query
+          schema:
+            type: number
+        - name: max_lat
+          in: query
+          schema:
+            type: number
+        - name: business_type
+          in: query
+          schema:
+            type: string
+        - name: zone_id
+          in: query
+          schema:
+            type: string
+        - name: area_id
+          in: query
+          schema:
+            type: string
+        - name: rating_min
+          in: query
+          schema:
+            type: number
+        - name: cuisine
+          in: query
+          schema:
+            type: string
+        - name: verification_status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Intelligence Map Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntelligenceMapResponse"
+
+  /intelligence/businesses/nearby:
+    get:
+      operationId: getIntelligenceNearby
+      tags: [intelligence]
+      summary: Get nearby intelligence businesses
+      parameters:
+        - name: lng
+          in: query
+          schema:
+            type: number
+        - name: lat
+          in: query
+          schema:
+            type: number
+        - name: radius_km
+          in: query
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Intelligence Map Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntelligenceMapResponse"
+
+  /intelligence/import/preview:
+    post:
+      operationId: previewIntelligenceImport
+      tags: [intelligence]
+      summary: Preview CSV data import
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImportPreviewRequest"
+      responses:
+        "200":
+          description: Import preview stats and annotated rows
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportPreviewResponse"
+
+  /intelligence/import/confirm:
+    post:
+      operationId: confirmIntelligenceImport
+      tags: [intelligence]
+      summary: Confirm and execute CSV data import
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImportPreviewRequest"
+      responses:
+        "200":
+          description: Import confirmed and executed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportHistory"
+
+  /intelligence/import/history:
+    get:
+      operationId: getIntelligenceImportHistory
+      tags: [intelligence]
+      summary: Get import history logs
+      responses:
+        "200":
+          description: List of import history logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ImportHistory"
+
+  /intelligence/discovery/sync:
+    post:
+      operationId: syncDiscovery
+      tags: [intelligence]
+      summary: Trigger an automatic discovery sync with OSM Overpass API
+      responses:
+        "200":
+          description: Discovery sync completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SyncResponse"
+
+  /intelligence/discovery/history:
+    get:
+      operationId: getDiscoveryHistory
+      tags: [intelligence]
+      summary: Get discovery sync history logs
+      responses:
+        "200":
+          description: List of discovery sync history logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SyncHistory"
+
+
+  /pickups:
+    get:
+      operationId: listPickups
+      tags: [pickups]
+      summary: List WhatsApp pickup requests
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+      responses:
+        "200":
+          description: List of pickup requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PickupList"
+
+  /pickups/{id}/status:
+    patch:
+      operationId: updatePickupStatus
+      tags: [pickups]
+      summary: Update pickup status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PickupStatusUpdate"
+      responses:
+        "200":
+          description: Pickup status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PickupRequest"
+        "404":
+          description: Pickup not found
+
+  /whatsapp/webhook:
+    get:
+      operationId: verifyWebhook
+      tags: [whatsapp]
+      summary: Verify WhatsApp Webhook
+      parameters:
+        - name: hub.mode
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: hub.verify_token
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: hub.challenge
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Verified
+          content:
+            text/plain:
+              schema:
+                type: string
+        "403":
+          description: Verification failed
+    post:
+      operationId: handleWebhook
+      tags: [whatsapp]
+      summary: Handle WhatsApp incoming events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WhatsAppWebhookPayload"
+      responses:
+        "200":
+          description: Event processed
+        "403":
+          description: Signature invalid
+
   /prospects:
     get:
       operationId: listProspects
@@ -666,6 +965,50 @@ paths:
 
 components:
   schemas:
+    IntelligenceMapMarker:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        business_type:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        rating:
+          type: number
+        review_count:
+          type: number
+        price_range:
+          type: string
+        cuisine:
+          type: array
+          items:
+            type: string
+        zone_id:
+          type: string
+        area_id:
+          type: string
+        verification_status:
+          type: string
+
+    IntelligenceMapResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/IntelligenceMapMarker"
+        total_available:
+          type: number
+        returned_count:
+          type: number
+        limit_reached:
+          type: boolean
+
     ProspectInput:
       type: object
       required: [name, address, zone]
@@ -1059,3 +1402,321 @@ components:
           type: array
           items:
             type: number
+
+    IntelligenceBusinessInput:
+      type: object
+      required: [name, business_type, address]
+      properties:
+        name:
+          type: string
+        business_type:
+          type: string
+        address:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        normalized_name:
+          type: string
+        street:
+          type: string
+        locality:
+          type: string
+        city:
+          type: string
+        pincode:
+          type: string
+        phone:
+          type: string
+        website:
+          type: string
+        maps_url:
+          type: string
+        rating:
+          type: number
+        review_count:
+          type: number
+        price_range:
+          type: string
+        cuisine:
+          type: array
+          items:
+            type: string
+        categories:
+          type: array
+          items:
+            type: string
+        opening_hours:
+          type: object
+          additionalProperties:
+            type: string
+        zone_id:
+          type: string
+        area_id:
+          type: string
+        borough_id:
+          type: string
+        ward_id:
+          type: string
+        source:
+          type: string
+        source_id:
+          type: string
+        source_url:
+          type: string
+
+    IntelligenceBusiness:
+      type: object
+      required: [id, name, business_type, address, created_at, updated_at]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        normalized_name:
+          type: ["string", "null"]
+        business_type:
+          type: string
+        address:
+          type: string
+        street:
+          type: ["string", "null"]
+        locality:
+          type: ["string", "null"]
+        city:
+          type: ["string", "null"]
+        pincode:
+          type: ["string", "null"]
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        phone:
+          type: ["string", "null"]
+        website:
+          type: ["string", "null"]
+        maps_url:
+          type: ["string", "null"]
+        rating:
+          type: ["number", "null"]
+        review_count:
+          type: ["number", "null"]
+        price_range:
+          type: ["string", "null"]
+        cuisine:
+          type: array
+          items:
+            type: string
+        categories:
+          type: array
+          items:
+            type: string
+        opening_hours:
+          type: object
+          additionalProperties:
+            type: string
+        zone_id:
+          type: ["string", "null"]
+        area_id:
+          type: ["string", "null"]
+        borough_id:
+          type: ["string", "null"]
+        ward_id:
+          type: ["string", "null"]
+        source:
+          type: ["string", "null"]
+        source_id:
+          type: ["string", "null"]
+        source_url:
+          type: ["string", "null"]
+        verification_status:
+          type: ["string", "null"]
+        last_verified:
+          type: ["string", "null"]
+        last_updated:
+          type: ["string", "null"]
+        created_at:
+          type: string
+        updated_at:
+          type: string
+
+    PickupRequest:
+      type: object
+      required: [_id, ticket_id, customer_id, whatsapp_number, customer_name, language, quantity_range, weekend_batch, latitude, longitude, status, source, created_at, updated_at]
+      properties:
+        _id:
+          type: string
+        ticket_id:
+          type: string
+        customer_id:
+          type: string
+        whatsapp_number:
+          type: string
+        customer_name:
+          type: string
+        language:
+          type: string
+        script_preference:
+          type: ["string", "null"]
+        quantity_range:
+          type: string
+        weekend_batch:
+          type: boolean
+        latitude:
+          type: number
+        longitude:
+          type: number
+        landmark:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: ["PENDING", "ASSIGNED", "PICKUP_IN_PROGRESS", "COMPLETED", "CANCELLED"]
+        eta:
+          type: ["string", "null"]
+        assigned_to:
+          type: ["string", "null"]
+        source:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        completed_at:
+          type: ["string", "null"]
+        cancelled_at:
+          type: ["string", "null"]
+
+    PickupList:
+      type: object
+      required: [data, total, page, limit]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/PickupRequest"
+        total:
+          type: number
+        page:
+          type: number
+        limit:
+          type: number
+
+    PickupStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: ["PENDING", "ASSIGNED", "PICKUP_IN_PROGRESS", "COMPLETED", "CANCELLED"]
+        eta:
+          type: ["string", "null"]
+        assigned_to:
+          type: ["string", "null"]
+
+    WhatsAppWebhookPayload:
+      type: object
+      additionalProperties: true
+
+    ImportPreviewRequest:
+      type: object
+      required: [rows, filename]
+      properties:
+        filename:
+          type: string
+        rows:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+
+    ImportPreviewResponse:
+      type: object
+      required: [stats, rows]
+      properties:
+        stats:
+          type: object
+          required: [total, valid, invalid, duplicates, missingCoords, unassignedZones, cafes, restaurants]
+          properties:
+            total:
+              type: number
+            valid:
+              type: number
+            invalid:
+              type: number
+            duplicates:
+              type: number
+            missingCoords:
+              type: number
+            unassignedZones:
+              type: number
+            cafes:
+              type: number
+            restaurants:
+              type: number
+        rows:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+
+    ImportHistory:
+      type: object
+      required: [id, filename, stats, importedAt]
+      properties:
+        id:
+          type: string
+        filename:
+          type: string
+        stats:
+          type: object
+          required: [total, valid, invalid, duplicates, missingCoords, unassignedZones, cafes, restaurants]
+          properties:
+            total:
+              type: number
+            valid:
+              type: number
+            invalid:
+              type: number
+            duplicates:
+              type: number
+            missingCoords:
+              type: number
+            unassignedZones:
+              type: number
+            cafes:
+              type: number
+            restaurants:
+              type: number
+        importedAt:
+          type: string
+
+    SyncHistory:
+      type: object
+      required: [id, timestamp, records_discovered, new_records, updated_records, duplicates, invalid_records, errors]
+      properties:
+        id:
+          type: string
+        timestamp:
+          type: string
+        records_discovered:
+          type: number
+        new_records:
+          type: number
+        updated_records:
+          type: number
+        duplicates:
+          type: number
+        invalid_records:
+          type: number
+        errors:
+          type: number
+
+    SyncResponse:
+      type: object
+      required: [message, history]
+      properties:
+        message:
+          type: string
+        history:
+          $ref: "#/components/schemas/SyncHistory"

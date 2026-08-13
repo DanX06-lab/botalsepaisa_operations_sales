@@ -11,7 +11,11 @@ import {
   SidebarMenuButton,
   SidebarProvider,
   SidebarTrigger,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   LayoutDashboard,
   Store,
@@ -22,7 +26,9 @@ import {
   Droplet,
   Route as RouteIcon,
   History,
-  Users
+  Users,
+  MessageCircle,
+  ChevronDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -32,8 +38,27 @@ export function Layout({ children }: { children: ReactNode }) {
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'WhatsApp Pickups', path: '/pickups', icon: MessageCircle },
     { name: 'Shops', path: '/shops', icon: Store },
-    { name: 'Cafe Prospects', path: '/prospects', icon: Users },
+    { 
+      name: 'Kolkata Intelligence', 
+      icon: Users,
+      subItems: [
+        { name: 'Overview', path: '/intelligence/overview' },
+        { name: 'Cafes', path: '/intelligence/cafes' },
+        { name: 'Restaurants', path: '/intelligence/restaurants' },
+        { name: 'Map', path: '/intelligence/map' },
+        { name: 'Zones', path: '/intelligence/zones' },
+        { name: 'Areas', path: '/intelligence/areas' },
+        { name: 'Wards', path: '/intelligence/wards' },
+        { name: 'Boroughs', path: '/intelligence/boroughs' },
+        { name: 'Data Sources', path: '/intelligence/data-sources' },
+        { name: 'Import', path: '/intelligence/import' },
+        { name: 'Coverage', path: '/intelligence/coverage' },
+        { name: 'Duplicates', path: '/intelligence/duplicates' },
+        { name: 'Analytics', path: '/intelligence/analytics' },
+      ]
+    },
     { name: 'Collections', path: '/collections', icon: Package },
     { name: 'Route Planner', path: '/routes', icon: RouteIcon },
     { name: 'Route History', path: '/routes/history', icon: History },
@@ -60,18 +85,45 @@ export function Layout({ children }: { children: ReactNode }) {
           <SidebarContent className="py-4">
             <SidebarMenu>
               {navItems.map((item) => (
-                <SidebarMenuItem key={item.path}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={location === item.path || location.startsWith(item.path + '/')}
-                    tooltip={item.name}
-                  >
-                    <Link href={item.path}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.name}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                item.subItems ? (
+                  <Collapsible key={item.name} asChild defaultOpen={location.startsWith('/intelligence')}>
+                    <SidebarMenuItem>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton tooltip={item.name}>
+                          <item.icon className="h-4 w-4" />
+                          <span>{item.name}</span>
+                          <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          {item.subItems.map((subItem) => (
+                            <SidebarMenuSubItem key={subItem.path}>
+                              <SidebarMenuSubButton asChild isActive={location === subItem.path}>
+                                <Link href={subItem.path}>
+                                  <span>{subItem.name}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ))}
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </SidebarMenuItem>
+                  </Collapsible>
+                ) : (
+                  <SidebarMenuItem key={item.name}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={item.path ? (location === item.path || location.startsWith(item.path + '/')) : false}
+                      tooltip={item.name}
+                    >
+                      <Link href={item.path || '#'}>
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.name}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
               ))}
             </SidebarMenu>
           </SidebarContent>

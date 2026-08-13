@@ -79,6 +79,18 @@ export async function createIndexes(): Promise<void> {
     { collection: "routes", keys: { createdBy: 1 }, options: { name: "createdBy_idx" } },
     { collection: "routes", keys: { status: 1 }, options: { name: "route_status_idx" } },
     { collection: "routes", keys: { routeDate: 1, createdBy: 1 }, options: { name: "routeDate_createdBy_idx", unique: true, partialFilterExpression: { status: { $in: ["PLANNED", "IN_PROGRESS"] } } } },
+
+    // Intelligence Businesses collection indexes
+    { collection: "intelligence_businesses", keys: { location: "2dsphere" }, options: { name: "ib_location_2dsphere_idx" } },
+    { collection: "intelligence_businesses", keys: { zone_id: 1 }, options: { name: "ib_zone_id_idx" } },
+    { collection: "intelligence_businesses", keys: { area_id: 1 }, options: { name: "ib_area_id_idx" } },
+    { collection: "intelligence_businesses", keys: { business_type: 1 }, options: { name: "ib_business_type_idx" } },
+
+    // Import History collection indexes
+    { collection: "import_history", keys: { importedAt: -1 }, options: { name: "ih_importedAt_idx" } },
+    
+    // Sync History collection indexes
+    { collection: "sync_history", keys: { timestamp: -1 }, options: { name: "sh_timestamp_idx" } },
   ];
 
   for (const index of indexes) {
