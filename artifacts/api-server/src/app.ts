@@ -59,6 +59,34 @@ app.use((err: any, req: any, res: any, next: any) => {
   res.status(statusCode).json({ error: message });
 });
 
+import { getDb } from "./lib/mongodb";
+app.get("/api/migrate-shops-now", async (req, res) => {
+  try {
+    const db = getDb();
+    const shops = await db.collection("shops").find().sort({ id: 1 }).toArray();
+    let nextNumericId = 1;
+    for (const shop of shops) {
+      const oldId = shop.id;
+      const newId = nextNumericId++;
+      if (oldId === newId) continue;
+      const newShopIdString = `BSP${String(newId).padStart(4, "0")}`;
+      await db.collection("shops").updateOne({ _id: shop._id }, { $set: { id: newId, shopId: newShopIdString } });
+      await db.collection("collections").updateMany({ shopId: oldId }, { $set: { shopId: newId } });
+      const routes = await db.collection("routes").find({ shopIds: oldId }).toArray();
+      for (const route of routes) {
+        const updatedShopIds = route.shopIds.map((id: any) => id === oldId ? newId : id);
+        const updatedStops = route.stops ? route.stops.map((stop: any) => stop.shopId === oldId ? { ...stop, shopId: newId } : stop) : [];
+        await db.collection("routes").updateOne({ _id: route._id }, { $set: { shopIds: updatedShopIds, stops: updatedStops } });
+      }
+    }
+    const highestId = nextNumericId - 1;
+    await db.collection("counters").updateOne({ name: "shopId" }, { $set: { value: highestId } }, { upsert: true });
+    res.json({ success: true, message: `Migrated to ${highestId}` });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.use("/api", router);
 
 export default app;

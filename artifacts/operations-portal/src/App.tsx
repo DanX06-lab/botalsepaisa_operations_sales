@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from '@/context/AuthContext';
 import Login from '@/pages/login';
 import Dashboard from '@/pages/dashboard';
 import Shops from '@/pages/shops';
+import Prospects from '@/pages/prospects';
 import Collections from '@/pages/collections';
 import Reports from '@/pages/reports';
 import Settings from '@/pages/settings';
@@ -28,6 +29,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/shops" component={Shops} />
+      <Route path="/prospects" component={Prospects} />
       <Route path="/collections" component={Collections} />
       <Route path="/reports" component={Reports} />
       <Route path="/settings" component={Settings} />

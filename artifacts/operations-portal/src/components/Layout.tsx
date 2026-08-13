@@ -21,7 +21,8 @@ import {
   LogOut,
   Droplet,
   Route as RouteIcon,
-  History
+  History,
+  Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -32,6 +33,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Shops', path: '/shops', icon: Store },
+    { name: 'Cafe Prospects', path: '/prospects', icon: Users },
     { name: 'Collections', path: '/collections', icon: Package },
     { name: 'Route Planner', path: '/routes', icon: RouteIcon },
     { name: 'Route History', path: '/routes/history', icon: History },
