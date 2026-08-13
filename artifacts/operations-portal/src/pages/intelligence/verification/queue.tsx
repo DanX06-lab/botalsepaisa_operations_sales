@@ -5,7 +5,7 @@ import {
   useGetVerificationQueue,
   useBulkUpdateVerificationStatus,
   useGetCoverageOverview,
-} from '@botalsepaisa/api-client-react';
+} from '@workspace/api-client-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';

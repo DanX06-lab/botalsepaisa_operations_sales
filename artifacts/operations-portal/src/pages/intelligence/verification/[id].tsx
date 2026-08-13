@@ -11,7 +11,7 @@ import {
   useMarkAsDuplicate,
   IntelligenceBusiness,
   customFetch
-} from '@botalsepaisa/api-client-react';
+} from '@workspace/api-client-react';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
