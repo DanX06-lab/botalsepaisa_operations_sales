@@ -202,11 +202,19 @@ export default function VerificationDetail() {
                   <div><span className="text-gray-500 block mb-1">Phone</span>{business.phone || '-'}</div>
                   <div><span className="text-gray-500 block mb-1">Website</span>{business.website ? <a href={business.website} target="_blank" rel="noreferrer" className="text-primary hover:underline">{business.website}</a> : '-'}</div>
                   <div><span className="text-gray-500 block mb-1">Rating</span>{business.rating ? `${business.rating} (${business.review_count} reviews)` : '-'}</div>
+                  <div><span className="text-gray-500 block mb-1">Price Range</span>{business.price_range || '-'}</div>
+                  <div><span className="text-gray-500 block mb-1">Cuisine</span>{Array.isArray(business.cuisine) && business.cuisine.length > 0 ? business.cuisine.join(', ') : '-'}</div>
+                  <div><span className="text-gray-500 block mb-1">Opening Hours</span>{business.opening_hours || '-'}</div>
+                  <div><span className="text-gray-500 block mb-1">Zone</span>{business.zone_id || <span className="text-yellow-600">Unassigned</span>}</div>
+                  <div><span className="text-gray-500 block mb-1">Area</span>{business.area_id || <span className="text-yellow-600">Unassigned</span>}</div>
+                  <div><span className="text-gray-500 block mb-1">Ward</span>{business.ward_id || <span className="text-yellow-600">Unassigned</span>}</div>
+                  <div><span className="text-gray-500 block mb-1">Borough</span>{business.borough_id || <span className="text-yellow-600">Unassigned</span>}</div>
+                  <div><span className="text-gray-500 block mb-1">Coordinates</span>{business.latitude && business.longitude ? `${business.latitude}, ${business.longitude}` : <span className="text-red-500">Missing</span>}</div>
                   <div><span className="text-gray-500 block mb-1">Source</span>{business.source || '-'}</div>
-                  <div><span className="text-gray-500 block mb-1">Source ID</span>{business.source_id || '-'}</div>
-                  <div><span className="text-gray-500 block mb-1">Source URL</span>{business.source_url ? <a href={business.source_url} target="_blank" rel="noreferrer" className="text-primary hover:underline break-all">{business.source_url}</a> : '-'}</div>
+                  <div className="md:col-span-2"><span className="text-gray-500 block mb-1">Source ID</span>{business.source_id || '-'}</div>
+                  <div className="md:col-span-2"><span className="text-gray-500 block mb-1">Source URL</span>{business.source_url ? <a href={business.source_url} target="_blank" rel="noreferrer" className="text-primary hover:underline break-all">{business.source_url}</a> : '-'}</div>
+                  <div><span className="text-gray-500 block mb-1">Last Synced</span>{business.last_synced ? new Date(business.last_synced).toLocaleString() : '-'}</div>
                   <div><span className="text-gray-500 block mb-1">Last Updated</span>{business.last_updated ? new Date(business.last_updated).toLocaleString() : '-'}</div>
-                  <div><span className="text-gray-500 block mb-1">Coordinates</span>{business.latitude && business.longitude ? `${business.latitude}, ${business.longitude}` : 'Missing'}</div>
                 </div>
               )}
             </CardContent>
