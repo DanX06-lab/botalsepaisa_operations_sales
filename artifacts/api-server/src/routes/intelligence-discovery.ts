@@ -11,36 +11,62 @@ router.post("/intelligence/discovery/sync", async (req: Request, res: Response):
     const db = getDb();
     
     // Using simple bounding box for Kolkata
-    const query = `[out:json];(node["amenity"="cafe"](22.45,88.25,22.75,88.50);node["amenity"="restaurant"](22.45,88.25,22.75,88.50););out body;`;
+    const query = `[out:json][timeout:55];(node["amenity"="cafe"](22.45,88.25,22.75,88.50);node["amenity"="restaurant"](22.45,88.25,22.75,88.50););out body;`;
     
-    const url = "https://overpass-api.de/api/interpreter";
-    
-    logger.info("Calling Overpass API for discovery sync");
+    // Multiple public Overpass mirrors — tried in order until one succeeds
+    const OVERPASS_ENDPOINTS = [
+      "https://overpass-api.de/api/interpreter",
+      "https://overpass.kumi.systems/api/interpreter",
+      "https://overpass.openstreetmap.ru/api/interpreter",
+    ];
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 25000); // 25s timeout
+    const tryFetch = async (url: string): Promise<any> => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 60000); // 60s per endpoint
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "User-Agent": "BotalSePaisa-Operations/1.0 (contact@botalsepaisa.in)"
+          },
+          body: `data=${encodeURIComponent(query)}`,
+          signal: controller.signal
+        });
+        if (!response.ok) {
+          const body = await response.text().catch(() => "");
+          throw new Error(`HTTP ${response.status} from ${url}: ${body.slice(0, 200)}`);
+        }
+        return await response.json();
+      } catch (err: any) {
+        if (err.name === "AbortError") {
+          throw new Error(`Timeout (60s) calling ${url}`);
+        }
+        throw err;
+      } finally {
+        clearTimeout(timer);
+      }
+    };
 
-    let response: Response;
-    try {
-      response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "User-Agent": "BotalSePaisa-Operations/1.0 (contact@botalsepaisa.in)"
-        },
-        body: `data=${encodeURIComponent(query)}`,
-        signal: controller.signal
-      });
-    } finally {
-      clearTimeout(timeout);
+    let data: any = null;
+    let lastError: Error | null = null;
+
+    for (const endpoint of OVERPASS_ENDPOINTS) {
+      try {
+        logger.info({ endpoint }, "Trying Overpass endpoint");
+        data = await tryFetch(endpoint);
+        logger.info({ endpoint }, "Overpass endpoint succeeded");
+        break;
+      } catch (err: any) {
+        logger.warn({ endpoint, error: err.message }, "Overpass endpoint failed, trying next");
+        lastError = err;
+      }
     }
 
-    if (!response.ok) {
-      const body = await response.text().catch(() => '');
-      throw new Error(`Overpass API error ${response.status}: ${response.statusText} — ${body.slice(0, 200)}`);
+    if (!data) {
+      throw new Error(`All Overpass endpoints failed. Last error: ${lastError?.message}`);
     }
 
-    const data: any = await response.json();
     const nodes = data.elements || [];
     
     const stats = {
