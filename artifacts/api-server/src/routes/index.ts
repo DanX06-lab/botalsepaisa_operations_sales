@@ -8,15 +8,8 @@ import settingsRouter from "./settings";
 import dashboardRouter from "./dashboard";
 import routesRouter from "./routes";
 import prospectsRouter from "./prospects";
-import intelligenceRouter from "./intelligence";
 import whatsappRouter from "./whatsapp";
 import pickupsRouter from "./pickups";
-
-import intelligenceImportRouter from "./intelligence-import";
-import intelligenceDiscoveryRouter from "./intelligence-discovery";
-import intelligenceMapRouter from "./intelligence-map";
-import { intelligenceCoverageRouter } from "./intelligence-coverage";
-import { intelligenceVerificationRouter } from "./intelligence-verification";
 
 const router: IRouter = Router();
 
@@ -29,12 +22,6 @@ router.use(settingsRouter);
 router.use(dashboardRouter);
 router.use(routesRouter);
 router.use(prospectsRouter);
-router.use(intelligenceRouter);
-router.use(intelligenceImportRouter);
-router.use(intelligenceDiscoveryRouter);
-router.use(intelligenceMapRouter);
-router.use("/intelligence/coverage", intelligenceCoverageRouter);
-router.use("/intelligence/verification", intelligenceVerificationRouter);
 router.use(whatsappRouter);
 router.use(pickupsRouter);
 

@@ -40,26 +40,7 @@ export function Layout({ children }: { children: ReactNode }) {
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'WhatsApp Pickups', path: '/pickups', icon: MessageCircle },
     { name: 'Shops', path: '/shops', icon: Store },
-    { 
-      name: 'Kolkata Intelligence', 
-      icon: Users,
-      subItems: [
-        { name: 'Overview', path: '/intelligence/overview' },
-        { name: 'Cafes', path: '/intelligence/cafes' },
-        { name: 'Restaurants', path: '/intelligence/restaurants' },
-        { name: 'Map', path: '/intelligence/map' },
-        { name: 'Zones', path: '/intelligence/zones' },
-        { name: 'Areas', path: '/intelligence/areas' },
-        { name: 'Wards', path: '/intelligence/wards' },
-        { name: 'Boroughs', path: '/intelligence/boroughs' },
-        { name: 'Data Sources', path: '/intelligence/data-sources' },
-        { name: 'Import', path: '/intelligence/import' },
-        { name: 'Coverage', path: '/intelligence/coverage' },
-        { name: 'Duplicates', path: '/intelligence/duplicates' },
-        { name: 'Analytics', path: '/intelligence/analytics' },
-        { name: 'Verification Queue', path: '/intelligence/verification/queue' },
-      ]
-    },
+
     { name: 'Collections', path: '/collections', icon: Package },
     { name: 'Route Planner', path: '/routes', icon: RouteIcon },
     { name: 'Route History', path: '/routes/history', icon: History },
