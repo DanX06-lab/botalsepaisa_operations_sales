@@ -16,16 +16,28 @@ router.post("/intelligence/discovery/sync", async (req: Request, res: Response):
     const url = "https://overpass-api.de/api/interpreter";
     
     logger.info("Calling Overpass API for discovery sync");
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: `data=${encodeURIComponent(query)}`
-    });
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 25000); // 25s timeout
+
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "User-Agent": "BotalSePaisa-Operations/1.0 (contact@botalsepaisa.in)"
+        },
+        body: `data=${encodeURIComponent(query)}`,
+        signal: controller.signal
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
 
     if (!response.ok) {
-      throw new Error(`Overpass API error: ${response.statusText}`);
+      const body = await response.text().catch(() => '');
+      throw new Error(`Overpass API error ${response.status}: ${response.statusText} — ${body.slice(0, 200)}`);
     }
 
     const data: any = await response.json();
@@ -126,6 +138,8 @@ router.post("/intelligence/discovery/sync", async (req: Request, res: Response):
             zone_id: zoneId,
             source: "osm",
             source_id: sourceId,
+            source_url: `https://www.openstreetmap.org/node/${sourceId}`,
+            verification_status: "unverified",
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           });
@@ -150,9 +164,10 @@ router.post("/intelligence/discovery/sync", async (req: Request, res: Response):
       history: historyRecord
     });
 
-  } catch (error) {
-    logger.error({ error }, "Failed to sync discovery");
-    res.status(500).json({ error: "Failed to sync discovery" });
+  } catch (error: any) {
+    const message = error?.message || String(error);
+    logger.error({ error, message }, "Failed to sync discovery");
+    res.status(500).json({ error: "Failed to sync discovery", detail: message });
   }
 });
 
