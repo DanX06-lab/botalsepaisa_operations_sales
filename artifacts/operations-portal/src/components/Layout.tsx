@@ -68,7 +68,7 @@ export function Layout({ children }: { children: ReactNode }) {
             <SidebarMenu>
               {navItems.map((item) => (
                 item.subItems ? (
-                  <Collapsible key={item.name} asChild defaultOpen={location.startsWith('/intelligence')}>
+                  <Collapsible key={item.name} asChild>
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton tooltip={item.name}>
