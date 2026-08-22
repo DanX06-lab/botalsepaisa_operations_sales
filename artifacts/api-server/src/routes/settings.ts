@@ -51,7 +51,7 @@ router.put("/settings", async (req, res): Promise<void> => {
     { upsert: true, returnDocument: "after" }
   );
 
-  const setting = result?.value || { id: 1, pricePerKg };
+  const setting = result || { id: 1, pricePerKg };
   req.log.info({ pricePerKg: setting.pricePerKg, homeLatitude: setting.homeLatitude, homeLongitude: setting.homeLongitude }, "Settings updated");
   res.json(setting);
 });
