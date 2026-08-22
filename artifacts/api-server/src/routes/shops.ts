@@ -45,7 +45,7 @@ router.get("/shops", async (req, res): Promise<void> => {
   const skip = (Number(page) - 1) * Number(limit);
 
   const filter: Record<string, unknown> = {};
-  if (search) {
+  if (search && search !== "undefined") {
     filter.$or = [
       { shopName: { $regex: search, $options: "i" } },
       { ownerName: { $regex: search, $options: "i" } },
