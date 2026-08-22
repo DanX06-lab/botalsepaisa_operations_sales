@@ -178,8 +178,8 @@ router.patch("/collections/:id/payment", async (req, res): Promise<void> => {
     return;
   }
 
-  const shop = await db.collection("shops").findOne({ id: updated.value.shopId });
-  res.json(serializeCollection(updated.value, shop));
+  const shop = await db.collection("shops").findOne({ id: updated.shopId });
+  res.json(serializeCollection(updated, shop));
 });
 
 router.delete("/collections/:id", async (req, res): Promise<void> => {
