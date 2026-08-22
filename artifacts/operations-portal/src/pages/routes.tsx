@@ -25,7 +25,6 @@ export default function Routes() {
   const [collectionDialogOpen, setCollectionDialogOpen] = useState(false);
   const [collectionStopId, setCollectionStopId] = useState<number | null>(null);
   const [collectionShopId, setCollectionShopId] = useState<number | null>(null);
-  const [collectionWeight, setCollectionWeight] = useState<string>('');
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -104,7 +103,6 @@ export default function Routes() {
       onSuccess: (data) => {
         toast({ title: "Success", description: "Collection recorded successfully" });
         setCollectionDialogOpen(false);
-        setCollectionWeight('');
         setCollectionStopId(null);
         setCollectionShopId(null);
         
@@ -173,17 +171,10 @@ export default function Routes() {
       return;
     }
     
-    const weight = parseFloat(collectionWeight);
-    if (isNaN(weight) || weight <= 0) {
-      toast({ title: "Error", description: "Weight must be greater than 0", variant: "destructive" });
-      return;
-    }
-    
     createCollection.mutate({
       data: {
         shopId: collectionShopId,
         collectionDate: selectedDate,
-        weightKg: weight,
         routeId: todayRoute?.id,
         routeStopSequence: collectionStopId
       }
@@ -552,43 +543,16 @@ export default function Routes() {
                 <DialogTitle>Record Collection</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="weightKg">Weight (KG)</Label>
-                  <Input
-                    id="weightKg"
-                    type="number"
-                    min="0.1"
-                    step="0.1"
-                    placeholder="e.g., 5.5"
-                    value={collectionWeight}
-                    onChange={(e) => setCollectionWeight(e.target.value)}
-                  />
-                </div>
-                
-                {settings && (
-                  <div className="bg-muted p-3 rounded-md">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Rate:</span>
-                      <span className="font-medium">₹{settings.pricePerKg}/KG</span>
-                    </div>
-                    {collectionWeight && (
-                      <div className="flex items-center justify-between text-sm mt-2">
-                        <span className="text-muted-foreground">Estimated Total:</span>
-                        <span className="font-medium text-primary">
-                          ₹{(parseFloat(collectionWeight) * settings.pricePerKg).toFixed(2)}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
-                
+                <p className="text-sm text-muted-foreground">
+                  Record a pickup for this shop. Weight and price will be assigned later from the Reports panel.
+                </p>
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => setCollectionDialogOpen(false)}>
                     Cancel
                   </Button>
                   <Button 
                     onClick={handleCreateCollection}
-                    disabled={createCollection.isPending || !collectionWeight}
+                    disabled={createCollection.isPending}
                   >
                     {createCollection.isPending ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

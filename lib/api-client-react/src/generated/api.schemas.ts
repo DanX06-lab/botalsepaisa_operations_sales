@@ -208,7 +208,8 @@ export interface Collection {
 export interface CollectionInput {
   shopId: number;
   collectionDate: string;
-  weightKg: number;
+  /** @nullable */
+  weightKg?: number | null;
   /** @nullable */
   routeId?: number | null;
   /** @nullable */
@@ -259,7 +260,6 @@ export interface ReportResult {
 
 export interface Settings {
   id: number;
-  pricePerKg: number;
   /** @nullable */
   homeLatitude?: number | null;
   /** @nullable */
@@ -267,7 +267,6 @@ export interface Settings {
 }
 
 export interface SettingsUpdate {
-  pricePerKg: number;
   /** @nullable */
   homeLatitude?: number | null;
   /** @nullable */

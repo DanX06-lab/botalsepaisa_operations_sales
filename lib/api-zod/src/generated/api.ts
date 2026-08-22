@@ -975,7 +975,7 @@ export const ListCollectionsResponse = zod.object({
 export const CreateCollectionBody = zod.object({
   "shopId": zod.number(),
   "collectionDate": zod.string(),
-  "weightKg": zod.number(),
+  "weightKg": zod.number().nullish(),
   "routeId": zod.number().nullish(),
   "routeStopSequence": zod.number().nullish()
 })
@@ -1190,7 +1190,6 @@ export const GetReportsResponse = zod.object({
  */
 export const GetSettingsResponse = zod.object({
   "id": zod.number(),
-  "pricePerKg": zod.number(),
   "homeLatitude": zod.number().nullish(),
   "homeLongitude": zod.number().nullish()
 })
@@ -1200,14 +1199,12 @@ export const GetSettingsResponse = zod.object({
  * @summary Update settings
  */
 export const UpdateSettingsBody = zod.object({
-  "pricePerKg": zod.number(),
   "homeLatitude": zod.number().nullish(),
   "homeLongitude": zod.number().nullish()
 })
 
 export const UpdateSettingsResponse = zod.object({
   "id": zod.number(),
-  "pricePerKg": zod.number(),
   "homeLatitude": zod.number().nullish(),
   "homeLongitude": zod.number().nullish()
 })

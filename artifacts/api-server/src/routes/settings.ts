@@ -1,32 +1,32 @@
 import { Router, type IRouter } from "express";
 import { getDb } from "../lib/mongodb";
 import { requireAuth } from "../middlewares/auth";
-import { UpdateSettingsBody } from "@workspace/api-zod";
+import { SettingsUpdate } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
 router.use(requireAuth);
 
-router.get("/settings", async (_req, res): Promise<void> => {
+router.get("/settings", async (req, res): Promise<void> => {
   const db = getDb();
-  let setting = await db.collection("settings").findOne({ id: 1 });
-  if (!setting) {
-    await db.collection("settings").insertOne({ id: 1, pricePerKg: 12 });
-    setting = { id: 1, pricePerKg: 12 } as any;
+  let settings = await db.collection("settings").findOne({ id: 1 });
+  if (!settings) {
+    settings = { id: 1, homeLatitude: null, homeLongitude: null };
+    await db.collection("settings").insertOne(settings);
   }
-  res.json(setting);
+  res.json(settings);
 });
 
 router.put("/settings", async (req, res): Promise<void> => {
-  const parsed = UpdateSettingsBody.safeParse(req.body);
+  const parsed = SettingsUpdate.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
 
-  const { pricePerKg, homeLatitude, homeLongitude } = parsed.data;
+  const { homeLatitude, homeLongitude } = parsed.data;
   
-  const updateData: Record<string, unknown> = { pricePerKg };
+  const updateData: Record<string, unknown> = {};
   
   if (homeLatitude !== undefined) {
     if (homeLatitude !== null && (homeLatitude < -90 || homeLatitude > 90)) {
@@ -51,8 +51,8 @@ router.put("/settings", async (req, res): Promise<void> => {
     { upsert: true, returnDocument: "after" }
   );
 
-  const setting = result || { id: 1, pricePerKg };
-  req.log.info({ pricePerKg: setting.pricePerKg, homeLatitude: setting.homeLatitude, homeLongitude: setting.homeLongitude }, "Settings updated");
+  const setting = result || { id: 1, homeLatitude: updateData.homeLatitude, homeLongitude: updateData.homeLongitude };
+  req.log.info({ homeLatitude: setting.homeLatitude, homeLongitude: setting.homeLongitude }, "Settings updated");
   res.json(setting);
 });
 

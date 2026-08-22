@@ -27,15 +27,10 @@ export default function Collections() {
 
   const [shopId, setShopId] = useState<string>('');
   const [collectionDate, setCollectionDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [weightKg, setWeightKg] = useState<string>('');
   const [openShopSelect, setOpenShopSelect] = useState(false);
 
   const { data: shopsData } = useListShops({ limit: 1000 }); // get all for combo
   const { data: settings } = useGetSettings();
-
-  const pricePerKg = settings?.pricePerKg || 0;
-  const numericWeight = parseFloat(weightKg) || 0;
-  const calculatedTotal = numericWeight * pricePerKg;
 
   const createCollection = useCreateCollection({
     mutation: {
@@ -57,25 +52,14 @@ export default function Collections() {
       toast({ title: "Required", description: "Please select a shop.", variant: "destructive" });
       return;
     }
-    if (numericWeight <= 0) {
-      toast({ title: "Required", description: "Weight must be greater than 0.", variant: "destructive" });
-      return;
-    }
     
     createCollection.mutate({
       data: {
         shopId: parseInt(shopId, 10),
-        collectionDate,
-        weightKg: numericWeight
+        collectionDate
       }
     });
   };
-
-  const formattedTotal = new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 2
-  }).format(calculatedTotal);
 
   return (
     <ProtectedRoute>
@@ -89,7 +73,7 @@ export default function Collections() {
           <Card>
             <CardHeader>
               <CardTitle>Collection Entry</CardTitle>
-              <CardDescription>All calculations are done automatically based on the current rate.</CardDescription>
+              <CardDescription>Record a new pickup from a shop. Weight and price will be updated later.</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -155,39 +139,6 @@ export default function Collections() {
                       onChange={(e) => setCollectionDate(e.target.value)}
                       className="bg-background"
                     />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="weight">Weight (KG)</Label>
-                    <div className="relative">
-                      <Input 
-                        id="weight" 
-                        type="number" 
-                        min="0" 
-                        step="0.01" 
-                        required 
-                        value={weightKg}
-                        onChange={(e) => setWeightKg(e.target.value)}
-                        placeholder="0.00"
-                        className="bg-background pr-12"
-                      />
-                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-muted-foreground text-sm">
-                        KG
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-primary/5 border border-primary/10 rounded-lg p-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                    <Info className="h-4 w-4 text-primary" />
-                    Current Rate: <strong>₹{pricePerKg}/KG</strong>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm text-muted-foreground mb-1">Total Amount Payable</div>
-                    <div className="text-3xl font-bold text-primary tracking-tight">
-                      {formattedTotal}
-                    </div>
                   </div>
                 </div>
 

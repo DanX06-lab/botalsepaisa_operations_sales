@@ -1634,14 +1634,14 @@ components:
 
     CollectionInput:
       type: object
-      required: [shopId, collectionDate, weightKg]
+      required: [shopId, collectionDate]
       properties:
         shopId:
           type: number
         collectionDate:
           type: string
         weightKg:
-          type: number
+          type: ["number", "null"]
         routeId:
           type: ["number", "null"]
         routeStopSequence:
@@ -1723,11 +1723,9 @@ components:
 
     Settings:
       type: object
-      required: [id, pricePerKg]
+      required: [id]
       properties:
         id:
-          type: number
-        pricePerKg:
           type: number
         homeLatitude:
           type: ["number", "null"]
@@ -1736,10 +1734,7 @@ components:
 
     SettingsUpdate:
       type: object
-      required: [pricePerKg]
       properties:
-        pricePerKg:
-          type: number
         homeLatitude:
           type: ["number", "null"]
         homeLongitude:

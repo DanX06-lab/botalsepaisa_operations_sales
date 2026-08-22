@@ -20,15 +20,11 @@ export default function Settings() {
   const queryClient = useQueryClient();
   const { data, isLoading } = useGetSettings();
   
-  const [pricePerKg, setPricePerKg] = useState<string>('');
   const [homeLatitude, setHomeLatitude] = useState<string>('');
   const [homeLongitude, setHomeLongitude] = useState<string>('');
   const [isCapturingLocation, setIsCapturingLocation] = useState(false);
 
   useEffect(() => {
-    if (data?.pricePerKg) {
-      setPricePerKg(data.pricePerKg.toString());
-    }
     if (data?.homeLatitude) {
       setHomeLatitude(data.homeLatitude.toString());
     }
@@ -85,18 +81,12 @@ export default function Settings() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const num = parseFloat(pricePerKg);
-    if (isNaN(num) || num <= 0) {
-      toast({ title: "Invalid", description: "Price must be a positive number.", variant: "destructive" });
-      return;
-    }
     
     const lat = parseFloat(homeLatitude);
     const lng = parseFloat(homeLongitude);
 
     updateSettings.mutate({
       data: { 
-        pricePerKg: num,
         homeLatitude: (!isNaN(lat) && lat >= -90 && lat <= 90) ? lat : null,
         homeLongitude: (!isNaN(lng) && lng >= -180 && lng <= 180) ? lng : null
       }
@@ -113,59 +103,6 @@ export default function Settings() {
             <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
             <p className="text-muted-foreground mt-1">Configure global application settings.</p>
           </div>
-
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-md">
-                  <SettingsIcon className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <CardTitle>Pricing Configuration</CardTitle>
-                  <CardDescription>Set the default payout rate for plastic collections.</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} id="settings-form" className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="pricePerKg">Price Per KG (₹)</Label>
-                  <div className="relative max-w-sm">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground">
-                      ₹
-                    </div>
-                    <Input 
-                      id="pricePerKg" 
-                      type="number" 
-                      min="0.1" 
-                      step="0.1" 
-                      required 
-                      value={pricePerKg}
-                      onChange={(e) => setPricePerKg(e.target.value)}
-                      disabled={isLoading}
-                      className="pl-8 bg-background max-w-sm text-lg font-medium"
-                    />
-                  </div>
-                </div>
-
-                <Alert className="max-w-sm bg-muted/50 border-muted">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription className="text-sm text-muted-foreground">
-                    Only future entries will use the new rate. Past entries remain unaffected.
-                  </AlertDescription>
-                </Alert>
-              </form>
-            </CardContent>
-            <CardFooter className="border-t bg-muted/20 px-6 py-4">
-              <Button 
-                type="submit" 
-                form="settings-form"
-                disabled={isLoading || updateSettings.isPending}
-              >
-                {updateSettings.isPending ? 'Saving...' : 'Save Settings'}
-              </Button>
-            </CardFooter>
-          </Card>
 
           <Card>
             <CardHeader>

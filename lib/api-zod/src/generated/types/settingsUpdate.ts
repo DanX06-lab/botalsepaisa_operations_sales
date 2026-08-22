@@ -7,7 +7,6 @@
  */
 
 export interface SettingsUpdate {
-  pricePerKg: number;
   /** @nullable */
   homeLatitude?: number | null;
   /** @nullable */

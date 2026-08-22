@@ -97,16 +97,16 @@ router.post("/collections", async (req, res): Promise<void> => {
     return;
   }
 
-  const setting = await db.collection("settings").findOne({ id: 1 });
-  const ratePerKg = setting?.pricePerKg ?? 12;
-  const totalAmount = Math.round(weightKg * ratePerKg * 100) / 100;
+  const finalWeight = weightKg || 0;
+  const ratePerKg = 0;
+  const totalAmount = 0;
 
   const id = await getNextSequenceValue("collectionId");
   const collection = {
     id,
     shopId,
     collectionDate,
-    weightKg,
+    weightKg: finalWeight,
     ratePerKg,
     totalAmount,
     paymentStatus: "PENDING",

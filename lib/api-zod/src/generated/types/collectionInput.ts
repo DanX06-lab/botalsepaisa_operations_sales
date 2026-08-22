@@ -9,7 +9,8 @@
 export interface CollectionInput {
   shopId: number;
   collectionDate: string;
-  weightKg: number;
+  /** @nullable */
+  weightKg?: number | null;
   /** @nullable */
   routeId?: number | null;
   /** @nullable */

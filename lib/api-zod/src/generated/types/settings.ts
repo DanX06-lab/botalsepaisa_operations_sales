@@ -8,7 +8,6 @@
 
 export interface Settings {
   id: number;
-  pricePerKg: number;
   /** @nullable */
   homeLatitude?: number | null;
   /** @nullable */
