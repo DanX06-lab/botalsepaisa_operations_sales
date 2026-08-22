@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Search, Plus, Edit2, Trash2, Phone, User, Store, Camera, X, Image, MapPin, CheckCircle, AlertCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   Dialog,
   DialogContent,
@@ -90,7 +91,7 @@ export default function Shops() {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { data, isLoading } = useListShops({ 
+  const { data, isLoading, isError, error, refetch } = useListShops({ 
     page, 
     limit: 10, 
     search: debouncedSearch || undefined 
@@ -359,6 +360,17 @@ export default function Shops() {
                 <div className="space-y-4">
                   {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-16 w-full" />)}
                 </div>
+              ) : isError ? (
+                <Alert variant="destructive" className="my-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Error Loading Shops</AlertTitle>
+                  <AlertDescription className="flex flex-col gap-2">
+                    <p>There was a problem loading the shops data. Please try again.</p>
+                    <Button variant="outline" size="sm" onClick={() => refetch()} className="w-fit">
+                      Retry
+                    </Button>
+                  </AlertDescription>
+                </Alert>
               ) : data?.data.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <Store className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
