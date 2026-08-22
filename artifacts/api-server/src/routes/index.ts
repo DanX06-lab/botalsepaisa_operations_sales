@@ -8,8 +8,6 @@ import settingsRouter from "./settings";
 import dashboardRouter from "./dashboard";
 import routesRouter from "./routes";
 import prospectsRouter from "./prospects";
-import whatsappRouter from "./whatsapp";
-import pickupsRouter from "./pickups";
 
 const router: IRouter = Router();
 
@@ -22,7 +20,5 @@ router.use(settingsRouter);
 router.use(dashboardRouter);
 router.use(routesRouter);
 router.use(prospectsRouter);
-router.use(whatsappRouter);
-router.use(pickupsRouter);
 
 export default router;

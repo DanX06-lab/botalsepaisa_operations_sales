@@ -36,9 +36,8 @@ export function Layout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const { username, logout } = useAuth();
 
-  const navItems = [
+  const navItems: any[] = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'WhatsApp Pickups', path: '/pickups', icon: MessageCircle },
     { name: 'Shops', path: '/shops', icon: Store },
 
     { name: 'Collections', path: '/collections', icon: Package },
@@ -79,7 +78,7 @@ export function Layout({ children }: { children: ReactNode }) {
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <SidebarMenuSub>
-                          {item.subItems.map((subItem) => (
+                          {item.subItems.map((subItem: any) => (
                             <SidebarMenuSubItem key={subItem.path}>
                               <SidebarMenuSubButton asChild isActive={location === subItem.path}>
                                 <Link href={subItem.path}>

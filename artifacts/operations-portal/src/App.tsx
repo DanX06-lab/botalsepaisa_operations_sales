@@ -5,7 +5,6 @@ import Login from '@/pages/login';
 import Dashboard from '@/pages/dashboard';
 import Shops from '@/pages/shops';
 import Prospects from '@/pages/prospects';
-import Pickups from '@/pages/pickups';
 import Collections from '@/pages/collections';
 import Reports from '@/pages/reports';
 import Settings from '@/pages/settings';
@@ -30,7 +29,6 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/shops" component={Shops} />
-      <Route path="/pickups" component={Pickups} />
       <Route path="/prospects" component={Prospects} />
       <Route path="/collections" component={Collections} />
       <Route path="/reports" component={Reports} />

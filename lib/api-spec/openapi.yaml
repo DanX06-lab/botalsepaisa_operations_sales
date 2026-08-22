@@ -28,10 +28,7 @@ tags:
     description: Prospect management
   - name: intelligence
     description: Intelligence module
-  - name: pickups
-    description: WhatsApp pickup requests
-  - name: whatsapp
-    description: WhatsApp webhook integration
+
 
 paths:
   /intelligence/businesses:
@@ -654,105 +651,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/QualityCoverage"
 
-
-  /pickups:
-    get:
-      operationId: listPickups
-      tags: [pickups]
-      summary: List WhatsApp pickup requests
-      parameters:
-        - name: status
-          in: query
-          schema:
-            type: string
-        - name: page
-          in: query
-          schema:
-            type: number
-        - name: limit
-          in: query
-          schema:
-            type: number
-      responses:
-        "200":
-          description: List of pickup requests
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PickupList"
-
-  /pickups/{id}/status:
-    patch:
-      operationId: updatePickupStatus
-      tags: [pickups]
-      summary: Update pickup status
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PickupStatusUpdate"
-      responses:
-        "200":
-          description: Pickup status updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PickupRequest"
-        "404":
-          description: Pickup not found
-
-  /whatsapp/webhook:
-    get:
-      operationId: verifyWebhook
-      tags: [whatsapp]
-      summary: Verify WhatsApp Webhook
-      parameters:
-        - name: hub.mode
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: hub.verify_token
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: hub.challenge
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Verified
-          content:
-            text/plain:
-              schema:
-                type: string
-        "403":
-          description: Verification failed
-    post:
-      operationId: handleWebhook
-      tags: [whatsapp]
-      summary: Handle WhatsApp incoming events
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/WhatsAppWebhookPayload"
-      responses:
-        "200":
-          description: Event processed
-        "403":
-          description: Signature invalid
 
   /prospects:
     get:
@@ -2031,82 +1929,6 @@ components:
         updated_at:
           type: string
 
-    PickupRequest:
-      type: object
-      required: [_id, ticket_id, customer_id, whatsapp_number, customer_name, language, quantity_range, weekend_batch, latitude, longitude, status, source, created_at, updated_at]
-      properties:
-        _id:
-          type: string
-        ticket_id:
-          type: string
-        customer_id:
-          type: string
-        whatsapp_number:
-          type: string
-        customer_name:
-          type: string
-        language:
-          type: string
-        script_preference:
-          type: ["string", "null"]
-        quantity_range:
-          type: string
-        weekend_batch:
-          type: boolean
-        latitude:
-          type: number
-        longitude:
-          type: number
-        landmark:
-          type: ["string", "null"]
-        status:
-          type: string
-          enum: ["PENDING", "ASSIGNED", "PICKUP_IN_PROGRESS", "COMPLETED", "CANCELLED"]
-        eta:
-          type: ["string", "null"]
-        assigned_to:
-          type: ["string", "null"]
-        source:
-          type: string
-        created_at:
-          type: string
-        updated_at:
-          type: string
-        completed_at:
-          type: ["string", "null"]
-        cancelled_at:
-          type: ["string", "null"]
-
-    PickupList:
-      type: object
-      required: [data, total, page, limit]
-      properties:
-        data:
-          type: array
-          items:
-            $ref: "#/components/schemas/PickupRequest"
-        total:
-          type: number
-        page:
-          type: number
-        limit:
-          type: number
-
-    PickupStatusUpdate:
-      type: object
-      required: [status]
-      properties:
-        status:
-          type: string
-          enum: ["PENDING", "ASSIGNED", "PICKUP_IN_PROGRESS", "COMPLETED", "CANCELLED"]
-        eta:
-          type: ["string", "null"]
-        assigned_to:
-          type: ["string", "null"]
-
-    WhatsAppWebhookPayload:
-      type: object
-      additionalProperties: true
 
     ImportPreviewRequest:
       type: object
