@@ -7,6 +7,8 @@ import {
   GetCollectionParams,
   UpdatePaymentStatusParams,
   UpdatePaymentStatusBody,
+  UpdateCollectionParams,
+  UpdateCollectionBody,
 } from "@workspace/api-zod";
 import { ObjectId } from "mongodb";
 
@@ -138,6 +140,57 @@ router.get("/collections/:id", async (req, res): Promise<void> => {
 
   const shop = await db.collection("shops").findOne({ id: collection.shopId });
   res.json(serializeCollection(collection, shop));
+});
+
+router.put("/collections/:id", async (req, res): Promise<void> => {
+  const params = UpdateCollectionParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+
+  const parsed = UpdateCollectionBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+
+  const db = getDb();
+  const existing = await db.collection("collections").findOne({ id: params.data.id });
+  if (!existing) {
+    res.status(404).json({ error: "Collection not found" });
+    return;
+  }
+
+  const updateData: Record<string, unknown> = {};
+  if (parsed.data.weightKg !== undefined) {
+    updateData.weightKg = parsed.data.weightKg;
+  }
+  if (parsed.data.ratePerKg !== undefined) {
+    updateData.ratePerKg = parsed.data.ratePerKg;
+  }
+  
+  // Recalculate total amount if weight or rate changes
+  if (updateData.weightKg !== undefined || updateData.ratePerKg !== undefined) {
+    const newWeight = updateData.weightKg !== undefined ? updateData.weightKg : existing.weightKg;
+    const newRate = updateData.ratePerKg !== undefined ? updateData.ratePerKg : existing.ratePerKg;
+    updateData.totalAmount = (newWeight as number) * (newRate as number);
+  }
+
+  const updated = await db.collection("collections").findOneAndUpdate(
+    { id: params.data.id },
+    { $set: updateData },
+    { returnDocument: "after" }
+  );
+
+  if (!updated) {
+    res.status(404).json({ error: "Collection not found" });
+    return;
+  }
+
+  const shop = await db.collection("shops").findOne({ id: updated.shopId });
+  req.log.info({ id: params.data.id }, "Collection updated");
+  res.json(serializeCollection(updated, shop));
 });
 
 router.patch("/collections/:id/payment", async (req, res): Promise<void> => {

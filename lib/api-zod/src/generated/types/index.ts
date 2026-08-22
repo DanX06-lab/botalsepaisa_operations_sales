@@ -14,6 +14,7 @@ export * from './bulkVerificationRequest';
 export * from './collection';
 export * from './collectionInput';
 export * from './collectionList';
+export * from './collectionUpdate';
 export * from './coverageOverview';
 export * from './dashboardSummary';
 export * from './duplicateReviewRequest';

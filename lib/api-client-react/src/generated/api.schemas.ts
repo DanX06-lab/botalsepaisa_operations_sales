@@ -222,6 +222,11 @@ export interface CollectionList {
   limit: number;
 }
 
+export interface CollectionUpdate {
+  weightKg?: number;
+  ratePerKg?: number;
+}
+
 export interface PaymentUpdate {
   paymentStatus: string;
   /** @nullable */

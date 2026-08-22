@@ -941,6 +941,31 @@ paths:
           description: Collection deleted successfully
         "404":
           description: Not found
+    put:
+      operationId: updateCollection
+      tags: [collections]
+      summary: Update a collection entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CollectionUpdate"
+      responses:
+        "200":
+          description: Collection updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collection"
+        "404":
+          description: Not found
 
   /collections/{id}/payment:
     patch:
@@ -1635,6 +1660,14 @@ components:
         page:
           type: number
         limit:
+          type: number
+
+    CollectionUpdate:
+      type: object
+      properties:
+        weightKg:
+          type: number
+        ratePerKg:
           type: number
 
     PaymentUpdate:

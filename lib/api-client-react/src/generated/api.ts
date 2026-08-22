@@ -28,6 +28,7 @@ import type {
   Collection,
   CollectionInput,
   CollectionList,
+  CollectionUpdate,
   CoverageOverview,
   DashboardSummary,
   DuplicateReviewRequest,
@@ -2874,6 +2875,78 @@ export const useDeleteCollection = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getDeleteCollectionMutationOptions(options));
+    }
+
+export const getUpdateCollectionUrl = (id: number,) => {
+
+
+
+
+  return `/api/collections/${id}`
+}
+
+/**
+ * @summary Update a collection entry
+ */
+export const updateCollection = async (id: number,
+    collectionUpdate: CollectionUpdate, options?: Parameters<typeof customFetch>[1]): Promise<Collection> => {
+
+  return customFetch<Collection>(getUpdateCollectionUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(collectionUpdate)
+  }
+);}
+
+
+
+
+
+export const getUpdateCollectionMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCollection>>, TError,{id: number;data: BodyType<CollectionUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateCollection>>, TError,{id: number;data: BodyType<CollectionUpdate>}, TContext> => {
+
+const mutationKey = ['updateCollection'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateCollection>>, {id: number;data: BodyType<CollectionUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateCollection(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateCollectionMutationResult = NonNullable<Awaited<ReturnType<typeof updateCollection>>>
+    export type UpdateCollectionMutationBody = BodyType<CollectionUpdate>
+    export type UpdateCollectionMutationError = ErrorType<void>
+
+    /**
+ * @summary Update a collection entry
+ */
+export const useUpdateCollection = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCollection>>, TError,{id: number;data: BodyType<CollectionUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateCollection>>,
+        TError,
+        {id: number;data: BodyType<CollectionUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateCollectionMutationOptions(options));
     }
 
 export const getUpdatePaymentStatusUrl = (id: number,) => {

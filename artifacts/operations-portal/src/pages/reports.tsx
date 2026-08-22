@@ -5,6 +5,7 @@ import {
   useGetReports, 
   useUpdatePaymentStatus,
   useDeleteCollection,
+  useUpdateCollection,
   getGetReportsQueryKey
 } from '@workspace/api-client-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -16,7 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFoo
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { FileText, IndianRupee, Search, Calendar, ChevronRight, Trash2 } from 'lucide-react';
+import { FileText, IndianRupee, Search, Calendar, ChevronRight, Trash2, Edit2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -52,6 +53,8 @@ export default function Reports() {
   const [paymentDialog, setPaymentDialog] = useState<{open: boolean, entry: any | null}>({ open: false, entry: null });
   const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
   const [paidBy, setPaidBy] = useState('');
+
+  const [editDialog, setEditDialog] = useState<{open: boolean, entry: any | null, weightKg: string, ratePerKg: string}>({ open: false, entry: null, weightKg: '', ratePerKg: '' });
 
   const updatePayment = useUpdatePaymentStatus({
     mutation: {
@@ -97,6 +100,31 @@ export default function Reports() {
       }
     }
   });
+
+  const updateCollection = useUpdateCollection({
+    mutation: {
+      onSuccess: () => {
+        toast({ title: "Success", description: "Collection updated successfully." });
+        queryClient.invalidateQueries({ queryKey: getGetReportsQueryKey() });
+        setEditDialog({ open: false, entry: null, weightKg: '', ratePerKg: '' });
+      },
+      onError: (err: any) => {
+        toast({ title: "Error", description: err.message, variant: "destructive" });
+      }
+    }
+  });
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editDialog.entry) return;
+    updateCollection.mutate({
+      id: editDialog.entry.id,
+      data: {
+        weightKg: Number(editDialog.weightKg),
+        ratePerKg: Number(editDialog.ratePerKg)
+      }
+    });
+  };
 
   const handleDelete = (id: number) => {
     if (confirm('Are you sure you want to delete this collection entry? This action cannot be undone.')) {
@@ -199,6 +227,14 @@ export default function Reports() {
                               <Button
                                 variant="ghost"
                                 size="sm"
+                                className="h-8 text-xs text-muted-foreground hover:text-primary"
+                                onClick={() => setEditDialog({ open: true, entry, weightKg: String(entry.weightKg), ratePerKg: String(entry.ratePerKg) })}
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 className="h-8 text-xs text-muted-foreground hover:text-destructive"
                                 onClick={() => handleDelete(entry.id)}
                                 disabled={deleteCollection.isPending}
@@ -263,6 +299,59 @@ export default function Reports() {
                 <Button type="button" variant="outline" onClick={() => setPaymentDialog({ open: false, entry: null })}>Cancel</Button>
                 <Button type="submit" disabled={updatePayment.isPending}>
                   {updatePayment.isPending ? 'Saving...' : 'Confirm Payment'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+        {/* Edit Collection Dialog */}
+        <Dialog open={editDialog.open} onOpenChange={(open) => !open && setEditDialog({ open: false, entry: null, weightKg: '', ratePerKg: '' })}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Collection</DialogTitle>
+              <DialogDescription>
+                Update the weight and rate for <strong>{editDialog.entry?.shop.shopName}</strong>. Total amount will be recalculated automatically.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleEditSubmit} className="space-y-4 pt-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="weightKg">Weight (KG)</Label>
+                  <Input 
+                    id="weightKg" 
+                    type="number" 
+                    step="0.01"
+                    required 
+                    value={editDialog.weightKg} 
+                    onChange={e => setEditDialog({ ...editDialog, weightKg: e.target.value })} 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ratePerKg">Rate per KG (₹)</Label>
+                  <Input 
+                    id="ratePerKg" 
+                    type="number" 
+                    step="0.01"
+                    required 
+                    value={editDialog.ratePerKg} 
+                    onChange={e => setEditDialog({ ...editDialog, ratePerKg: e.target.value })} 
+                  />
+                </div>
+              </div>
+              <div className="rounded-md bg-muted p-3 mt-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">New Total Amount</span>
+                  <span className="font-bold text-lg text-primary">
+                    {formatCurrency((Number(editDialog.weightKg) || 0) * (Number(editDialog.ratePerKg) || 0))}
+                  </span>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setEditDialog({ open: false, entry: null, weightKg: '', ratePerKg: '' })}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={updateCollection.isPending}>
+                  {updateCollection.isPending ? 'Saving...' : 'Save Changes'}
                 </Button>
               </DialogFooter>
             </form>

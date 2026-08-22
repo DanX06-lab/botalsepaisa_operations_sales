@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Search, Plus, Edit2, Trash2, Phone, User, Store, Camera, X, Image, MapPin, CheckCircle, AlertCircle } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Phone, User, Store, Camera, X, Image, MapPin, CheckCircle, AlertCircle, Eye } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -106,6 +106,10 @@ export default function Shops() {
   const [locationError, setLocationError] = useState<string>('');
   
   const [selectedShop, setSelectedShop] = useState<any>(null);
+  const [viewDialog, setViewDialog] = useState<{ open: boolean; shop: any | null }>({
+    open: false,
+    shop: null,
+  });
   const [formData, setFormData] = useState<FormData>(EMPTY_FORM);
   const [phoneTouched, setPhoneTouched] = useState(false);
 
@@ -155,7 +159,6 @@ export default function Shops() {
     e.preventDefault();
     setPhoneTouched(true);
     
-    // Validate required fields
     if (!formData.shopName || !formData.ownerName || !formData.phoneNumber) {
       toast({ title: "Validation Error", description: "Shop name, owner name, and mobile are required", variant: "destructive" });
       return;
@@ -166,13 +169,11 @@ export default function Shops() {
       return;
     }
     
-    // GPS coordinates are mandatory for new shop
     if (formData.latitude === null || formData.longitude === null) {
       toast({ title: "GPS Required", description: "GPS location capture is required to add a new shop", variant: "destructive" });
       return;
     }
     
-    // Photo is required for new shop
     if (!formData.photoBase64) {
       toast({ title: "Photo Required", description: "Camera permission is required to capture the shop photo", variant: "destructive" });
       return;
@@ -249,12 +250,10 @@ export default function Shops() {
     setIsDeleteOpen(true);
   };
 
-  // Handle file/camera input → convert to base64
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Limit to 5MB
     if (file.size > 5 * 1024 * 1024) {
       toast({ title: "Photo too large", description: "Please use a photo under 5 MB.", variant: "destructive" });
       return;
@@ -272,7 +271,6 @@ export default function Shops() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  // Handle GPS capture
   const handleCaptureLocation = () => {
     if (!navigator.geolocation) {
       toast({ title: "GPS Not Supported", description: "Geolocation is not supported by your browser", variant: "destructive" });
@@ -437,6 +435,9 @@ export default function Shops() {
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
+                              <Button variant="outline" size="sm" onClick={() => setViewDialog({ open: true, shop })}>
+                                <Eye className="h-3.5 w-3.5" />
+                              </Button>
                               <Button variant="outline" size="sm" onClick={() => openEdit(shop)}>
                                 <Edit2 className="h-3.5 w-3.5" />
                               </Button>
@@ -452,7 +453,6 @@ export default function Shops() {
                 </div>
               )}
 
-              {/* Pagination */}
               {data && data.total > data.limit && (
                 <div className="flex items-center justify-between mt-4">
                   <div className="text-sm text-muted-foreground">
@@ -482,7 +482,6 @@ export default function Shops() {
           </Card>
         </div>
 
-        {/* Add/Edit Dialog */}
         <Dialog open={isAddOpen || isEditOpen} onOpenChange={(open) => {
           if (!open) {
             setIsAddOpen(false);
@@ -544,7 +543,6 @@ export default function Shops() {
                 <Input id="remark" value={formData.remark} onChange={e => setFormData({...formData, remark: e.target.value})} placeholder="Any additional details..." />
               </div>
 
-              {/* GPS Location Capture - MANDATORY */}
               <div className="space-y-2">
                 <Label>GPS Location <span className="text-red-500 text-xs">(required)</span></Label>
                 {locationStatus === 'success' ? (
@@ -589,7 +587,6 @@ export default function Shops() {
                 )}
               </div>
 
-              {/* Photo capture - REQUIRED for new shop */}
               <div className="space-y-2">
                 <Label>Shop Photo {isEditOpen ? <span className="text-muted-foreground text-xs">(optional)</span> : <span className="text-red-500 text-xs">(required)</span>}</Label>
                 {formData.photoBase64 ? (
@@ -622,7 +619,6 @@ export default function Shops() {
                     <span className="text-xs">Camera required</span>
                   </button>
                 )}
-                {/* Hidden file input — capture="environment" opens rear camera on mobile */}
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -651,7 +647,6 @@ export default function Shops() {
           </DialogContent>
         </Dialog>
 
-        {/* Photo Viewer */}
         <Dialog open={isPhotoOpen} onOpenChange={setIsPhotoOpen}>
           <DialogContent className="max-w-lg p-2">
             <DialogHeader className="p-2 pb-0">
@@ -663,7 +658,6 @@ export default function Shops() {
           </DialogContent>
         </Dialog>
 
-        {/* Delete Confirmation */}
         <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -673,13 +667,92 @@ export default function Shops() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+              <AlertDialogCancel disabled={deleteShop.isPending}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete} disabled={deleteShop.isPending} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
                 {deleteShop.isPending ? 'Deleting...' : 'Delete'}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <Dialog open={viewDialog.open} onOpenChange={(open) => !open && setViewDialog({ open: false, shop: null })}>
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Shop Details</DialogTitle>
+            </DialogHeader>
+            
+            {viewDialog.shop && (
+              <div className="space-y-6">
+                {viewDialog.shop.photoUrl && (
+                  <div className="w-full h-48 relative rounded-md overflow-hidden bg-muted">
+                    <img src={viewDialog.shop.photoUrl} alt="Shop photo" className="object-cover w-full h-full" />
+                  </div>
+                )}
+                
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-muted-foreground text-xs">Shop ID</Label>
+                      <div className="font-medium">{viewDialog.shop.shopId || viewDialog.shop.id}</div>
+                    </div>
+                    <div>
+                      <Label className="text-muted-foreground text-xs">Shop Name</Label>
+                      <div className="font-medium">{viewDialog.shop.shopName}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-muted-foreground text-xs">Owner Name</Label>
+                      <div className="font-medium">{viewDialog.shop.ownerName}</div>
+                    </div>
+                    <div>
+                      <Label className="text-muted-foreground text-xs">Mobile</Label>
+                      <div className="font-medium">{viewDialog.shop.mobile}</div>
+                    </div>
+                  </div>
+
+                  {viewDialog.shop.latitude && viewDialog.shop.longitude && (
+                    <div>
+                      <Label className="text-muted-foreground text-xs">Location Coordinates</Label>
+                      <div className="font-medium flex items-center text-sm">
+                        <MapPin className="h-4 w-4 mr-1 text-primary" />
+                        {viewDialog.shop.latitude.toFixed(6)}, {viewDialog.shop.longitude.toFixed(6)}
+                        {viewDialog.shop.accuracy && (
+                          <span className="text-muted-foreground ml-2">(±{Math.round(viewDialog.shop.accuracy)}m)</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {viewDialog.shop.remark && (
+                    <div>
+                      <Label className="text-muted-foreground text-xs">Remark</Label>
+                      <div className="text-sm p-3 bg-muted rounded-md mt-1 border">
+                        {viewDialog.shop.remark}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {viewDialog.shop.createdAt && (
+                    <div>
+                      <Label className="text-muted-foreground text-xs">Created At</Label>
+                      <div className="font-medium text-sm">
+                        {new Date(viewDialog.shop.createdAt).toLocaleString()}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            
+            <DialogFooter className="sm:justify-end mt-4">
+              <Button variant="secondary" onClick={() => setViewDialog({ open: false, shop: null })}>
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </Layout>
     </ProtectedRoute>
   );

@@ -1058,6 +1058,48 @@ export const DeleteCollectionResponse = zod.void()
 
 
 /**
+ * @summary Update a collection entry
+ */
+export const UpdateCollectionParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateCollectionBody = zod.object({
+  "weightKg": zod.number().optional(),
+  "ratePerKg": zod.number().optional()
+})
+
+export const UpdateCollectionResponse = zod.object({
+  "id": zod.number(),
+  "shopId": zod.number(),
+  "shop": zod.object({
+  "id": zod.number(),
+  "shopId": zod.string(),
+  "shopName": zod.string(),
+  "ownerName": zod.string(),
+  "mobile": zod.string(),
+  "latitude": zod.number().nullish(),
+  "longitude": zod.number().nullish(),
+  "accuracy": zod.number().nullish(),
+  "locationCapturedAt": zod.string().nullish(),
+  "photoUrl": zod.string().nullish(),
+  "remark": zod.string().nullish(),
+  "createdAt": zod.string()
+}).optional(),
+  "collectionDate": zod.string(),
+  "weightKg": zod.number(),
+  "ratePerKg": zod.number(),
+  "totalAmount": zod.number(),
+  "paymentStatus": zod.string(),
+  "paymentDate": zod.string().nullish(),
+  "paidBy": zod.string().nullish(),
+  "routeId": zod.number().nullish(),
+  "routeStopSequence": zod.number().nullish(),
+  "createdAt": zod.string()
+})
+
+
+/**
  * @summary Mark a collection as paid or pending
  */
 export const UpdatePaymentStatusParams = zod.object({
