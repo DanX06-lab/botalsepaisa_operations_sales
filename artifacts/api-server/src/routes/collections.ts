@@ -182,4 +182,23 @@ router.patch("/collections/:id/payment", async (req, res): Promise<void> => {
   res.json(serializeCollection(updated.value, shop));
 });
 
+router.delete("/collections/:id", async (req, res): Promise<void> => {
+  const params = GetCollectionParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+
+  const db = getDb();
+  const existing = await db.collection("collections").findOne({ id: params.data.id });
+  if (!existing) {
+    res.status(404).json({ error: "Collection not found" });
+    return;
+  }
+
+  await db.collection("collections").deleteOne({ id: params.data.id });
+  req.log.info({ id: params.data.id }, "Collection entry deleted");
+  res.status(204).send();
+});
+
 export default router;

@@ -926,6 +926,21 @@ paths:
                 $ref: "#/components/schemas/Collection"
         "404":
           description: Not found
+    delete:
+      operationId: deleteCollection
+      tags: [collections]
+      summary: Delete a collection entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "204":
+          description: Collection deleted successfully
+        "404":
+          description: Not found
 
   /collections/{id}/payment:
     patch:

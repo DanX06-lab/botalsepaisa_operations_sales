@@ -698,101 +698,6 @@ export const GetQualityCoverageResponse = zod.object({
 
 
 /**
- * @summary List WhatsApp pickup requests
- */
-export const ListPickupsQueryParams = zod.object({
-  "status": zod.coerce.string().optional(),
-  "page": zod.coerce.number().optional(),
-  "limit": zod.coerce.number().optional()
-})
-
-export const ListPickupsResponse = zod.object({
-  "data": zod.array(zod.object({
-  "_id": zod.string(),
-  "ticket_id": zod.string(),
-  "customer_id": zod.string(),
-  "whatsapp_number": zod.string(),
-  "customer_name": zod.string(),
-  "language": zod.string(),
-  "script_preference": zod.string().nullish(),
-  "quantity_range": zod.string(),
-  "weekend_batch": zod.boolean(),
-  "latitude": zod.number(),
-  "longitude": zod.number(),
-  "landmark": zod.string().nullish(),
-  "status": zod.enum(['PENDING', 'ASSIGNED', 'PICKUP_IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
-  "eta": zod.string().nullish(),
-  "assigned_to": zod.string().nullish(),
-  "source": zod.string(),
-  "created_at": zod.string(),
-  "updated_at": zod.string(),
-  "completed_at": zod.string().nullish(),
-  "cancelled_at": zod.string().nullish()
-})),
-  "total": zod.number(),
-  "page": zod.number(),
-  "limit": zod.number()
-})
-
-
-/**
- * @summary Update pickup status
- */
-export const UpdatePickupStatusParams = zod.object({
-  "id": zod.coerce.string()
-})
-
-export const UpdatePickupStatusBody = zod.object({
-  "status": zod.enum(['PENDING', 'ASSIGNED', 'PICKUP_IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
-  "eta": zod.string().nullish(),
-  "assigned_to": zod.string().nullish()
-})
-
-export const UpdatePickupStatusResponse = zod.object({
-  "_id": zod.string(),
-  "ticket_id": zod.string(),
-  "customer_id": zod.string(),
-  "whatsapp_number": zod.string(),
-  "customer_name": zod.string(),
-  "language": zod.string(),
-  "script_preference": zod.string().nullish(),
-  "quantity_range": zod.string(),
-  "weekend_batch": zod.boolean(),
-  "latitude": zod.number(),
-  "longitude": zod.number(),
-  "landmark": zod.string().nullish(),
-  "status": zod.enum(['PENDING', 'ASSIGNED', 'PICKUP_IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
-  "eta": zod.string().nullish(),
-  "assigned_to": zod.string().nullish(),
-  "source": zod.string(),
-  "created_at": zod.string(),
-  "updated_at": zod.string(),
-  "completed_at": zod.string().nullish(),
-  "cancelled_at": zod.string().nullish()
-})
-
-
-/**
- * @summary Verify WhatsApp Webhook
- */
-export const VerifyWebhookQueryParams = zod.object({
-  "hub.mode": zod.coerce.string(),
-  "hub.verify_token": zod.coerce.string(),
-  "hub.challenge": zod.coerce.string()
-})
-
-export const VerifyWebhookResponse = zod.string()
-
-
-/**
- * @summary Handle WhatsApp incoming events
- */
-export const HandleWebhookBody = zod.record(zod.string(), zod.unknown())
-
-export const HandleWebhookResponse = zod.unknown()
-
-
-/**
  * @summary List all prospects
  */
 export const ListProspectsQueryParams = zod.object({
@@ -1140,6 +1045,16 @@ export const GetCollectionResponse = zod.object({
   "routeStopSequence": zod.number().nullish(),
   "createdAt": zod.string()
 })
+
+
+/**
+ * @summary Delete a collection entry
+ */
+export const DeleteCollectionParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteCollectionResponse = zod.void()
 
 
 /**

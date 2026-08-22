@@ -431,74 +431,6 @@ export interface IntelligenceBusiness {
   updated_at: string;
 }
 
-export type PickupRequestStatus = typeof PickupRequestStatus[keyof typeof PickupRequestStatus];
-
-
-export const PickupRequestStatus = {
-  PENDING: 'PENDING',
-  ASSIGNED: 'ASSIGNED',
-  PICKUP_IN_PROGRESS: 'PICKUP_IN_PROGRESS',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED',
-} as const;
-
-export interface PickupRequest {
-  _id: string;
-  ticket_id: string;
-  customer_id: string;
-  whatsapp_number: string;
-  customer_name: string;
-  language: string;
-  /** @nullable */
-  script_preference?: string | null;
-  quantity_range: string;
-  weekend_batch: boolean;
-  latitude: number;
-  longitude: number;
-  /** @nullable */
-  landmark?: string | null;
-  status: PickupRequestStatus;
-  /** @nullable */
-  eta?: string | null;
-  /** @nullable */
-  assigned_to?: string | null;
-  source: string;
-  created_at: string;
-  updated_at: string;
-  /** @nullable */
-  completed_at?: string | null;
-  /** @nullable */
-  cancelled_at?: string | null;
-}
-
-export interface PickupList {
-  data: PickupRequest[];
-  total: number;
-  page: number;
-  limit: number;
-}
-
-export type PickupStatusUpdateStatus = typeof PickupStatusUpdateStatus[keyof typeof PickupStatusUpdateStatus];
-
-
-export const PickupStatusUpdateStatus = {
-  PENDING: 'PENDING',
-  ASSIGNED: 'ASSIGNED',
-  PICKUP_IN_PROGRESS: 'PICKUP_IN_PROGRESS',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED',
-} as const;
-
-export interface PickupStatusUpdate {
-  status: PickupStatusUpdateStatus;
-  /** @nullable */
-  eta?: string | null;
-  /** @nullable */
-  assigned_to?: string | null;
-}
-
-export interface WhatsAppWebhookPayload { [key: string]: unknown }
-
 export type ImportPreviewRequestRowsItem = { [key: string]: unknown };
 
 export interface ImportPreviewRequest {
@@ -699,18 +631,6 @@ borough_id?: string;
 business_type?: string;
 verification_status?: string;
 source?: string;
-};
-
-export type ListPickupsParams = {
-status?: string;
-page?: number;
-limit?: number;
-};
-
-export type VerifyWebhookParams = {
-'hub.mode': string;
-'hub.verify_token': string;
-'hub.challenge': string;
 };
 
 export type ListProspectsParams = {

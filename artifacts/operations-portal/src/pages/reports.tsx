@@ -4,6 +4,7 @@ import { Layout } from '@/components/Layout';
 import { 
   useGetReports, 
   useUpdatePaymentStatus,
+  useDeleteCollection,
   getGetReportsQueryKey
 } from '@workspace/api-client-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -15,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFoo
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { FileText, IndianRupee, Search, Calendar, ChevronRight } from 'lucide-react';
+import { FileText, IndianRupee, Search, Calendar, ChevronRight, Trash2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -83,6 +84,24 @@ export default function Reports() {
       id,
       data: { paymentStatus: 'PENDING', paymentDate: null, paidBy: null }
     });
+  };
+
+  const deleteCollection = useDeleteCollection({
+    mutation: {
+      onSuccess: () => {
+        toast({ title: "Success", description: "Collection deleted successfully." });
+        queryClient.invalidateQueries({ queryKey: getGetReportsQueryKey() });
+      },
+      onError: (err: any) => {
+        toast({ title: "Error", description: err.message, variant: "destructive" });
+      }
+    }
+  });
+
+  const handleDelete = (id: number) => {
+    if (confirm('Are you sure you want to delete this collection entry? This action cannot be undone.')) {
+      deleteCollection.mutate({ id });
+    }
   };
 
   return (
@@ -158,24 +177,35 @@ export default function Reports() {
                             )}
                           </TableCell>
                           <TableCell className="text-right">
-                            {entry.paymentStatus === 'PENDING' ? (
-                              <Button 
-                                size="sm" 
-                                className="h-8"
-                                onClick={() => setPaymentDialog({ open: true, entry })}
-                              >
-                                Mark Paid
-                              </Button>
-                            ) : (
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
+                            <div className="flex gap-2 justify-end">
+                              {entry.paymentStatus === 'PENDING' ? (
+                                <Button 
+                                  size="sm" 
+                                  className="h-8"
+                                  onClick={() => setPaymentDialog({ open: true, entry })}
+                                >
+                                  Mark Paid
+                                </Button>
+                              ) : (
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 text-xs text-muted-foreground hover:text-destructive"
+                                  onClick={() => markPending(entry.id)}
+                                >
+                                  Revert
+                                </Button>
+                              )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 className="h-8 text-xs text-muted-foreground hover:text-destructive"
-                                onClick={() => markPending(entry.id)}
+                                onClick={() => handleDelete(entry.id)}
+                                disabled={deleteCollection.isPending}
                               >
-                                Revert
+                                <Trash2 className="h-4 w-4" />
                               </Button>
-                            )}
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}

@@ -51,14 +51,10 @@ import type {
   IntelligenceMapResponse,
   ListCollectionsParams,
   ListIntelligenceMapParams,
-  ListPickupsParams,
   ListProspectsParams,
   ListShopsParams,
   LoginCredentials,
   PaymentUpdate,
-  PickupList,
-  PickupRequest,
-  PickupStatusUpdate,
   Prospect,
   ProspectInput,
   QualityCoverage,
@@ -77,10 +73,8 @@ import type {
   SyncResponse,
   VerificationHistory,
   VerificationStatusRequest,
-  VerifyWebhookParams,
   VisitStopInput,
   WardCoverage,
-  WhatsAppWebhookPayload,
   ZoneCoverage
 } from './api.schemas';
 
@@ -1830,317 +1824,6 @@ export function useGetQualityCoverage<TData = Awaited<ReturnType<typeof getQuali
 
 
 
-export const getListPickupsUrl = (params?: ListPickupsParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/pickups?${stringifiedParams}` : `/api/pickups`
-}
-
-/**
- * @summary List WhatsApp pickup requests
- */
-export const listPickups = async (params?: ListPickupsParams, options?: Parameters<typeof customFetch>[1]): Promise<PickupList> => {
-
-  return customFetch<PickupList>(getListPickupsUrl(params),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-
-
-export const getListPickupsQueryKey = (params?: ListPickupsParams,) => {
-    return [
-    `/api/pickups`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getListPickupsQueryOptions = <TData = Awaited<ReturnType<typeof listPickups>>, TError = ErrorType<unknown>>(params?: ListPickupsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPickups>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getListPickupsQueryKey(params);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPickups>>> = ({ signal }) => listPickups(params, { signal, ...requestOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPickups>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type ListPickupsQueryResult = NonNullable<Awaited<ReturnType<typeof listPickups>>>
-export type ListPickupsQueryError = ErrorType<unknown>
-
-
-/**
- * @summary List WhatsApp pickup requests
- */
-
-export function useListPickups<TData = Awaited<ReturnType<typeof listPickups>>, TError = ErrorType<unknown>>(
- params?: ListPickupsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPickups>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
-
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getListPickupsQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
-
-export const getUpdatePickupStatusUrl = (id: string,) => {
-
-
-
-
-  return `/api/pickups/${id}/status`
-}
-
-/**
- * @summary Update pickup status
- */
-export const updatePickupStatus = async (id: string,
-    pickupStatusUpdate: PickupStatusUpdate, options?: Parameters<typeof customFetch>[1]): Promise<PickupRequest> => {
-
-  return customFetch<PickupRequest>(getUpdatePickupStatusUrl(id),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(pickupStatusUpdate)
-  }
-);}
-
-
-
-
-
-export const getUpdatePickupStatusMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePickupStatus>>, TError,{id: string;data: BodyType<PickupStatusUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updatePickupStatus>>, TError,{id: string;data: BodyType<PickupStatusUpdate>}, TContext> => {
-
-const mutationKey = ['updatePickupStatus'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePickupStatus>>, {id: string;data: BodyType<PickupStatusUpdate>}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  updatePickupStatus(id,data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdatePickupStatusMutationResult = NonNullable<Awaited<ReturnType<typeof updatePickupStatus>>>
-    export type UpdatePickupStatusMutationBody = BodyType<PickupStatusUpdate>
-    export type UpdatePickupStatusMutationError = ErrorType<void>
-
-    /**
- * @summary Update pickup status
- */
-export const useUpdatePickupStatus = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePickupStatus>>, TError,{id: string;data: BodyType<PickupStatusUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof updatePickupStatus>>,
-        TError,
-        {id: string;data: BodyType<PickupStatusUpdate>},
-        TContext
-      > => {
-      return useMutation(getUpdatePickupStatusMutationOptions(options));
-    }
-
-export const getVerifyWebhookUrl = (params: VerifyWebhookParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/whatsapp/webhook?${stringifiedParams}` : `/api/whatsapp/webhook`
-}
-
-/**
- * @summary Verify WhatsApp Webhook
- */
-export const verifyWebhook = async (params: VerifyWebhookParams, options?: Parameters<typeof customFetch>[1]): Promise<string> => {
-
-  return customFetch<string>(getVerifyWebhookUrl(params),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-
-
-export const getVerifyWebhookQueryKey = (params?: VerifyWebhookParams,) => {
-    return [
-    `/api/whatsapp/webhook`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getVerifyWebhookQueryOptions = <TData = Awaited<ReturnType<typeof verifyWebhook>>, TError = ErrorType<void>>(params: VerifyWebhookParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof verifyWebhook>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getVerifyWebhookQueryKey(params);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof verifyWebhook>>> = ({ signal }) => verifyWebhook(params, { signal, ...requestOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof verifyWebhook>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type VerifyWebhookQueryResult = NonNullable<Awaited<ReturnType<typeof verifyWebhook>>>
-export type VerifyWebhookQueryError = ErrorType<void>
-
-
-/**
- * @summary Verify WhatsApp Webhook
- */
-
-export function useVerifyWebhook<TData = Awaited<ReturnType<typeof verifyWebhook>>, TError = ErrorType<void>>(
- params: VerifyWebhookParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof verifyWebhook>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
-
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getVerifyWebhookQueryOptions(params,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
-
-export const getHandleWebhookUrl = () => {
-
-
-
-
-  return `/api/whatsapp/webhook`
-}
-
-/**
- * @summary Handle WhatsApp incoming events
- */
-export const handleWebhook = async (whatsAppWebhookPayload: WhatsAppWebhookPayload, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
-
-  return customFetch<void>(getHandleWebhookUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(whatsAppWebhookPayload)
-  }
-);}
-
-
-
-
-
-export const getHandleWebhookMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof handleWebhook>>, TError,{data: BodyType<WhatsAppWebhookPayload>}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof handleWebhook>>, TError,{data: BodyType<WhatsAppWebhookPayload>}, TContext> => {
-
-const mutationKey = ['handleWebhook'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof handleWebhook>>, {data: BodyType<WhatsAppWebhookPayload>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  handleWebhook(data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type HandleWebhookMutationResult = NonNullable<Awaited<ReturnType<typeof handleWebhook>>>
-    export type HandleWebhookMutationBody = BodyType<WhatsAppWebhookPayload>
-    export type HandleWebhookMutationError = ErrorType<void>
-
-    /**
- * @summary Handle WhatsApp incoming events
- */
-export const useHandleWebhook = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof handleWebhook>>, TError,{data: BodyType<WhatsAppWebhookPayload>}, TContext>, request?: SecondParameter<typeof customFetch>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof handleWebhook>>,
-        TError,
-        {data: BodyType<WhatsAppWebhookPayload>},
-        TContext
-      > => {
-      return useMutation(getHandleWebhookMutationOptions(options));
-    }
-
 export const getListProspectsUrl = (params?: ListProspectsParams,) => {
   const normalizedParams = new URLSearchParams();
 
@@ -3121,6 +2804,77 @@ export function useGetCollection<TData = Awaited<ReturnType<typeof getCollection
 
 
 
+
+export const getDeleteCollectionUrl = (id: number,) => {
+
+
+
+
+  return `/api/collections/${id}`
+}
+
+/**
+ * @summary Delete a collection entry
+ */
+export const deleteCollection = async (id: number, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getDeleteCollectionUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteCollectionMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCollection>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteCollection>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteCollection'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteCollection>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteCollection(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteCollectionMutationResult = NonNullable<Awaited<ReturnType<typeof deleteCollection>>>
+
+    export type DeleteCollectionMutationError = ErrorType<void>
+
+    /**
+ * @summary Delete a collection entry
+ */
+export const useDeleteCollection = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCollection>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteCollection>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteCollectionMutationOptions(options));
+    }
 
 export const getUpdatePaymentStatusUrl = (id: number,) => {
 
