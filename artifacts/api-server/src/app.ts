@@ -65,6 +65,11 @@ app.use((err: any, req: any, res: any, next: any) => {
 });
 
 import { getDb } from "./lib/mongodb";
+
+app.get("/", (req, res) => {
+  res.json({ status: "ok", message: "BotalSePaisa API is running" });
+});
+
 app.get("/api/migrate-shops-now", async (req, res) => {
   try {
     const db = getDb();
