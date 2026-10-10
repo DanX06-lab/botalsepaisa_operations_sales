@@ -40,8 +40,9 @@ export async function seed() {
   if (!settings) {
     await db.collection("settings").insertOne({
       id: 1,
-      pricePerKg: 12
+      homeLatitude: null,
+      homeLongitude: null
     });
-    logger.info("Default settings created (pricePerKg: 12)");
+    logger.info("Default settings created");
   }
 }
