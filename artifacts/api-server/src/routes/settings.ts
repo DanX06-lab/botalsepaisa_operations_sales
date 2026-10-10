@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { getDb } from "../lib/mongodb";
 import { requireAuth } from "../middlewares/auth";
-import { SettingsUpdate } from "@workspace/api-zod";
+import { UpdateSettingsBody } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
@@ -18,7 +18,7 @@ router.get("/settings", async (req, res): Promise<void> => {
 });
 
 router.put("/settings", async (req, res): Promise<void> => {
-  const parsed = SettingsUpdate.safeParse(req.body);
+  const parsed = UpdateSettingsBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
