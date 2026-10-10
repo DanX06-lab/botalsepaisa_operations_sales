@@ -14,8 +14,9 @@ export async function seed() {
   }
   
   const existing = await db.collection("users").findOne({ username: adminUsername });
+  const passwordHash = await bcrypt.hash(adminPassword.trim(), 10);
+  
   if (!existing) {
-    const passwordHash = await bcrypt.hash(adminPassword.trim(), 10);
     const userId = await getNextSequenceValue("userId");
     await db.collection("users").insertOne({
       id: userId,
@@ -25,14 +26,13 @@ export async function seed() {
       createdAt: new Date()
     });
     logger.info(`Admin user created (username: ${adminUsername})`);
-  } else if (!existing.passwordHash || typeof existing.passwordHash !== 'string') {
-    // Fix existing user with invalid password hash
-    const passwordHash = await bcrypt.hash(adminPassword.trim(), 10);
+  } else {
+    // Always sync the admin password with the environment variable on startup
     await db.collection("users").updateOne(
       { username: adminUsername },
       { $set: { passwordHash } }
     );
-    logger.info(`Admin user password hash fixed (username: ${adminUsername})`);
+    logger.info(`Admin user password synced (username: ${adminUsername})`);
   }
 
   // Ensure default settings exist
