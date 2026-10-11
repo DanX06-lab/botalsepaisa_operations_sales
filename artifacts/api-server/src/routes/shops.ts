@@ -57,7 +57,7 @@ router.get("/shops", async (req, res): Promise<void> => {
   const [data, total] = await Promise.all([
     db.collection("shops")
       .find(filter)
-      .sort({ createdAt: -1 })
+      .sort({ id: -1 })
       .skip(skip)
       .limit(Number(limit))
       .toArray(),
